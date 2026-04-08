@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STIs / STDs — IBANGA HealthBot Rwanda</title>
+  <meta name="description" content="Learn about sexually transmitted infections (STIs/STDs): symptoms, prevention, testing, and treatment. Youth-friendly information for Rwanda.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg fixed-top" aria-label="Main navigation">
+  <div class="container">
+    <a class="navbar-brand" href="index.html"><i class="fas fa-heartbeat me-2" style="color:var(--primary);-webkit-text-fill-color:var(--primary)"></i>IBANGA</a>
+    <div class="a11y-controls d-none d-lg-flex me-3">
+      <button class="a11y-btn" id="btn-high-contrast">🔳 Contrast</button>
+      <button class="a11y-btn" id="btn-large-font">🔠 Text</button>
+    </div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="contraception.html">Contraception</a></li>
+        <li class="nav-item"><a class="nav-link" href="pregnancy.html">Pregnancy</a></li>
+        <li class="nav-item"><a class="nav-link" href="menstrual.html">Menstrual Health</a></li>
+        <li class="nav-item"><a class="nav-link active" href="std.html">STIs</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+        <li class="nav-item ms-2"><button class="btn-nav-cta" onclick="document.getElementById('chatbot-fab-btn').click()"><i class="fas fa-comments me-2"></i>Chat Now</button></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<section class="page-hero" style="background:radial-gradient(ellipse at 20% 50%,hsl(38,50%,10%) 0%,transparent 60%),var(--bg-dark)">
+  <div class="container">
+    <div class="breadcrumb-custom"><a href="index.html">Home</a> <i class="fas fa-chevron-right" style="font-size:0.7rem"></i> STIs / STDs</div>
+    <span class="section-label" style="background:rgba(230,160,30,0.12);border-color:rgba(230,160,30,0.3);color:var(--warning)">Sexual Health</span>
+    <h1 class="hero-title"><span style="background:linear-gradient(135deg,var(--warning),var(--danger));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">STIs</span> &amp; STDs</h1>
+    <p class="hero-desc mt-3">Sexually transmitted infections are common and treatable. Knowledge, testing, and prevention protect you and your partners.</p>
+    <div class="platform-badges mt-4">
+      <span class="platform-badge"><i class="fas fa-shield-alt" style="color:var(--primary)"></i> Prevention Saves Lives</span>
+      <span class="platform-badge"><i class="fas fa-vial" style="color:var(--info)"></i> Testing is Confidential</span>
+      <span class="platform-badge"><i class="fas fa-lock" style="color:var(--accent)"></i> No Shame, No Judgment</span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Important notice banner -->
+    <div class="info-card warning mb-5 fade-in" style="background:rgba(230,160,30,0.08)">
+      <h5>⚠️ Important Reminder</h5>
+      <p style="margin:0;color:var(--text-muted);font-size:0.92rem">Many STIs have <strong>no visible symptoms</strong> but can still be passed to others and cause serious health problems if untreated. Regular testing is the only way to know your status. There is no shame in getting tested — it is a sign of responsibility.</p>
+    </div>
+
+    <div class="row g-5">
+      <div class="col-lg-8">
+
+        <!-- What are STIs -->
+        <div class="method-card fade-in" id="what">
+          <h3><span style="font-size:1.5rem">🦠</span> What Are STIs?</h3>
+          <p style="color:var(--text-muted)">Sexually Transmitted Infections (STIs), also called Sexually Transmitted Diseases (STDs), are infections passed from person to person primarily through sexual contact — vaginal, anal, or oral sex.</p>
+          <div class="info-card mt-3" style="border-left-color:var(--warning)">
+            <h5>How STIs Are Transmitted</h5>
+            <ul>
+              <li>Unprotected vaginal, anal, or oral sex</li>
+              <li>Sharing needles or sharp objects</li>
+              <li>Blood transfusion with infected blood</li>
+              <li>From mother to child during pregnancy, birth, or breastfeeding</li>
+              <li>Some STIs (like herpes) can spread through skin-to-skin contact</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Common STIs -->
+        <div class="method-card fade-in" id="common">
+          <h3><span style="font-size:1.5rem">📋</span> Common STIs</h3>
+          <div class="sti-grid mt-3">
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(220,30,30,0.15);color:#ff6b6b">🔴 VIRAL</span>
+              <h4>HIV / AIDS</h4>
+              <p>Attacks the immune system. No cure, but highly manageable with antiretroviral therapy (ART). People on treatment live long, healthy lives. Prevented with condoms, PrEP, and regular testing.</p>
+            </div>
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(230,160,30,0.15);color:var(--warning)">🟡 VIRAL</span>
+              <h4>HPV (Human Papillomavirus)</h4>
+              <p>Most common STI. Can cause genital warts and some cancers (cervical, anal). Often has no symptoms. HPV vaccine is available and highly effective — ask your health center.</p>
+            </div>
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(130,60,200,0.15);color:var(--accent)">🟣 VIRAL</span>
+              <h4>Herpes (HSV-1 &amp; HSV-2)</h4>
+              <p>Causes painful blisters or sores on mouth or genitals. No cure, but antivirals reduce outbreaks and transmission risk. Very common — can be managed well.</p>
+            </div>
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(30,145,220,0.15);color:var(--info)">🔵 BACTERIAL</span>
+              <h4>Gonorrhea</h4>
+              <p>Causes thick discharge, painful urination. Can be cured with antibiotics. If untreated, can cause infertility. Drug-resistant gonorrhea is an increasing concern.</p>
+            </div>
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(26,160,120,0.15);color:var(--primary)">🟢 BACTERIAL</span>
+              <h4>Chlamydia</h4>
+              <p>Often has NO symptoms — most common curable STI. Can cause infertility if left untreated. Easily cured with a single course of antibiotics. Testing is simple and painless.</p>
+            </div>
+            <div class="sti-card">
+              <span class="sti-badge" style="background:rgba(220,80,110,0.15);color:var(--coral)">🩷 BACTERIAL</span>
+              <h4>Syphilis</h4>
+              <p>Starts with painless sores, progresses in stages. Curable with penicillin if caught early. Can cause serious organ damage and be passed to unborn babies if untreated.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Symptoms -->
+        <div class="method-card fade-in" id="symptoms">
+          <h3><span style="font-size:1.5rem">🔍</span> Common Signs &amp; Symptoms</h3>
+          <p style="color:var(--text-muted);margin-bottom:1rem">These symptoms may indicate an STI. If you notice any of them, get tested promptly — do not wait.</p>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="info-card" style="border-left-color:var(--warning);height:100%">
+                <h5>In Both Men &amp; Women</h5>
+                <ul>
+                  <li>Unusual discharge from genitals</li>
+                  <li>Pain or burning during urination</li>
+                  <li>Sores, blisters, or bumps on genitals, mouth, or anus</li>
+                  <li>Rash on hands, feet, or body</li>
+                  <li>Abnormal growths (warts)</li>
+                  <li>Itching or irritation in genital area</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-card" style="border-left-color:var(--coral);height:100%">
+                <h5>Additional Signs in Women</h5>
+                <ul>
+                  <li>Unusual vaginal discharge (color, smell)</li>
+                  <li>Bleeding between periods</li>
+                  <li>Pain during sex</li>
+                  <li>Lower abdominal pain</li>
+                  <li>Burning or swelling</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="info-card danger mt-3">
+            <h5>🚨 Remember</h5>
+            <p style="margin:0;color:var(--text-muted);font-size:0.9rem">Many people with STIs — especially chlamydia and HIV in early stages — have <strong>NO symptoms at all</strong>. The only way to know for sure is to <strong>get tested</strong>.</p>
+          </div>
+        </div>
+
+        <!-- Prevention -->
+        <div class="method-card fade-in" id="prevention">
+          <h3><span style="font-size:1.5rem">🛡️</span> How to Prevent STIs</h3>
+          <div class="row g-3 mt-1">
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem;border-color:rgba(26,160,120,0.3)">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">🔵</div>
+                <h5 style="font-size:0.95rem;font-weight:700;color:var(--primary)">Use Condoms Correctly</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">The most effective way to prevent STIs during sex. Use for vaginal, anal, and oral sex.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem;border-color:rgba(30,145,220,0.3)">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">🧪</div>
+                <h5 style="font-size:0.95rem;font-weight:700;color:var(--info)">Get Tested Regularly</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">If sexually active, get tested at least once a year. Free at Rwanda health centers.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem;border-color:rgba(130,60,200,0.3)">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">💉</div>
+                <h5 style="font-size:0.95rem;font-weight:700;color:var(--accent)">Get Vaccinated</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">HPV vaccine protects against cervical cancer. Available at health centers.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem;border-color:rgba(26,160,120,0.3)">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">🛡️</div>
+                <h5 style="font-size:0.95rem;font-weight:700;color:var(--primary)">PrEP for HIV</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">If at high risk for HIV, take PrEP daily. Very effective when taken consistently.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">🤝</div>
+                <h5 style="font-size:0.95rem;font-weight:700">Communicate with Partners</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">Talk openly with partners about testing and protection. Mutual testing builds trust.</p>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="glass-card" style="padding:1.25rem">
+                <div style="font-size:1.5rem;margin-bottom:0.5rem">🚫</div>
+                <h5 style="font-size:0.95rem;font-weight:700">Avoid Sharing Sharp Items</h5>
+                <p style="color:var(--text-muted);font-size:0.85rem">Never share needles, razors, or scissors. HIV and hepatitis can spread this way.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testing & Treatment -->
+        <div class="method-card fade-in" id="testing">
+          <h3><span style="font-size:1.5rem">🧬</span> Testing &amp; Treatment</h3>
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <div class="info-card success">
+                <h5>✅ What Can Be Cured</h5>
+                <ul>
+                  <li><strong>Gonorrhea</strong> — antibiotics</li>
+                  <li><strong>Chlamydia</strong> — antibiotics</li>
+                  <li><strong>Syphilis</strong> — penicillin</li>
+                  <li><strong>Trichomoniasis</strong> — antibiotics</li>
+                  <li>Most bacterial STIs — curable if treated early</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-card" style="border-left-color:var(--info)">
+                <h5>💊 What Can Be Managed</h5>
+                <ul>
+                  <li><strong>HIV</strong> — ART therapy → undetectable = untransmittable</li>
+                  <li><strong>Herpes</strong> — antivirals reduce outbreaks</li>
+                  <li><strong>HPV</strong> — warts treated, cancers screened</li>
+                  <li>Early treatment prevents serious complications</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="info-card mt-3" style="border-left-color:var(--primary)">
+            <h5>📍 Where to Get Tested in Rwanda</h5>
+            <ul>
+              <li>All public health centers offer <strong>free HIV testing</strong></li>
+              <li>District hospitals offer full STI screening</li>
+              <li>Youth-friendly health units in many districts</li>
+              <li>Testing is <strong>confidential</strong> — your results are private</li>
+              <li>Call <strong>114</strong> for your nearest testing center</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Myths & Facts -->
+        <div class="method-card fade-in" id="myths">
+          <h3><span style="font-size:1.5rem">❌</span> Myths vs Facts</h3>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;margin-top:1rem">
+            <div style="background:hsl(220,18%,16%);border-radius:var(--radius-sm);padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div><span style="color:var(--danger);font-weight:700;font-size:0.8rem">❌ MYTH</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">"You can tell if someone has an STI just by looking at them."</p></div>
+              <div><span style="color:var(--success);font-weight:700;font-size:0.8rem">✅ FACT</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">Most STIs have no visible symptoms. You cannot tell — only testing confirms it.</p></div>
+            </div>
+            <div style="background:hsl(220,18%,16%);border-radius:var(--radius-sm);padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div><span style="color:var(--danger);font-weight:700;font-size:0.8rem">❌ MYTH</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">"Only promiscuous people get STIs."</p></div>
+              <div><span style="color:var(--success);font-weight:700;font-size:0.8rem">✅ FACT</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">Anyone who is sexually active can get an STI — even from a single encounter or a long-term partner.</p></div>
+            </div>
+            <div style="background:hsl(220,18%,16%);border-radius:var(--radius-sm);padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div><span style="color:var(--danger);font-weight:700;font-size:0.8rem">❌ MYTH</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">"HIV is a death sentence."</p></div>
+              <div><span style="color:var(--success);font-weight:700;font-size:0.8rem">✅ FACT</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">People with HIV on ART treatment live long, healthy lives. Early diagnosis and treatment make all the difference.</p></div>
+            </div>
+            <div style="background:hsl(220,18%,16%);border-radius:var(--radius-sm);padding:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div><span style="color:var(--danger);font-weight:700;font-size:0.8rem">❌ MYTH</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">"Getting tested means you don't trust your partner."</p></div>
+              <div><span style="color:var(--success);font-weight:700;font-size:0.8rem">✅ FACT</span><p style="font-size:0.88rem;margin:0.3rem 0 0;color:var(--text-muted)">Regular testing is a responsible health habit — like annual check-ups. It shows you care about your health and theirs.</p></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-lg-4">
+        <div style="position:sticky;top:100px">
+          <div class="glass-card mb-4">
+            <h5 style="font-weight:700;margin-bottom:1rem">📋 Quick Navigation</h5>
+            <div style="display:flex;flex-direction:column;gap:0.4rem">
+              <a href="#what" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">🦠 What Are STIs?</a>
+              <a href="#common" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">📋 Common STIs</a>
+              <a href="#symptoms" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">🔍 Symptoms</a>
+              <a href="#prevention" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">🛡️ Prevention</a>
+              <a href="#testing" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">🧬 Testing &amp; Treatment</a>
+              <a href="#myths" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.4rem 0.6rem;border-radius:8px" onmouseover="this.style.color='var(--warning)'" onmouseout="this.style.color='var(--text-muted)'">❌ Myths vs Facts</a>
+            </div>
+          </div>
+          <div class="glass-card mb-4" style="background:rgba(230,160,30,0.08);border-color:rgba(230,160,30,0.25)">
+            <h5 style="font-weight:700;margin-bottom:0.75rem;color:var(--warning)">💬 Ask IBANGA</h5>
+            <p style="color:var(--text-muted);font-size:0.88rem">Have questions about STIs? Ask IBANGA privately — no judgment, no shame.</p>
+            <button class="btn-primary-custom mt-2" style="width:100%;justify-content:center;background:linear-gradient(135deg,var(--warning),var(--danger))" onclick="document.getElementById('chatbot-fab-btn').click()">
+              <i class="fas fa-comments"></i> Ask Now
+            </button>
+          </div>
+          <div class="glass-card">
+            <h5 style="font-weight:700;margin-bottom:0.75rem">🧪 Get Tested</h5>
+            <p style="color:var(--text-muted);font-size:0.85rem">Free HIV &amp; STI testing available at all Rwanda health centers. Confidential and judgment-free.</p>
+            <a href="tel:114" style="color:var(--primary);font-weight:700;text-decoration:none;font-size:0.9rem;display:block;margin-top:0.5rem"><i class="fas fa-phone me-2"></i>114 — Find Nearest Clinic</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer role="contentinfo">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4"><div class="footer-brand"><i class="fas fa-heartbeat me-2"></i>IBANGA HealthBot Rwanda</div><p class="footer-desc">Private. Reliable. Youth-Friendly SRH information for young people in Rwanda.</p></div>
+      <div class="col-sm-6 col-lg-4 footer-links"><h6>Health Topics</h6><a href="contraception.html">Contraception</a><a href="pregnancy.html">Pregnancy</a><a href="menstrual.html">Menstrual Health</a><a href="std.html">STIs / STDs</a></div>
+      <div class="col-sm-6 col-lg-4 footer-links"><h6>Emergency</h6><a href="tel:114"><i class="fas fa-phone me-2" style="color:var(--primary)"></i>Health: 114</a><a href="tel:912"><i class="fas fa-ambulance me-2" style="color:var(--danger)"></i>Emergency: 912</a></div>
+    </div>
+    <div class="footer-bottom"><p>© 2025 IBANGA HealthBot Rwanda. All content is medically verified.</p></div>
+  </div>
+</footer>
+
+<div id="chatbot-fab"><button class="fab-btn" id="chatbot-fab-btn" aria-label="Open IBANGA HealthBot chat"><i class="fas fa-comments"></i></button>
+  <div id="chatbot-panel" role="dialog" aria-label="IBANGA HealthBot Chat" aria-modal="true">
+    <div class="cb-header"><div class="cb-avatar"><i class="fas fa-heartbeat"></i></div><div class="cb-header-info"><h4>IBANGA HealthBot</h4><span><span class="cb-status-dot"></span>Online</span></div><button class="cb-close" id="cb-close">✕</button></div>
+    <div class="cb-lang-toggle"><button class="lang-btn active" id="lang-rw">🇷🇼 Kinyarwanda</button><button class="lang-btn" id="lang-en">🇬🇧 English</button><button class="simple-lang-btn" id="simple-mode-btn">🔤 Simple</button></div>
+    <div class="cb-messages" id="cb-messages" role="log" aria-live="polite"></div>
+    <div class="quick-replies" id="quick-replies" role="group"></div>
+    <div class="cb-input-row"><label for="cb-input" class="visually-hidden">Type your question</label><input type="text" class="cb-input" id="cb-input" placeholder="Baza ikibazo... / Ask a question..." autocomplete="off"><button class="cb-send" id="cb-send" aria-label="Send"><i class="fas fa-paper-plane"></i></button></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="assets/js/chatbot.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
