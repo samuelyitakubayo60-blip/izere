@@ -17,14 +17,14 @@
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,rw,fr,sw,ki',
+        pageLanguage: 'rw',
+        includedLanguages: 'rw,en,fr,sw,ki',
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
         autoDisplay: false
       }, 'google_translate_element');
     }
   </script>
-  <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 <body>
 
@@ -56,11 +56,11 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="languageDropdown">
             <li><h6 class="dropdown-header"><i class="fas fa-language me-2"></i>Choose Language</h6></li>
-            <li><button class="dropdown-item translate-option" data-lang="en">
-              <span class="flag">🇬🇧</span> English
+            <li><button class="dropdown-item translate-option active" data-lang="rw">
+              <span class="flag">��</span> Kinyarwanda
             </button></li>
-            <li><button class="dropdown-item translate-option" data-lang="rw">
-              <span class="flag">🇷🇼</span> Kinyarwanda
+            <li><button class="dropdown-item translate-option" data-lang="en">
+              <span class="flag">��</span> English
             </button></li>
             <li><button class="dropdown-item translate-option" data-lang="fr">
               <span class="flag">🇫🇷</span> Français
@@ -73,12 +73,7 @@
             </button></li>
           </ul>
         </li>
-        <li class="nav-item ms-2">
-          <button class="btn-nav-cta" onclick="document.getElementById('chatbot-fab-btn').click()" aria-label="Open chatbot">
-            <i class="fas fa-comments me-2"></i>Chat Now
-          </button>
-        </li>
-      </ul>
+              </ul>
     </div>
   </div>
 </nav>
@@ -102,9 +97,6 @@
           <strong>DEMO VERSION:</strong> Experience our prototype chatbot for confidential sexual &amp; reproductive health information in <strong>English</strong> — available 24/7, no judgment.
         </p>
         <div class="hero-btns d-flex flex-wrap gap-3 mt-4">
-          <button class="btn-primary-custom" onclick="document.getElementById('chatbot-fab-btn').click()" aria-label="Open chatbot demo">
-            <i class="fas fa-comments"></i> Talk to IBANGA
-          </button>
           <a class="btn-outline-custom" href="about.html" aria-label="Learn more about the project">
             <i class="fas fa-info-circle"></i> Learn More
           </a>

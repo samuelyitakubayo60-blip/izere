@@ -318,7 +318,17 @@ body {
 .glass-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: var(--shadow); }
 
 /* ===== TOPIC CARDS (Home) ===== */
-.topic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.5rem; }
+.topic-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); 
+  gap: 1.5rem; 
+}
+
+/* Ensure topic cards are visible */
+.topic-grid .topic-card {
+  opacity: 1;
+  transform: translateY(0);
+}
 .topic-card {
   background: var(--bg-card);
   border: 1px solid var(--border);

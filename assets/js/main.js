@@ -24,44 +24,65 @@ if (largeFontBtn) {
 /* ── Smooth Scroll for anchor links ── */
 document.querySelectorAll('a[href^="#"]').forEach(a => {
   a.addEventListener('click', e => {
-    const target = document.querySelector(a.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      const offset = 80;
-      const top = target.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top, behavior: 'smooth' });
+    const href = a.getAttribute('href');
+    if (href && href !== '#') {
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
     }
   });
 });
 
 /* ── Navbar active on scroll ── */
+// Only apply scroll-based active state to hash links within the same page
 const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
-const sections = [...navLinks].map(l => document.querySelector(l.getAttribute('href'))).filter(Boolean);
+const sections = [...navLinks].map(l => {
+  const href = l.getAttribute('href');
+  if (href && href !== '#') {
+    return document.querySelector(href);
+  }
+  return null;
+}).filter(Boolean);
 
-function updateActiveNav() {
-  const scrollY = window.scrollY + 100;
-  sections.forEach((section, i) => {
-    if (section.offsetTop <= scrollY && section.offsetTop + section.offsetHeight > scrollY) {
-      navLinks.forEach(l => l.classList.remove('active'));
-      if (navLinks[i]) navLinks[i].classList.add('active');
-    }
-  });
-}
-window.addEventListener('scroll', updateActiveNav, { passive: true });
-
-/* ── Intersection Observer for fade-in animations ── */
-const fadeEls = document.querySelectorAll('.fade-in');
-if (fadeEls.length) {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+if (sections.length > 0) {
+  function updateActiveNav() {
+    const scrollY = window.scrollY + 100;
+    sections.forEach((section, i) => {
+      if (section.offsetTop <= scrollY && section.offsetTop + section.offsetHeight > scrollY) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        navLinks[i].classList.add('active');
       }
     });
-  }, { threshold: 0.12 });
-  fadeEls.forEach(el => observer.observe(el));
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    window.addEventListener('scroll', updateActiveNav);
+    updateActiveNav();
+  });
 }
+
+/* ── Intersection Observer for fade-in animations ── */
+document.addEventListener('DOMContentLoaded', function() {
+  const fadeEls = document.querySelectorAll('.fade-in');
+  if (fadeEls.length) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    fadeEls.forEach(el => observer.observe(el));
+  }
+  
+  // Initialize translation
+  initTranslation();
+});
 
 /* ── Animated phone chat on hero ── */
 (function animateHeroChat() {
@@ -150,30 +171,45 @@ function initTranslation() {
       translateOptions.forEach(opt => opt.classList.remove('active'));
       this.classList.add('active');
       
-      // Trigger Google Translate
-      if (window.google && window.google.translate) {
-        const selectElement = document.querySelector('.goog-te-combo');
-        if (selectElement) {
-          selectElement.value = lang;
-          selectElement.dispatchEvent(new Event('change'));
+      // Trigger Google Translate with retry logic
+      function triggerTranslate() {
+        if (window.google && window.google.translate) {
+          const selectElement = document.querySelector('.goog-te-combo');
+          if (selectElement) {
+            selectElement.value = lang;
+            selectElement.dispatchEvent(new Event('change'));
+            console.log('Translation triggered for language:', lang);
+          } else {
+            console.log('Google Translate combo not found, retrying...');
+            setTimeout(triggerTranslate, 500);
+          }
+        } else {
+          console.log('Google Translate not ready, retrying...');
+          setTimeout(triggerTranslate, 1000);
         }
       }
+      
+      triggerTranslate();
       
       // Store preference
       localStorage.setItem('preferred-language', lang);
     });
   });
   
-  // Load saved language preference
-  const savedLang = localStorage.getItem('preferred-language');
-  if (savedLang) {
-    translateOptions.forEach(opt => {
-      opt.classList.toggle('active', opt.getAttribute('data-lang') === savedLang);
-    });
+  // Load saved language preference or default to Kinyarwanda
+  const savedLang = localStorage.getItem('preferred-language') || 'rw';
+  translateOptions.forEach(opt => {
+    opt.classList.toggle('active', opt.getAttribute('data-lang') === savedLang);
+  });
+  
+  // Auto-trigger Kinyarwanda on first load if no preference saved
+  if (!localStorage.getItem('preferred-language')) {
+    setTimeout(() => {
+      const kinyarwandaOption = document.querySelector('.translate-option[data-lang="rw"]');
+      if (kinyarwandaOption) {
+        kinyarwandaOption.click();
+      }
+    }, 2000);
   }
 }
 
-// Initialize translation when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-  initTranslation();
-});
