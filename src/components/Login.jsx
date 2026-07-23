@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useChatUI } from '../components/FloatingChat';
@@ -9,6 +10,9 @@ const Login = () => {
   const { login } = useAuth();
   const { t } = useLanguage();
   const { openChat } = useChatUI();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || '/';
 
   const handleGoogleSignIn = async () => {
     try {
@@ -17,7 +21,15 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
       const response = await login(result.user, idToken);
-      if (!response.success) setError(t('login.authError'));
+      if (!response.success) {
+        setError(response.error || t('login.authError'));
+        return;
+      }
+      if (response.user?.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       console.error('Google sign-in error:', err);
       setError(t('login.googleError'));
@@ -38,6 +50,7 @@ const Login = () => {
         )}
 
         <button
+          type="button"
           onClick={handleGoogleSignIn}
           className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
         >

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useAuth } from '../contexts/AuthContext';
 
 const NAV_LINKS = [
   { to: '/', key: 'home' },
@@ -14,6 +15,7 @@ const NAV_LINKS = [
 
 const Navigation = () => {
   const { t } = useLanguage();
+  const { isAdmin, logout, user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const closeMobile = () => setMobileOpen(false);
@@ -29,7 +31,6 @@ const Navigation = () => {
             IZERE
           </Link>
 
-          {/* Desktop menu */}
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {NAV_LINKS.map(({ to, key }) => (
               <Link
@@ -40,12 +41,36 @@ const Navigation = () => {
                 {t(`nav.${key}`)}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className="hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium border border-white/40"
+              >
+                {t('nav.admin')}
+              </Link>
+            )}
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            {!user && (
+              <Link
+                to="/login"
+                className="hidden sm:inline text-sm hover:bg-red-700 px-2 py-1 rounded-md"
+              >
+                {t('nav.staffLogin')}
+              </Link>
+            )}
+            {user && (
+              <button
+                type="button"
+                onClick={logout}
+                className="hidden sm:inline text-sm hover:bg-red-700 px-2 py-1 rounded-md"
+              >
+                {t('nav.signOut')}
+              </button>
+            )}
             <LanguageSwitcher />
 
-            {/* Mobile hamburger */}
             <button
               type="button"
               className="lg:hidden p-2 rounded-lg hover:bg-red-700 transition-colors"
@@ -68,7 +93,6 @@ const Navigation = () => {
         </div>
       </div>
 
-      {/* Mobile dropdown */}
       {mobileOpen && (
         <>
           <button
@@ -87,6 +111,21 @@ const Navigation = () => {
                   {t(`nav.${key}`)}
                 </Link>
               ))}
+              {isAdmin && (
+                <Link to="/admin" className={linkClass} onClick={closeMobile}>
+                  {t('nav.admin')}
+                </Link>
+              )}
+              {!user && (
+                <Link to="/login" className={linkClass} onClick={closeMobile}>
+                  {t('nav.staffLogin')}
+                </Link>
+              )}
+              {user && (
+                <button type="button" className={`${linkClass} text-left w-full`} onClick={() => { logout(); closeMobile(); }}>
+                  {t('nav.signOut')}
+                </button>
+              )}
             </div>
           </div>
         </>

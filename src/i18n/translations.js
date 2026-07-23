@@ -11,6 +11,8 @@ export const translations = {
       signInOptional: 'Sign in (optional)',
       signOut: 'Sign out',
       askPrivately: 'Ask privately',
+      admin: 'Admin',
+      staffLogin: 'Staff sign in',
     },
     home: {
       tagline: '"Izere" — Trust in Kinyarwanda',
@@ -135,6 +137,8 @@ export const translations = {
       signInOptional: 'Injira (si ngombwa)',
       signOut: 'Sohoka',
       askPrivately: 'Baza mu ibanga',
+      admin: 'Admin',
+      staffLogin: 'Injira (abakozi)',
     },
     home: {
       tagline: '"Izere" — Kwizera mu Kinyarwanda',
@@ -248,6 +252,30 @@ export const translations = {
   },
 };
 
+function deepMerge(base, patch) {
+  if (!patch || typeof patch !== 'object') return base;
+  const out = { ...base };
+  for (const [k, v] of Object.entries(patch)) {
+    if (v && typeof v === 'object' && !Array.isArray(v)) {
+      out[k] = deepMerge(out[k] || {}, v);
+    } else if (typeof v === 'string') {
+      out[k] = v;
+    }
+  }
+  return out;
+}
+
+/** Merged static + CMS overrides from GET /api/translations/bundle */
+let mergedTranslations = null;
+
+export function applyRemoteTranslations(bundle) {
+  if (!bundle) return;
+  mergedTranslations = {
+    en: deepMerge(translations.en, bundle.en || {}),
+    rw: deepMerge(translations.rw, bundle.rw || {}),
+  };
+}
+
 export function translate(lang, key) {
   const keys = key.split('.');
   const resolve = (tree) => {
@@ -257,5 +285,6 @@ export function translate(lang, key) {
     }
     return typeof value === 'string' ? value : null;
   };
-  return resolve(translations[lang]) ?? resolve(translations.en) ?? key;
+  const tree = mergedTranslations?.[lang] ?? translations[lang];
+  return resolve(tree) ?? resolve(translations.en) ?? key;
 }

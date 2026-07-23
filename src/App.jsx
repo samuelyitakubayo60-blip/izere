@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ChatUIProvider } from './components/FloatingChat';
 import Navigation from './components/Navigation';
+import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/Login';
 import Home from './pages/Home';
 import Chat from './pages/Chat';
@@ -11,6 +12,7 @@ import Pregnancy from './pages/Pregnancy';
 import Menstrual from './pages/Menstrual';
 import STI from './pages/STI';
 import Blog from './pages/Blog';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import './index.css';
 
 function App() {
@@ -30,6 +32,14 @@ function App() {
                 <Route path="/menstrual" element={<Menstrual />} />
                 <Route path="/sti" element={<STI />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route
+                  path="/admin"
+                  element={
+                    <ProtectedRoute adminOnly>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
             </div>
           </ChatUIProvider>

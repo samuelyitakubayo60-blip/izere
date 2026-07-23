@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { translate } from '../i18n/translations';
+import { translate, applyRemoteTranslations } from '../i18n/translations';
+import { fetchTranslationBundle } from '../services/translationService';
 
 const STORAGE_KEY = 'izere_language';
 
@@ -10,6 +11,21 @@ export function LanguageProvider({ children }) {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved === 'rw' ? 'rw' : 'en';
   });
+  const [i18nVersion, setI18nVersion] = useState(0);
+
+  const reloadFromApi = useCallback(async () => {
+    try {
+      const bundle = await fetchTranslationBundle();
+      applyRemoteTranslations(bundle);
+      setI18nVersion((v) => v + 1);
+    } catch {
+      // Static translations.js still works offline
+    }
+  }, []);
+
+  useEffect(() => {
+    reloadFromApi();
+  }, [reloadFromApi]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, language);
@@ -20,10 +36,10 @@ export function LanguageProvider({ children }) {
     if (lang === 'en' || lang === 'rw') setLanguageState(lang);
   }, []);
 
-  const t = useCallback((key) => translate(language, key), [language]);
+  const t = useCallback((key) => translate(language, key), [language, i18nVersion]);
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, reloadFromApi }}>
       {children}
     </LanguageContext.Provider>
   );
