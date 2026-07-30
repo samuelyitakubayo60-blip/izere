@@ -1,0 +1,246 @@
+export const pregnancyPage = {
+  en: {
+    label: 'Reproductive Health',
+    labelStyle: { background: 'rgba(220,80,110,0.12)', borderColor: 'rgba(220,80,110,0.3)', color: 'var(--coral)' },
+    heroStyle: 'radial-gradient(ellipse at 20% 50%,hsl(340,40%,12%) 0%,transparent 60%),var(--bg-dark)',
+    titleAccent: 'Pregnancy',
+    titleRest: 'Information',
+    description:
+      'Understanding pregnancy signs, stages, how to stay healthy, and when to seek urgent help — all in one place.',
+    nav: [
+      { id: 'signs', icon: 'search', label: 'Early Signs' },
+      { id: 'confirm', icon: 'check-circle', label: 'Confirm Pregnancy' },
+      { id: 'stages', icon: 'calendar-alt', label: 'Trimesters' },
+      { id: 'antenatal', icon: 'hospital', label: 'Antenatal Care' },
+      { id: 'danger', icon: 'exclamation-triangle', label: 'Danger Signs' },
+    ],
+    remember:
+      'Early antenatal care saves lives. If you think you might be pregnant, visit a health center as soon as possible — even if you feel fine.',
+    sections: [
+      {
+        id: 'signs',
+        icon: 'search',
+        title: 'Early Signs & Symptoms',
+        intro:
+          'These are common early signs of pregnancy. Having one or more of these signs does NOT confirm pregnancy — you need a test.',
+        grid: [
+          { icon: 'calendar-alt', title: 'Missed Period', text: 'The most common early sign. Especially significant if your periods are usually regular.' },
+          { icon: 'dizzy', title: 'Nausea / Morning Sickness', text: 'Can happen at any time of day. Usually begins in the first trimester (weeks 4–8).' },
+          { icon: 'female', title: 'Breast Changes', text: 'Breasts may feel tender, swollen, or heavier. Nipples may darken.' },
+          { icon: 'bed', title: 'Fatigue', text: 'Feeling unusually tired is very common due to hormonal changes.' },
+          { icon: 'restroom', title: 'Frequent Urination', text: 'Needing to urinate more often than usual, especially at night.' },
+          { icon: 'apple-alt', title: 'Food Cravings / Aversions', text: 'Sudden strong desire or dislike for certain foods or smells.' },
+        ],
+        info: {
+          variant: 'accent',
+          icon: 'tint',
+          title: 'Other Possible Signs',
+          list: [
+            'Light spotting (implantation bleeding — lighter than a normal period)',
+            'Mild abdominal cramps (implantation)',
+            'Dizziness or mild headaches',
+            'Mood swings due to hormonal changes',
+          ],
+        },
+      },
+      {
+        id: 'confirm',
+        icon: 'check-circle',
+        title: 'How to Confirm Pregnancy',
+        glassGrid: [
+          { icon: 'vial', title: 'Urine Test', text: 'Home pregnancy test or at a clinic. Available at pharmacies. Detects hCG hormone from 3–5 days after missed period.' },
+          { icon: 'tint', title: 'Blood Test', text: 'Done at a health facility. More accurate. Can detect pregnancy earlier than a urine test.' },
+          { icon: 'x-ray', title: 'Ultrasound', text: "Scan at a health center. Confirms pregnancy and checks baby's development and heartbeat." },
+        ],
+      },
+      {
+        id: 'stages',
+        icon: 'calendar-alt',
+        title: 'Stages of Pregnancy (3 Trimesters)',
+        intro: 'Pregnancy usually lasts about 40 weeks (9 months), divided into three stages.',
+        trimesters: [
+          { icon: 'seedling', weeks: 'Weeks 1–12', title: '1st Trimester', color: 'var(--primary)', list: ['Major organ development', 'Heart begins to beat', 'Morning sickness common', 'Most critical period'] },
+          { icon: 'leaf', weeks: 'Weeks 13–26', title: '2nd Trimester', color: 'var(--info)', list: ['Baby grows rapidly', 'Movement can be felt', 'Nausea often improves', 'Baby bump visible'] },
+          { icon: 'heart', weeks: 'Weeks 27–40', title: '3rd Trimester', color: 'var(--coral)', list: ['Baby fully develops', 'Baby positions for birth', 'Increased discomfort', 'Prepare for labour'] },
+        ],
+      },
+      {
+        id: 'antenatal',
+        icon: 'hospital',
+        title: 'Antenatal Care (ANC)',
+        intro:
+          'Regular check-ups during pregnancy are essential for mother and baby health. In Rwanda, ANC is free at public health centers.',
+        info: {
+          variant: 'success',
+          icon: 'clipboard-list',
+          title: 'What ANC Includes',
+          list: [
+            'Blood pressure & weight monitoring',
+            'Blood tests (anaemia, HIV, syphilis)',
+            'Ultrasound scans',
+            'Iron and folic acid supplements',
+            'Malaria prevention in endemic areas',
+            'Birth plan and labour preparation',
+            'Nutrition and lifestyle counseling',
+          ],
+        },
+        info2: {
+          variant: 'accent',
+          icon: 'carrot',
+          title: 'Important Nutrition During Pregnancy',
+          list: [
+            'Eat iron-rich foods: spinach, beans, meat, eggs',
+            'Take prescribed folic acid and iron tablets',
+            'Eat protein: fish, chicken, legumes',
+            'Drink enough clean water (8+ glasses/day)',
+            'Avoid: alcohol, tobacco, unprescribed medications',
+          ],
+        },
+      },
+      {
+        id: 'danger',
+        icon: 'exclamation-triangle',
+        title: 'Danger Signs — Seek Help Immediately',
+        intro:
+          'If you experience any of these during pregnancy, go to a health facility immediately. Do not wait.',
+        info: {
+          variant: 'danger',
+          icon: 'ambulance',
+          title: 'Emergency Warning Signs',
+          list: [
+            'Severe abdominal or pelvic pain',
+            'Heavy vaginal bleeding',
+            "Severe headache that won't go away",
+            'Blurred or disturbed vision',
+            'Severe swelling of face, hands, or feet',
+            'High fever or chills',
+            'Difficulty breathing',
+            'Baby not moving or reduced movements (after 28 weeks)',
+          ],
+        },
+        emergency: true,
+      },
+    ],
+  },
+  rw: {
+    label: "Ubuzima bwo gucuranga",
+    labelStyle: { background: 'rgba(220,80,110,0.12)', borderColor: 'rgba(220,80,110,0.3)', color: 'var(--coral)' },
+    heroStyle: 'radial-gradient(ellipse at 20% 50%,hsl(340,40%,12%) 0%,transparent 60%),var(--bg-dark)',
+    titleAccent: 'Imyaka',
+    titleRest: "Amakuru",
+    description:
+      "Kumenya ibimenyetso by'imyaka, ibice, uko wiyitaho, n'igihe ukeneye ubufasha bwihuse — byose ahantu hamwe.",
+    nav: [
+      { id: 'signs', icon: 'search', label: 'Ibimenyetso bya mbere' },
+      { id: 'confirm', icon: 'check-circle', label: 'Kwemeza imyaka' },
+      { id: 'stages', icon: 'calendar-alt', label: 'Ibyiciro bitatu' },
+      { id: 'antenatal', icon: 'hospital', label: 'Ubuvuzi bwo mbere' },
+      { id: 'danger', icon: 'exclamation-triangle', label: 'Ibimenyetso byihutirwa' },
+    ],
+    remember:
+      'Ubuvuzi bwo mbere bwihutirwa burokora ubuzima. Niba utekereza ko uri mu myaka, jya mu kigo cy\'ubuzima vuba — n\'ubwo wiyumva neza.',
+    sections: [
+      {
+        id: 'signs',
+        icon: 'search',
+        title: 'Ibimenyetso bya mbere',
+        intro:
+          "Ibi ni ibimenyetso bisanzwe by'imyaka. Kugira kimwe cyangwa byinshi ntibikwemeza imyaka — ukeneye igerageza.",
+        grid: [
+          { icon: 'calendar-alt', title: 'Amenzi atinze', text: 'Ikimenyetso cya mbere cyane. Cyane iyo amenzi yawe akenshi agenda neza.' },
+          { icon: 'dizzy', title: 'Gusindira', text: 'Bishobora kubaho igihe icyo ari cyo cyose. Akenshi bitangira mu cyiciro cya mbere.' },
+          { icon: 'female', title: 'Impinduka z\'amabere', text: 'Amabere ashobora gukabwa, gukura, cyangwa gukomera. Intoki zishobora guhindura ibara.' },
+          { icon: 'bed', title: 'Umunaniriza', text: 'Kunanirira bidasanzwe ni ibisanzwe bituruka ku mpinduka z\'imyitwarire.' },
+          { icon: 'restroom', title: 'Gusaba imisaraba', text: 'Gusaba imisaraba kenshi kurusha ibisanzwe, cyane mu ijoro.' },
+          { icon: 'apple-alt', title: 'Ibiryo ukunda/wanga', text: 'Gukunda cyangwa kwanga ibiryo cyangwa impumuro byihuse.' },
+        ],
+        info: {
+          variant: 'accent',
+          icon: 'tint',
+          title: 'Andi bimenyetso',
+          list: [
+            'Amaraso make (atari nka mezi isanzwe)',
+            'Ububabare buoroshye mu nda',
+            'Gutangara cyangwa umutwe uto',
+            'Guhinduka kw\'umutima biturutse ku myitwarire',
+          ],
+        },
+      },
+      {
+        id: 'confirm',
+        icon: 'check-circle',
+        title: 'Uko wemeza imyaka',
+        glassGrid: [
+          { icon: 'vial', title: 'Igerageza ry\'amazi', text: 'Mu rugo cyangwa ku kigo cy\'ubuzima. Riboneka mu ma pharmacy.' },
+          { icon: 'tint', title: 'Igerageza rya maraso', text: 'Rikorwa ku kigo cy\'ubuzima. Rinyuranye kandi rishobora kumenya imyaka vuba.' },
+          { icon: 'x-ray', title: 'Ultrasound', text: 'Scan igenzura imyaka n\'iterambere ry\'umwana.' },
+        ],
+      },
+      {
+        id: 'stages',
+        icon: 'calendar-alt',
+        title: 'Ibyiciro bitatu by\'imyaka',
+        intro: 'Imyaka imara amezi 9, igabanijwe mu byiciro bitatu.',
+        trimesters: [
+          { icon: 'seedling', weeks: 'Icyumweru 1–12', title: 'Icyiciro cya 1', color: 'var(--primary)', list: ['Ibice by\'umwana bikura', 'Umutima utangira gukora', 'Gusindira bisanzwe', 'Igihe cy\'ingenzi cyane'] },
+          { icon: 'leaf', weeks: 'Icyumweru 13–26', title: 'Icyiciro cya 2', color: 'var(--info)', list: ['Umwana akura vuba', 'Ushobora kumva akora', 'Gusindira gushobora kugenda', 'Inda iboneka'] },
+          { icon: 'heart', weeks: 'Icyumweru 27–40', title: 'Icyiciro cya 3', color: 'var(--coral)', list: ['Umwana arangiza gukura', 'Witegura kuvuka', 'Umerewe bishobora kwiyongera', 'Witegure ku kuvuka'] },
+        ],
+      },
+      {
+        id: 'antenatal',
+        icon: 'hospital',
+        title: 'Ubuvuzi bwo mbere (ANC)',
+        intro: 'Gusura muganga buri gihe ni ngombwa. Mu Rwanda ANC ni ubuntu mu matorero ya Leta.',
+        info: {
+          variant: 'success',
+          icon: 'clipboard-list',
+          title: 'Ibyo ANC irimo',
+          list: [
+            'Gupima umuvuduko w\'amaraso n\'uburemere',
+            'Igerageza rya maraso (fer, SIDA, syphilis)',
+            'Ultrasound',
+            'Imiti ya fer na acide folic',
+            'Kurinda malariya',
+            'Gutegura kuvuka',
+            'Inama ku biryo n\'imibereho',
+          ],
+        },
+        info2: {
+          variant: 'accent',
+          icon: 'carrot',
+          title: 'Ibiryo by\'ingenzi',
+          list: [
+            'Ibiryo birimo fer: spinachi, ibishyimbo, inyama',
+            'Fata imiti y\'acide folic na fer',
+            'Proteini: ifi, inkoko, ibishyimbo',
+            'Nywa amazi ahagije',
+            'Irinda: inyogasuru, itabi, imiti itari yemewe',
+          ],
+        },
+      },
+      {
+        id: 'danger',
+        icon: 'exclamation-triangle',
+        title: 'Ibimenyetso byihutirwa',
+        intro: 'Niba ubone ibi mu gihe cy\'imyaka, jya ku kigo cy\'ubuzima ako kanya.',
+        info: {
+          variant: 'danger',
+          icon: 'ambulance',
+          title: 'Ibimenyetso byo guhutira',
+          list: [
+            'Ububabare bukabije mu nda',
+            'Amaraso menshi',
+            'Umutwe ukabije udashira',
+            'Kutabona neza',
+            'Gukomoka kw\'ubuso cyangwa amaboko',
+            'Umuriro mwinshi',
+            'Kubura umwuka',
+            'Umwana atagira ibyo akora (nyuma y\'icyumweru 28)',
+          ],
+        },
+        emergency: true,
+      },
+    ],
+  },
+};

@@ -1,90 +1,199 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useChatUI } from '../components/FloatingChat';
+import { useFadeIn } from '../hooks/useFadeIn';
+import Icon from '../components/Icon';
+import izereImage from '../assets/izere.jpeg';
 
-const Home = () => {
+const TOPICS = [
+  { to: '/contraception', cls: 't-contraception', icon: 'pills', ic: 'ic-contraception', titleKey: 'topicContraception', descKey: 'topicContraceptionDesc' },
+  { to: '/pregnancy', cls: 't-pregnancy', icon: 'baby', ic: 'ic-pregnancy', titleKey: 'topicPregnancy', descKey: 'topicPregnancyDesc' },
+  { to: '/menstrual', cls: 't-menstrual', icon: 'calendar-alt', ic: 'ic-menstrual', titleKey: 'topicMenstrual', descKey: 'topicMenstrualDesc' },
+  { to: '/sti', cls: 't-std', icon: 'shield-virus', ic: 'ic-std', titleKey: 'topicSti', descKey: 'topicStiDesc' },
+];
+
+const FEATURES = [
+  { icon: 'lock', color: 'var(--primary)', bg: 'rgba(26,160,120,0.15)', titleKey: 'featurePrivateTitle', textKey: 'featurePrivateText' },
+  { icon: 'clock', color: 'var(--accent)', bg: 'rgba(130,60,200,0.15)', titleKey: 'featureChatTitle', textKey: 'featureChatText' },
+  { icon: 'language', color: 'var(--info)', bg: 'rgba(30,145,220,0.15)', titleKey: 'featureLangTitle', textKey: 'featureLangText' },
+  { icon: 'user-md', color: 'var(--warning)', bg: 'rgba(230,160,30,0.15)', titleKey: 'featureTrustedTitle', textKey: 'featureTrustedText' },
+  { icon: 'comments', color: 'var(--coral)', bg: 'rgba(220,80,110,0.15)', titleKey: 'featureAskTitle', textKey: 'featureAskText' },
+  { icon: 'universal-access', color: 'var(--primary)', bg: 'rgba(26,160,120,0.1)', titleKey: 'featureAccessTitle', textKey: 'featureAccessText' },
+];
+
+const HOW_STEPS = ['how1', 'how2', 'how3', 'how4'];
+
+const A11Y = [
+  { icon: 'deaf', titleKey: 'a11yHearTitle', textKey: 'a11yHearText' },
+  { icon: 'low-vision', titleKey: 'a11yVisionTitle', textKey: 'a11yVisionText' },
+  { icon: 'wheelchair', titleKey: 'a11yMobilityTitle', textKey: 'a11yMobilityText' },
+  { icon: 'comment', titleKey: 'a11ySpeechTitle', textKey: 'a11ySpeechText' },
+  { icon: 'brain', titleKey: 'a11yLearnTitle', textKey: 'a11yLearnText' },
+  { icon: 'wifi', titleKey: 'a11yConnectTitle', textKey: 'a11yConnectText' },
+];
+
+export default function Home() {
   const { t } = useLanguage();
   const { openChat } = useChatUI();
+  const fadeRef = useFadeIn([]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 to-pink-50">
-      <div className="bg-gradient-to-r from-red-600 to-pink-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-2">IZERE</h1>
-          <p className="text-lg md:text-xl opacity-90 mb-1">{t('home.tagline')}</p>
-          <p className="text-xl md:text-2xl mb-2">{t('home.headline')}</p>
-          <p className="text-lg md:text-xl opacity-90 mb-8">{t('home.subheadline')}</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              type="button"
-              onClick={openChat}
-              className="bg-white text-red-600 px-8 py-3 rounded-lg font-semibold hover:bg-red-50 transition-colors"
-            >
-              {t('home.startChatting')}
-            </button>
-            <Link
-              to="/contraception"
-              className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-red-600 transition-colors"
-            >
-              {t('home.learnMore')}
-            </Link>
+    <div ref={fadeRef}>
+      <section id="home" className="hero-section" aria-labelledby="hero-heading">
+        <div className="container">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <div className="hero-badge">
+                <Icon name="shield-alt" /> {t('home.badgePrivate')}
+              </div>
+              <h1 className="hero-title" id="hero-heading">
+                IZERE <span className="gradient-text">{t('home.brandAccent')}</span>
+              </h1>
+              <p className="hero-desc mt-3">{t('home.tagline')}</p>
+              <p className="hero-desc">{t('home.headline')}</p>
+              <p className="hero-desc" style={{ fontSize: '0.95rem' }}>{t('home.subheadline')}</p>
+              <div className="hero-btns flex flex-wrap gap-3 mt-4">
+                <button type="button" className="btn-primary-custom" onClick={openChat}>
+                  <Icon name="comments" /> {t('home.startChatting')}
+                </button>
+                <Link to="/about" className="btn-outline-custom">
+                  <Icon name="info-circle" /> {t('home.learnMore')}
+                </Link>
+              </div>
+              <div className="platform-badges mt-4">
+                <span className="platform-badge"><Icon name="globe" style={{ color: 'var(--accent)' }} /> {t('home.badgeWeb')}</span>
+                <span className="platform-badge"><Icon name="language" style={{ color: 'var(--warning)' }} /> {t('home.badgeLang')}</span>
+                <span className="platform-badge"><Icon name="lock" style={{ color: 'var(--primary)' }} /> {t('home.badgeNoAccount')}</span>
+              </div>
+            </div>
+            <div className="phone-mockup-wrap">
+              <div className="hero-image-frame">
+                <img src={izereImage} alt={t('home.imageAlt')} />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">{t('home.missionTitle')}</h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">{t('home.missionText')}</p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {[
-            ['💬', 'featureChatTitle', 'featureChatText'],
-            ['🔒', 'featurePrivateTitle', 'featurePrivateText'],
-            ['🌍', 'featureLangTitle', 'featureLangText'],
-            ['✅', 'featureTrustedTitle', 'featureTrustedText'],
-          ].map(([icon, titleKey, textKey]) => (
-            <div key={titleKey} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-red-600 text-4xl mb-4">{icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{t(`home.${titleKey}`)}</h3>
-              <p className="text-gray-600">{t(`home.${textKey}`)}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">{t('home.topicsTitle')}</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              ['/contraception', 'topicContraception', 'topicContraceptionDesc', 'from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600'],
-              ['/pregnancy', 'topicPregnancy', 'topicPregnancyDesc', 'from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600'],
-              ['/menstrual', 'topicMenstrual', 'topicMenstrualDesc', 'from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600'],
-              ['/sti', 'topicSti', 'topicStiDesc', 'from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600'],
-            ].map(([path, titleKey, descKey, gradient]) => (
-              <Link
-                key={path}
-                to={path}
-                className={`bg-gradient-to-br ${gradient} text-white p-6 rounded-lg transition-all`}
-              >
-                <h3 className="text-xl font-semibold mb-2">{t(`home.${titleKey}`)}</h3>
-                <p className="opacity-90">{t(`home.${descKey}`)}</p>
+      <section id="topics" className="section">
+        <div className="container">
+          <div className="text-center mb-5">
+            <span className="section-label">{t('home.topicsTitle')}</span>
+            <h2 className="section-title">{t('home.topicsHeading')}</h2>
+            <p className="section-sub">{t('home.topicsIntro')}</p>
+          </div>
+          <div className="topic-grid fade-in">
+            {TOPICS.map(({ to, cls, icon, ic, titleKey, descKey }) => (
+              <Link key={to} to={to} className={`topic-card ${cls}`}>
+                <div className={`topic-icon ${ic}`}>
+                  <Icon name={icon} />
+                </div>
+                <h3>{t(`home.${titleKey}`)}</h3>
+                <p>{t(`home.${descKey}`)}</p>
+                <span className="topic-arrow">
+                  {t('home.readMore')} <Icon name="arrow-right" />
+                </span>
               </Link>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg">
-          <h3 className="text-lg font-semibold text-yellow-800">{t('home.noticeTitle')}</h3>
-          <p className="text-yellow-700 mt-2">{t('home.noticeText')}</p>
+      <section id="features" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('home.whyIzere')}</span>
+            <h2 className="section-title">{t('home.whyHeading')}</h2>
+          </div>
+          <div className="features-grid">
+            {FEATURES.map(({ icon, color, bg, titleKey, textKey }) => (
+              <div key={titleKey} className="feature-card fade-in">
+                <div className="feature-icon-wrap" style={{ background: bg }}>
+                  <Icon name={icon} style={{ color }} />
+                </div>
+                <h4>{t(`home.${titleKey}`)}</h4>
+                <p>{t(`home.${textKey}`)}</p>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
+
+      <section id="how" className="section">
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('home.howLabel')}</span>
+            <h2 className="section-title">{t('home.howHeading')}</h2>
+            <p className="section-sub">{t('home.howSub')}</p>
+          </div>
+          <div className="how-grid fade-in">
+            {HOW_STEPS.map((key, i) => (
+              <div key={key} className="how-step">
+                <div className="how-num">{i + 1}</div>
+                <h4>{t(`home.${key}Title`)}</h4>
+                <p>{t(`home.${key}Text`)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="stats-bar fade-in">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+              {[
+                ['statYouth', '500K+'],
+                ['statDistricts', '30'],
+                ['statHours', '24/7'],
+                ['statFree', '100%'],
+              ].map(([key, val]) => (
+                <div key={key} className="stat-item">
+                  <div className="stat-num">{val}</div>
+                  <div className="stat-label">{t(`home.${key}`)}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="accessibility" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('home.a11yLabel')}</span>
+            <h2 className="section-title">
+              {t('home.a11yHeading')} <span className="gradient-text">{t('home.a11yAccent')}</span>
+            </h2>
+            <p className="section-sub">{t('home.a11ySub')}</p>
+          </div>
+          <div className="a11y-grid fade-in">
+            {A11Y.map(({ icon, titleKey, textKey }) => (
+              <div key={titleKey} className="a11y-card">
+                <div className="a11y-card-icon">
+                  <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.5rem' }} />
+                </div>
+                <div>
+                  <h5>{t(`home.${titleKey}`)}</h5>
+                  <p>{t(`home.${textKey}`)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="info-card warning fade-in" style={{ background: 'rgba(230,160,30,0.08)' }}>
+            <h5>
+              <Icon name="exclamation-triangle" className="me-2" />
+              {t('home.noticeTitle')}
+            </h5>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>{t('home.noticeText')}</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
-};
-
-export default Home;
+}

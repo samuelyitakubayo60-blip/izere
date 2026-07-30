@@ -1,137 +1,124 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../contexts/AuthContext';
+import { useChatUI } from './FloatingChat';
+import Icon from './Icon';
 
 const NAV_LINKS = [
-  { to: '/', key: 'home' },
+  { to: '/', key: 'home', end: true },
   { to: '/contraception', key: 'contraception' },
   { to: '/pregnancy', key: 'pregnancy' },
   { to: '/menstrual', key: 'menstrual' },
   { to: '/sti', key: 'sti' },
-  { to: '/blog', key: 'blog' },
+  { to: '/about', key: 'about' },
 ];
 
-const Navigation = () => {
+export default function Navigation() {
   const { t } = useLanguage();
   const { isAdmin, logout, user } = useAuth();
+  const { openChat } = useChatUI();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [largeText, setLargeText] = useState(false);
+  const [highContrast, setHighContrast] = useState(false);
 
   const closeMobile = () => setMobileOpen(false);
 
-  const linkClass =
-    'block px-4 py-3 rounded-lg text-base font-medium hover:bg-red-700/80 transition-colors';
+  const toggleA11y = (mode) => {
+    if (mode === 'contrast') {
+      setHighContrast((v) => {
+        document.body.classList.toggle('high-contrast', !v);
+        return !v;
+      });
+    } else {
+      setLargeText((v) => {
+        document.body.classList.toggle('simple-mode', !v);
+        return !v;
+      });
+    }
+  };
+
+  const navClass = ({ isActive }) => `nav-link${isActive ? ' nav-link-active' : ''}`;
 
   return (
-    <nav className="bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-lg relative z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3">
-          <Link to="/" className="flex-shrink-0 text-2xl font-bold" onClick={closeMobile}>
+    <div className="navbar-fixed-wrap">
+      <nav className="navbar" aria-label="Main navigation">
+        <div className="container flex items-center justify-between flex-wrap gap-2 py-3">
+          <Link to="/" className="navbar-brand" onClick={closeMobile}>
+            <Icon name="heartbeat" className="me-2" style={{ color: 'var(--primary)' }} />
             IZERE
           </Link>
 
+          <div className="hidden lg:flex items-center gap-2 me-3">
+            <button type="button" className="a11y-btn" onClick={() => toggleA11y('contrast')}>
+              <Icon name="adjust" /> {t('nav.contrast')}
+            </button>
+            <button type="button" className="a11y-btn" onClick={() => toggleA11y('text')}>
+              <Icon name="text-height" /> {t('nav.largeText')}
+            </button>
+          </div>
+
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {NAV_LINKS.map(({ to, key }) => (
-              <Link
-                key={key}
-                to={to}
-                className="hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium"
-              >
+            {NAV_LINKS.map(({ to, key, end }) => (
+              <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
                 {t(`nav.${key}`)}
-              </Link>
+              </NavLink>
             ))}
             {isAdmin && (
-              <Link
-                to="/admin"
-                className="hover:bg-red-700 px-3 py-2 rounded-md text-sm font-medium border border-white/40"
-              >
+              <NavLink to="/admin" className={navClass} onClick={closeMobile}>
                 {t('nav.admin')}
-              </Link>
+              </NavLink>
             )}
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+          <div className="flex items-center gap-2">
             {!user && (
-              <Link
-                to="/login"
-                className="hidden sm:inline text-sm hover:bg-red-700 px-2 py-1 rounded-md"
-              >
+              <Link to="/login" className="nav-link hidden sm:inline text-sm">
                 {t('nav.staffLogin')}
               </Link>
             )}
             {user && (
-              <button
-                type="button"
-                onClick={logout}
-                className="hidden sm:inline text-sm hover:bg-red-700 px-2 py-1 rounded-md"
-              >
+              <button type="button" onClick={logout} className="nav-link hidden sm:inline text-sm bg-transparent border-0 cursor-pointer">
                 {t('nav.signOut')}
               </button>
             )}
             <LanguageSwitcher />
-
+            <button type="button" className="btn-nav-cta hidden md:inline-flex items-center gap-2 border-0 cursor-pointer" onClick={openChat}>
+              <Icon name="comments" /> {t('nav.chatNow')}
+            </button>
             <button
               type="button"
-              className="lg:hidden p-2 rounded-lg hover:bg-red-700 transition-colors"
-              onClick={() => setMobileOpen((open) => !open)}
+              className="lg:hidden a11y-btn"
+              onClick={() => setMobileOpen((o) => !o)}
               aria-expanded={mobileOpen}
-              aria-controls="mobile-nav-menu"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             >
-              {mobileOpen ? (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
+              <Icon name={mobileOpen ? 'times' : 'bars'} />
             </button>
           </div>
         </div>
-      </div>
 
-      {mobileOpen && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 bg-black/30 z-20 lg:hidden"
-            onClick={closeMobile}
-            aria-label="Close menu overlay"
-          />
-          <div
-            id="mobile-nav-menu"
-            className="lg:hidden absolute left-0 right-0 top-16 z-30 bg-gradient-to-b from-red-600 to-pink-600 border-t border-white/20 shadow-xl px-4 py-4 pb-6"
-          >
-            <div className="flex flex-col gap-1 max-w-7xl mx-auto">
-              {NAV_LINKS.map(({ to, key }) => (
-                <Link key={key} to={to} className={linkClass} onClick={closeMobile}>
+        {mobileOpen && (
+          <div className="lg:hidden mobile-nav-panel px-4 py-4">
+            <div className="container flex flex-col gap-1">
+              {NAV_LINKS.map(({ to, key, end }) => (
+                <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
                   {t(`nav.${key}`)}
-                </Link>
+                </NavLink>
               ))}
               {isAdmin && (
-                <Link to="/admin" className={linkClass} onClick={closeMobile}>
+                <NavLink to="/admin" className={navClass} onClick={closeMobile}>
                   {t('nav.admin')}
-                </Link>
+                </NavLink>
               )}
-              {!user && (
-                <Link to="/login" className={linkClass} onClick={closeMobile}>
-                  {t('nav.staffLogin')}
-                </Link>
-              )}
-              {user && (
-                <button type="button" className={`${linkClass} text-left w-full`} onClick={() => { logout(); closeMobile(); }}>
-                  {t('nav.signOut')}
-                </button>
-              )}
+              <button type="button" className="btn-nav-cta mt-2 border-0 cursor-pointer justify-center" onClick={() => { openChat(); closeMobile(); }}>
+                <Icon name="comments" /> {t('nav.chatNow')}
+              </button>
             </div>
           </div>
-        </>
-      )}
-    </nav>
+        )}
+      </nav>
+    </div>
   );
-};
-
-export default Navigation;
+}

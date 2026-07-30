@@ -1,0 +1,283 @@
+export const menstrualPage = {
+  en: {
+    label: 'Reproductive Health',
+    labelStyle: { background: 'rgba(30,145,220,0.12)', borderColor: 'rgba(30,145,220,0.3)', color: 'var(--info)' },
+    heroStyle: 'radial-gradient(ellipse at 20% 50%,hsl(200,40%,12%) 0%,transparent 60%),var(--bg-dark)',
+    titleAccent: 'Menstrual',
+    titleRest: 'Health',
+    description:
+      'Understanding your cycle is power. Learn about the menstrual cycle, period tracking, hygiene, and when a visit to the doctor is needed.',
+    nav: [
+      { id: 'what', icon: 'tint', label: 'The Cycle' },
+      { id: 'phases', icon: 'sync-alt', label: '4 Phases' },
+      { id: 'pms', icon: 'comment-dots', label: 'PMS' },
+      { id: 'tracking', icon: 'mobile-alt', label: 'Tracking' },
+      { id: 'hygiene', icon: 'soap', label: 'Hygiene' },
+      { id: 'problems', icon: 'stethoscope', label: 'When to Seek Help' },
+    ],
+    remember:
+      'Every cycle is different. Tracking helps you know what is normal for your body — and when something needs a doctor.',
+    sections: [
+      {
+        id: 'what',
+        icon: 'tint',
+        title: 'What Is the Menstrual Cycle?',
+        intro:
+          'The menstrual cycle is a natural monthly process that prepares the body for possible pregnancy. It is controlled by hormones and is completely normal.',
+        stats: [
+          { icon: 'calendar-alt', label: 'Normal Cycle', value: '21–35 days' },
+          { icon: 'tint', label: 'Bleeding Lasts', value: '3–7 days' },
+          { icon: 'user', label: 'First Period Age', value: '10–15 years' },
+        ],
+        info: {
+          variant: 'info',
+          icon: 'lightbulb',
+          title: 'Important to Know',
+          list: [
+            'Day 1 of the cycle = the first day of bleeding',
+            'Irregular periods are common in the first 1–2 years after menarche',
+            'Every cycle is different — there is no single "correct" length',
+            'Stress, illness, or weight changes can affect regularity',
+          ],
+        },
+      },
+      {
+        id: 'phases',
+        icon: 'sync-alt',
+        title: 'The 4 Phases of the Cycle',
+        intro: 'Your cycle has four distinct phases. Understanding them helps you know your body better.',
+        cycleTimeline: [
+          { icon: 'tint', days: 'Days 1–5', title: 'Menstrual Phase', text: 'Bleeding occurs. The body sheds the uterine lining. Cramps may happen.', color: 'var(--danger)' },
+          { icon: 'seedling', days: 'Days 1–13', title: 'Follicular Phase', text: 'The body prepares an egg. Hormones rise. Energy often increases.', color: 'var(--primary)' },
+          { icon: 'circle', days: '~Day 14', title: 'Ovulation', text: 'An egg is released. Most fertile period — highest chance of pregnancy.', color: 'var(--accent)' },
+          { icon: 'moon', days: 'Days 15–28', title: 'Luteal Phase', text: 'Body prepares for pregnancy. PMS may occur. If no pregnancy → cycle restarts.', color: 'var(--info)' },
+        ],
+        info: {
+          variant: 'accent',
+          icon: 'microscope',
+          title: 'About Ovulation (Most Fertile Day)',
+          list: [
+            'Ovulation usually occurs around the middle of your cycle',
+            'The egg lives for only 12–24 hours after release',
+            'Sperm can survive up to 5 days in the body',
+            'You can get pregnant a few days before or after ovulation',
+            'Signs: mild cramping, clear stretchy discharge, slight temperature rise',
+          ],
+        },
+      },
+      {
+        id: 'pms',
+        icon: 'comment-dots',
+        title: 'PMS — Premenstrual Symptoms',
+        intro:
+          'Many people experience physical and emotional changes in the days before their period. This is called PMS (Premenstrual Syndrome).',
+        dualInfo: [
+          {
+            variant: 'coral',
+            icon: 'heartbeat',
+            title: 'Physical Symptoms',
+            list: ['Abdominal cramps or bloating', 'Breast tenderness', 'Headaches', 'Fatigue', 'Backache', 'Acne breakouts'],
+          },
+          {
+            variant: 'accent',
+            icon: 'brain',
+            title: 'Emotional Symptoms',
+            list: ['Mood swings', 'Irritability or sadness', 'Anxiety', 'Difficulty concentrating', 'Changes in appetite or sleep'],
+          },
+        ],
+        info: {
+          variant: 'success',
+          icon: 'dumbbell',
+          title: 'How to Manage PMS',
+          list: [
+            'Exercise lightly — walking and stretching reduce cramps',
+            'Apply a warm cloth or hot water bottle to your abdomen',
+            'Eat iron-rich foods: spinach, beans, meat',
+            'Avoid excess caffeine, salt, and sugar before your period',
+            'Rest, sleep well, and stay hydrated',
+            'Over-the-counter pain relief can help cramps',
+          ],
+        },
+      },
+      {
+        id: 'tracking',
+        icon: 'mobile-alt',
+        title: 'How to Track Your Period',
+        intro: 'Tracking helps you predict your next period, understand fertility, and notice health changes.',
+        glassGrid: [
+          { icon: 'calendar-alt', title: 'Calendar Method', text: 'Mark the first day of each period. Count days to the next first day — that is your cycle length.' },
+          { icon: 'mobile-alt', title: 'Period Apps', text: 'Apps like Clue, Flo, or Period Tracker can predict your next period and ovulation day.' },
+        ],
+        info: {
+          variant: 'primary',
+          icon: 'clipboard-list',
+          title: 'What to Track Each Month',
+          list: [
+            'Date period started (Day 1)',
+            'How many days bleeding lasted',
+            'Flow level (light, medium, heavy)',
+            'Pain level and mood',
+            'Any unusual symptoms',
+          ],
+        },
+      },
+      {
+        id: 'hygiene',
+        icon: 'soap',
+        title: 'Menstrual Hygiene',
+        intro: 'Good hygiene keeps you healthy and comfortable during your period.',
+        info: {
+          variant: 'success',
+          icon: 'hands-wash',
+          title: 'Hygiene Tips',
+          list: [
+            'Change pads, tampons, or cups every 4–6 hours',
+            'Wash hands before and after changing products',
+            'Wear clean, breathable underwear',
+            'Bath or shower regularly',
+            'Use clean products — pads and cups are available at pharmacies in Rwanda',
+          ],
+        },
+      },
+      {
+        id: 'problems',
+        icon: 'stethoscope',
+        title: 'When to See a Health Provider',
+        intro: 'Some period problems are common; others need medical attention.',
+        info: {
+          variant: 'danger',
+          icon: 'exclamation-circle',
+          title: 'See a Doctor If You Have',
+          list: [
+            'Pain so severe it stops daily activities',
+            'Bleeding so heavy you soak through every hour',
+            'Periods that stop for months without reason',
+            'Cycles always unpredictable after years of having them',
+            'Bleeding between periods or after sex',
+          ],
+        },
+      },
+    ],
+  },
+  rw: {
+    label: "Ubuzima bwo gucuranga",
+    labelStyle: { background: 'rgba(30,145,220,0.12)', borderColor: 'rgba(30,145,220,0.3)', color: 'var(--info)' },
+    heroStyle: 'radial-gradient(ellipse at 20% 50%,hsl(200,40%,12%) 0%,transparent 60%),var(--bg-dark)',
+    titleAccent: 'Amenzi',
+    titleRest: "n'ubuzima",
+    description:
+      "Kumenya igihe cyawe ni imbaraga. Menya igihe cy'amenzi, gukurikiza, isuku, n'igihe ujya kwa muganga.",
+    nav: [
+      { id: 'what', icon: 'tint', label: "Igihe cy'amenzi" },
+      { id: 'phases', icon: 'sync-alt', label: 'Ibice 4' },
+      { id: 'pms', icon: 'comment-dots', label: 'PMS' },
+      { id: 'tracking', icon: 'mobile-alt', label: 'Gukurikiza' },
+      { id: 'hygiene', icon: 'soap', label: 'Isuku' },
+      { id: 'problems', icon: 'stethoscope', label: 'Ubufasha' },
+    ],
+    remember: "Buri gihe gitandukanye. Gukurikiza bifasha kumenya ibisanzwe ku mubiri wawe — n'igihe ukeneye muganga.",
+    sections: [
+      {
+        id: 'what',
+        icon: 'tint',
+        title: "Igihe cy'amenzi ni iki?",
+        intro: "Igihe cy'amenzi ni igikorwa cy'ukwezi cyitegura umubiri ku myaka — ni ibisanzwe.",
+        stats: [
+          { icon: 'calendar-alt', label: 'Igihe gisanzwe', value: 'Iminsi 21–35' },
+          { icon: 'tint', label: 'Amaraso amara', value: 'Iminsi 3–7' },
+          { icon: 'user', label: 'Imyaka ya mbere', value: 'Imyaka 10–15' },
+        ],
+        info: {
+          variant: 'info',
+          icon: 'lightbulb',
+          title: 'Menya ibi',
+          list: [
+            'Umunsi wa 1 = uwa mbere w\'amaraso',
+            'Amenzi atagenda neza bisanzwe mu myaka 1–2 ya mbere',
+            'Buri muntu afite igihe cyiwe',
+            'Stress cyangwa indwara bishobora guhindura igihe',
+          ],
+        },
+      },
+      {
+        id: 'phases',
+        icon: 'sync-alt',
+        title: 'Ibice 4 by\'igihe',
+        intro: 'Igihe cyawe gifite ibice bine bitandukanye.',
+        cycleTimeline: [
+          { icon: 'tint', days: 'Iminsi 1–5', title: 'Amenzi', text: 'Gutwikira. Umubiri uvamo umwanya. Ibisebe bishobora kubaho.', color: 'var(--danger)' },
+          { icon: 'seedling', days: 'Iminsi 1–13', title: 'Gutegura amagi', text: 'Umubiri witegura amagi. Imyitwarire izamuka.', color: 'var(--primary)' },
+          { icon: 'circle', days: '~Umunsi 14', title: 'Gukura kw\'amagi', text: 'Igihe cyo guta mu myaka cyane.', color: 'var(--accent)' },
+          { icon: 'moon', days: 'Iminsi 15–28', title: 'Igihe cya nyuma', text: 'PMS ishobora kubaho. Nta myaka → amenzi asubira.', color: 'var(--info)' },
+        ],
+        info: {
+          variant: 'accent',
+          icon: 'microscope',
+          title: 'Ku gukura kw\'amagi',
+          list: [
+            'Benshi bakura amagi hagati y\'igihe',
+            'Amagi amara amasaha 12–24',
+            'Imyira ishobora kubaho iminsi 5',
+            'Urashobora guta mu myaka mbere cyangwa nyuma',
+          ],
+        },
+      },
+      {
+        id: 'pms',
+        icon: 'comment-dots',
+        title: 'PMS',
+        intro: 'Impinduka z\'umubiri n\'umutima mbere y\'amenzi zitwa PMS.',
+        dualInfo: [
+          { variant: 'coral', icon: 'heartbeat', title: 'Ibimenyetso by\'umubiri', list: ['Ibisebe', 'Gukabwa kw\'amabere', 'Umutwe', 'Umunaniriza', 'Ububabare mu mugongo'] },
+          { variant: 'accent', icon: 'brain', title: 'Ibimenyetso by\'umutima', list: ['Guhinduka kw\'umutima', 'Gushavura', 'Impungenge', 'Kutaryama neza'] },
+        ],
+        info: {
+          variant: 'success',
+          icon: 'dumbbell',
+          title: 'Uko wacunga PMS',
+          list: ['Imyitozo yoroshye', 'Gukomeza mu nda', 'Ibiryo birimo fer', 'Kuruhuka no kunywa amazi', 'Imiti y\'ububabare iyo bikenewe'],
+        },
+      },
+      {
+        id: 'tracking',
+        icon: 'mobile-alt',
+        title: 'Gukurikiza amenzi',
+        intro: 'Gukurikiza bifasha kubona igihe gikurikira no kumenya impinduka.',
+        glassGrid: [
+          { icon: 'calendar-alt', title: 'Kalendari', text: 'Andika umunsi wa mbere w\'amenzi buri kwezi.' },
+          { icon: 'mobile-alt', title: 'Porogaramu', text: 'Porogaramu zishobora gufasha gusuzuma igihe gikurikira.' },
+        ],
+        info: {
+          variant: 'primary',
+          icon: 'clipboard-list',
+          title: 'Ibyo gukurikiza',
+          list: ['Itariki amenzi atangiriraho', 'Iminsi amaraso amara', 'Uburemere bw\'amaraso', 'Ububabare n\'umutima'],
+        },
+      },
+      {
+        id: 'hygiene',
+        icon: 'soap',
+        title: "Isuku mu gihe cy'amenzi",
+        intro: 'Isuku nziza irinda indwara kandi igutuma wiyumva neza.',
+        info: {
+          variant: 'success',
+          icon: 'hands-wash',
+          title: 'Inama z\'isuku',
+          list: ['Hindura ibikoresho buri amasaha 4–6', 'Sukura intoki', 'Ambara ipantya isukuye', 'Sukura umubiri', 'Koresha ibikoresho byiza'],
+        },
+      },
+      {
+        id: 'problems',
+        icon: 'stethoscope',
+        title: 'Igihe ujya kwa muganga',
+        intro: 'Ibibazo bimwe bisanzwe; ibindi bisaba ubuvuzi.',
+        info: {
+          variant: 'danger',
+          icon: 'exclamation-circle',
+          title: 'Jya kwa muganga niba',
+          list: ['Ububabare bukubuza imirimo', 'Amaraso menshi cyane', 'Amenzi ahita amezi menshi', 'Amenzi atagenda neza buri gihe', 'Amaraso hagati y\'amenzi'],
+        },
+      },
+    ],
+  },
+};
