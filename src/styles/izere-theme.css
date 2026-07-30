@@ -662,6 +662,19 @@ footer {
 .footer-links h6 { font-weight: 700; font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-primary); }
 .footer-links a { display: block; color: var(--text-muted); text-decoration: none; font-size: 0.88rem; margin-bottom: 0.5rem; transition: var(--transition); }
 .footer-links a:hover { color: var(--primary); }
+.footer-link-btn {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.5rem;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition);
+}
+.footer-link-btn:hover { color: var(--primary); }
 .footer-social a { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: var(--bg-glass); border: 1px solid var(--border); border-radius: 10px; color: var(--text-muted); font-size: 0.9rem; text-decoration: none; transition: var(--transition); margin-right: 0.5rem; }
 .footer-social a:hover { border-color: var(--primary); color: var(--primary); }
 .footer-bottom { border-top: 1px solid var(--border); padding-top: 1.25rem; margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.82rem; }
