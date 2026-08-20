@@ -541,6 +541,7 @@ body {
   box-shadow: var(--shadow), 0 0 50px rgba(26,160,120,0.12);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   z-index: 9998;
   transform: scale(0.95) translateY(20px);
   opacity: 0;
@@ -578,13 +579,17 @@ body {
 .simple-lang-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius-pill); padding: 0.2rem 0.7rem; font-size: 0.73rem; cursor: pointer; transition: var(--transition); }
 .simple-lang-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .cb-messages {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .cb-messages::-webkit-scrollbar { width: 3px; }
 .cb-messages::-webkit-scrollbar-thumb { background: var(--border); }

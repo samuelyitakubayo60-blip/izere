@@ -46,7 +46,7 @@ export function ChatUIProvider({ children }) {
                 <Icon name="times" />
               </button>
             </div>
-            <div className="flex-1 min-h-0 overflow-hidden flex flex-col" style={{ minHeight: '360px', maxHeight: '420px' }}>
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col" style={{ height: '420px', maxHeight: 'min(420px, calc(100vh - 12rem))' }}>
               <ChatWidget compact onClose={closeChat} dark />
             </div>
           </div>

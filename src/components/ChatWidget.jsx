@@ -35,6 +35,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
   const [useBrowserTts, setUseBrowserTts] = useState(false);
 
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const streamRef = useRef(null);
   const chunksRef = useRef([]);
@@ -42,8 +43,13 @@ export default function ChatWidget({ compact = false, dark = false }) {
   const audioUrlRef = useRef(null);
 
   useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+      return;
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isLoading]);
 
   useEffect(() => {
     return () => {
@@ -275,7 +281,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
   const embedded = compact && dark;
 
   return (
-    <div className={compact ? 'flex flex-col h-full bg-transparent' : ''}>
+    <div className={compact ? 'flex flex-col h-full min-h-0 bg-transparent overflow-hidden' : ''}>
       {!embedded && (
         <div className={`${compact ? 'px-4 pt-4 pb-2' : 'bg-white rounded-lg shadow-md p-6 mb-6'}`}>
           {!compact && (
@@ -304,10 +310,11 @@ export default function ChatWidget({ compact = false, dark = false }) {
       )}
 
       <div
+        ref={messagesContainerRef}
         className={
           embedded
-            ? `cb-messages flex-1 ${messageHeight}`
-            : `${compact ? 'flex-1 mx-4 bg-gray-50 rounded-lg border border-gray-200' : 'bg-white rounded-lg shadow-md'} p-4 mb-4 ${messageHeight} overflow-y-auto`
+            ? 'cb-messages flex-1 min-h-0'
+            : `${compact ? 'flex-1 min-h-0 mx-4 bg-gray-50 rounded-lg border border-gray-200' : 'bg-white rounded-lg shadow-md'} p-4 mb-4 ${messageHeight} overflow-y-auto min-h-0`
         }
       >
         {messages.length === 0 ? (
@@ -366,7 +373,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
       </div>
 
       {embedded && messages.length > 0 && (
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-2 shrink-0">
           <button type="button" onClick={handleNewChat} className="text-xs text-primary-custom hover:underline">
             {t('chat.newChat')}
           </button>
@@ -375,7 +382,13 @@ export default function ChatWidget({ compact = false, dark = false }) {
 
       <form
         onSubmit={handleSendMessage}
-        className={embedded ? 'cb-input-row mx-0 rounded-none border-t border-[var(--border)]' : compact ? 'p-4 pt-0 border-t border-gray-100 bg-white' : 'bg-white rounded-lg shadow-md p-6'}
+        className={
+          embedded
+            ? 'cb-input-row mx-0 rounded-none border-t border-[var(--border)] shrink-0'
+            : compact
+              ? 'p-4 pt-0 border-t border-gray-100 bg-white shrink-0'
+              : 'bg-white rounded-lg shadow-md p-6 shrink-0'
+        }
       >
         {isRecActive && (
           <p className="text-xs text-red-600 mb-2 font-medium">
@@ -456,3 +469,4 @@ function getSupportedMimeType() {
   const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
   return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
 }
+
