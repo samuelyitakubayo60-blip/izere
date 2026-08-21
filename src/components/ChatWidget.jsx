@@ -119,7 +119,14 @@ export default function ChatWidget({ compact = false, dark = false }) {
         needsMedical: response.needs_medical_attention,
       };
 
-      setMessages((prev) => [...prev, assistantMsg]);
+      setMessages((prev) => {
+        const next = [...prev];
+        const lastUser = [...next].reverse().find((m) => m.role === 'user');
+        if (lastUser && (response.detected_language === 'en' || response.detected_language === 'rw')) {
+          lastUser.language = response.detected_language;
+        }
+        return [...next, assistantMsg];
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       setMessages((prev) => [
