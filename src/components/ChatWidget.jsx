@@ -84,12 +84,29 @@ export default function ChatWidget({ compact = false, dark = false }) {
     setIsLoading(true);
 
     try {
-      const response = await sendMessage({
-        message: trimmed,
-        language: 'auto',
-        session_id: sessionId,
-        anonymous_id: getAnonymousId(),
-      });
+      let response;
+      try {
+        response = await sendMessage({
+          message: trimmed,
+          language: 'auto',
+          session_id: sessionId,
+          anonymous_id: getAnonymousId(),
+        });
+      } catch (firstError) {
+        const status = firstError?.response?.status;
+        if (status === 404 && sessionId) {
+          clearChatSession();
+          setSessionId(null);
+          response = await sendMessage({
+            message: trimmed,
+            language: 'auto',
+            session_id: null,
+            anonymous_id: getAnonymousId(),
+          });
+        } else {
+          throw firstError;
+        }
+      }
 
       setSessionId(response.session_id);
       storeSessionId(response.session_id);
