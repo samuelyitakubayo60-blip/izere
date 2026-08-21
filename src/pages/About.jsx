@@ -5,12 +5,30 @@ import { useChatUI } from '../components/FloatingChat';
 import Icon from '../components/Icon';
 
 const PROBLEMS = [
-  { icon: 'user-slash', titleKey: 'aboutProblem1Title', textKey: 'aboutProblem1Text' },
-  { icon: 'lock', titleKey: 'aboutProblem2Title', textKey: 'aboutProblem2Text' },
-  { icon: 'exclamation-circle', titleKey: 'aboutProblem3Title', textKey: 'aboutProblem3Text' },
-  { icon: 'map-marker-alt', titleKey: 'aboutProblem4Title', textKey: 'aboutProblem4Text' },
-  { icon: 'language', titleKey: 'aboutProblem5Title', textKey: 'aboutProblem5Text' },
-  { icon: 'universal-access', titleKey: 'aboutProblem6Title', textKey: 'aboutProblem6Text' },
+  { icon: 'user-slash', n: 1 },
+  { icon: 'lock', n: 2 },
+  { icon: 'exclamation-circle', n: 3 },
+  { icon: 'map-marker-alt', n: 4 },
+  { icon: 'language', n: 5 },
+  { icon: 'universal-access', n: 6 },
+];
+
+const A11Y = [
+  { icon: 'deaf', key: 'Hear' },
+  { icon: 'low-vision', key: 'Vision' },
+  { icon: 'wheelchair', key: 'Mobility' },
+  { icon: 'comment', key: 'Speech' },
+  { icon: 'brain', key: 'Learn' },
+  { icon: 'wifi', key: 'Connect' },
+];
+
+const INNOVATIONS = [
+  { icon: 'language', color: 'var(--primary)', bg: 'rgba(26,160,120,0.15)', key: 'Lang' },
+  { icon: 'robot', color: 'var(--accent)', bg: 'rgba(130,60,200,0.15)', key: 'Ai' },
+  { icon: 'universal-access', color: 'var(--info)', bg: 'rgba(30,145,220,0.15)', key: 'Inclusive' },
+  { icon: 'exclamation-triangle', color: 'var(--warning)', bg: 'rgba(230,160,30,0.15)', key: 'Emergency' },
+  { icon: 'comments', color: 'var(--primary)', bg: 'rgba(26,160,120,0.1)', key: 'Access' },
+  { icon: 'hands-helping', color: 'var(--coral)', bg: 'rgba(220,80,110,0.15)', key: 'Hybrid' },
 ];
 
 export default function About() {
@@ -35,52 +53,162 @@ export default function About() {
           </div>
           <span className="section-label">{t('about.storyLabel')}</span>
           <h1 className="hero-title">
-            {t('about.title')} <span className="gradient-text">IZERE</span>
+            {t('about.title')} <span className="gradient-text">IZERE {t('home.brandAccent')}</span>
           </h1>
           <p className="hero-desc mt-3">{t('about.heroDesc')}</p>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" id="mission">
         <div className="container">
           <div className="grid md:grid-cols-2 gap-4 mb-5 fade-in">
             <div className="glass-card h-full" style={{ borderTop: '3px solid var(--primary)' }}>
-              <Icon name="bullseye" style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '1rem' }} />
-              <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>{t('home.missionTitle')}</h3>
-              <p style={{ color: 'var(--text-muted)' }}>{t('home.missionText')}</p>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎯</div>
+              <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>
+                {t('about.missionTitle')}
+              </h3>
+              <p style={{ color: 'var(--text-muted)' }}>{t('about.missionText')}</p>
             </div>
             <div className="glass-card h-full" style={{ borderTop: '3px solid var(--accent)' }}>
-              <Icon name="star" style={{ fontSize: '2rem', color: 'var(--accent)', marginBottom: '1rem' }} />
-              <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>{t('about.visionTitle')}</h3>
+              <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🌟</div>
+              <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>
+                {t('about.visionTitle')}
+              </h3>
               <p style={{ color: 'var(--text-muted)' }}>{t('about.visionText')}</p>
             </div>
           </div>
 
-          <div className="method-card fade-in">
+          <div className="method-card fade-in" id="problem">
             <h3>
-              <Icon name="question-circle" style={{ color: 'var(--primary)' }} />
-              {t('about.problemTitle')}
+              <span style={{ fontSize: '1.5rem' }}>❓</span> {t('about.problemTitle')}
             </h3>
             <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{t('about.problemIntro')}</p>
             <div className="a11y-grid">
-              {PROBLEMS.map(({ icon, titleKey, textKey }) => (
-                <div key={titleKey} className="a11y-card">
+              {PROBLEMS.map(({ icon, n }) => (
+                <div key={n} className="a11y-card">
                   <div className="a11y-card-icon">
                     <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.4rem' }} />
                   </div>
                   <div>
-                    <h5>{t(`about.${titleKey}`)}</h5>
-                    <p>{t(`about.${textKey}`)}</p>
+                    <h5>{t(`about.problem${n}Title`)}</h5>
+                    <p>{t(`about.problem${n}Text`)}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="glass-card fade-in mt-4 text-center" style={{ padding: '2rem' }}>
+      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="disability">
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('about.a11yLabel')}</span>
+            <h2 className="section-title">
+              {t('about.a11yHeading')} <span className="gradient-text">{t('about.a11yAccent')}</span>
+            </h2>
+            <p className="section-sub">{t('about.a11ySub')}</p>
+          </div>
+          <div className="a11y-grid fade-in">
+            {A11Y.map(({ icon, key }) => (
+              <div key={key} className="a11y-card">
+                <div className="a11y-card-icon">
+                  <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.5rem' }} />
+                </div>
+                <div>
+                  <h5>{t(`about.a11y${key}Title`)}</h5>
+                  <p>{t(`about.a11y${key}Text`)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div
+            className="glass-card mt-4 fade-in"
+            style={{ background: 'rgba(26,160,120,0.06)', borderColor: 'rgba(26,160,120,0.2)' }}
+          >
+            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}>{t('about.a11yCommitTitle')}</h4>
+            <p style={{ color: 'var(--text-muted)', margin: 0 }}>{t('about.a11yCommitText')}</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="innovation">
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('about.innovLabel')}</span>
+            <h2 className="section-title">
+              {t('about.innovHeading')} <span className="gradient-text">{t('about.innovAccent')}</span>
+            </h2>
+          </div>
+          <div className="features-grid fade-in">
+            {INNOVATIONS.map(({ icon, color, bg, key }) => (
+              <div key={key} className="feature-card">
+                <div className="feature-icon-wrap" style={{ background: bg }}>
+                  <Icon name={icon} style={{ color }} />
+                </div>
+                <h4>{t(`about.innov${key}Title`)}</h4>
+                <p>{t(`about.innov${key}Text`)}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="contact">
+        <div className="container">
+          <div className="text-center mb-5 fade-in">
+            <span className="section-label">{t('about.contactLabel')}</span>
+            <h2 className="section-title">
+              {t('about.contactHeading')} <span className="gradient-text">{t('about.contactAccent')}</span>
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 fade-in">
+            <div className="glass-card text-center h-full">
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📞</div>
+              <h5 style={{ fontWeight: 700 }}>{t('about.contactHotline')}</h5>
+              <a href="tel:114" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', textDecoration: 'none', display: 'block' }}>
+                114
+              </a>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                {t('about.contactHotlineSub')}
+              </p>
+            </div>
+            <div className="glass-card text-center h-full">
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
+              <h5 style={{ fontWeight: 700 }}>{t('about.contactEmergency')}</h5>
+              <a href="tel:912" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none', display: 'block' }}>
+                912
+              </a>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                {t('about.contactEmergencySub')}
+              </p>
+            </div>
+            <div className="glass-card text-center h-full">
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📧</div>
+              <h5 style={{ fontWeight: 700 }}>{t('about.contactEmail')}</h5>
+              <a
+                href="mailto:izerehealth@gmail.com"
+                style={{ color: 'var(--info)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', display: 'block', marginTop: '0.75rem' }}
+              >
+                izerehealth@gmail.com
+              </a>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                {t('about.contactEmailSub')}
+              </p>
+            </div>
+          </div>
+          <div
+            className="glass-card mt-4 fade-in text-center"
+            style={{
+              background: 'linear-gradient(135deg,rgba(26,160,120,0.08),rgba(130,60,200,0.08))',
+              borderColor: 'rgba(26,160,120,0.2)',
+              padding: '2.5rem',
+            }}
+          >
+            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}>{t('about.ctaTitle')}</h4>
             <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 1.5rem' }}>{t('about.ctaText')}</p>
-            <button type="button" className="btn-primary-custom" onClick={openChat}>
-              <Icon name="comments" /> {t('home.startChatting')}
+            <button type="button" className="btn-primary-custom" style={{ margin: '0 auto' }} onClick={openChat}>
+              <Icon name="comments" /> {t('about.ctaButton')}
             </button>
           </div>
         </div>

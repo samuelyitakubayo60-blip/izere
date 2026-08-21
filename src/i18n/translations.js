@@ -20,13 +20,14 @@ export const translations = {
     },
     home: {
       tagline: '"Izere" — Trust in Kinyarwanda',
-      brandAccent: 'HealthBot',
+      brandAccent: 'Health Hub',
       badgePrivate: 'Confidential & Anonymous',
       badgeWeb: 'Web Chat',
       badgeLang: 'English & Kinyarwanda',
       badgeNoAccount: 'No Registration',
-      headline: 'Private. Reliable. Youth-Friendly SRH information for young people in Rwanda.',
-      subheadline: 'No registration · No name · English & Kinyarwanda · Available 24/7',
+      headline:
+        'IZERE Health Hub is an initiative that uses digital technology to transform healthcare in Rwanda — through health-worker support, youth and community education, and referral systems — so reliable, confidential, youth-friendly sexual and reproductive health (SRH) information and services are easier to reach. We also support maternal health, and SRH information is available 24/7.',
+      subheadline: 'No registration · No name · English & Kinyarwanda · SRH information 24/7',
       startChatting: 'Start Chatting',
       learnMore: 'Learn More',
       readMore: 'Read more',
@@ -70,7 +71,7 @@ export const translations = {
       featureAccessText: 'High contrast, large text, and inclusive design for all users.',
       missionTitle: 'Our Mission',
       missionText:
-        'IZERE gives young people in Rwanda a safe, private way to ask sexual and reproductive health questions — without giving your name, email, or ID. Ask in Kinyarwanda or English and get clear, evidence-based answers instantly.',
+        'IZERE Health Hub gives young people in Rwanda a safe, private way to ask sexual and reproductive health questions — without giving your name, email, or ID. Ask in Kinyarwanda or English and get clear, evidence-based answers 24/7. We also support maternal health and help you know when to seek care.',
       featureChatTitle: 'AI Chatbot',
       featureChatText:
         'Ask questions naturally in English or Kinyarwanda and get instant, personalized responses.',
@@ -91,11 +92,11 @@ export const translations = {
       topicSti: 'STIs / STDs',
       topicStiDesc: 'Common infections, prevention, testing, and treatment — no shame, just facts.',
       imageAlt: 'Young people learning about sexual and reproductive health with IZERE',
-      aboutTitle: 'What is IZERE?',
+      aboutTitle: 'What is IZERE Health Hub?',
       aboutText1:
-        'IZERE means "trust" in Kinyarwanda. We are a friendly AI health companion built for young Rwandans who want honest answers about sex, relationships, pregnancy, periods, and STIs — without fear or judgment.',
+        'IZERE means "trust" in Kinyarwanda. IZERE Health Hub uses digital technology to transform healthcare in Rwanda through health-worker support, youth and community education, and referral systems. It is designed so young people can get reliable, confidential, youth-friendly SRH information and services — plus support for maternal health.',
       aboutText2:
-        'Chat in English or Kinyarwanda, anytime. No account needed. Your questions stay private. IZERE gives clear, evidence-based information and encourages you to visit a health centre when you need real care.',
+        'Chat in English or Kinyarwanda, 24/7. No account needed. Your questions stay private. IZERE Health Hub shares clear, evidence-based information and helps you know when to visit a health centre.',
       whoForTitle: 'Built for you if you want to…',
       whoFor1: 'Ask embarrassing questions without giving your name',
       whoFor2: 'Learn in Kinyarwanda or English — your choice',
@@ -107,8 +108,8 @@ export const translations = {
         'IZERE is designed as an educational and informational assistant only. It does not diagnose medical conditions, prescribe medications, or replace healthcare professionals. Users experiencing serious symptoms or medical emergencies are advised to seek immediate care from a qualified healthcare provider.',
     },
     chat: {
-      title: 'Chat with IZERE',
-      subtitle: 'Ask in English or Kinyarwanda — IZERE detects your language automatically.',
+      title: 'Chat with IZERE Health Hub',
+      subtitle: 'Ask in English or Kinyarwanda — IZERE Health Hub detects your language automatically.',
       autoLangNote: 'Speak or type in English or Kinyarwanda — answers match your language.',
       startRecording: 'Start voice',
       pauseRecording: 'Pause recording',
@@ -282,7 +283,7 @@ export const translations = {
     },
     footer: {
       about:
-        'Private. Reliable. Youth-Friendly SRH information for young people in Rwanda.',
+        'IZERE Health Hub: digital SRH information 24/7, maternal health support, and youth-friendly referrals in Rwanda.',
       exploreTitle: 'Health Topics',
       platformTitle: 'Platform',
       howItWorks: 'How It Works',
@@ -313,26 +314,88 @@ export const translations = {
       storyLabel: 'Our Story',
       title: 'About',
       heroDesc:
-        '"Izere" means trust in Kinyarwanda — our commitment to safe, anonymous, and trustworthy sexual and reproductive health support for Rwandan youth.',
+        '"Izere" means trust in Kinyarwanda. IZERE Health Hub is a digital initiative transforming healthcare in Rwanda through health-worker support, youth and community education, and referral systems. It provides reliable, confidential, youth-friendly SRH information 24/7, and also supports maternal health.',
+      missionTitle: 'Our Mission',
+      missionText:
+        'To improve access to accurate, confidential, and youth-friendly sexual and reproductive health information among young people in Rwanda through IZERE Health Hub — available on the web 24 hours a day, 7 days a week — and to support maternal health, health workers, and referrals to care.',
       visionTitle: 'Our Vision',
       visionText:
-        'A Rwanda where every young person has equal access to reliable SRH information, can make informed health decisions, and feels empowered to seek care without fear or stigma.',
-      problemTitle: 'The Problem We Are Solving',
+        'A Rwanda where every young person — regardless of location, disability, literacy level, or socioeconomic background — has equal access to reliable SRH information, can make informed health decisions, and feels empowered to seek care without fear or stigma.',
+      problemTitle: "The Problem We're Solving",
       problemIntro:
-        'Young people in Rwanda face barriers when accessing sexual and reproductive health information and services:',
+        'In Rwanda, young people aged 15–30 face multiple barriers when accessing sexual and reproductive health information and services:',
       problem1Title: 'Stigma & Shame',
-      problem1Text: 'Fear of judgment stops youth from seeking help at clinics or from family.',
+      problem1Text: 'Fear of judgment stops youth from seeking help at clinics or from family members.',
       problem2Title: 'Lack of Privacy',
-      problem2Text: 'Health facilities often lack confidentiality for sensitive questions.',
+      problem2Text: 'Health facilities often lack confidentiality, making sensitive questions uncomfortable.',
       problem3Title: 'Misinformation',
       problem3Text: 'Myths from peers and social media create false beliefs about HIV, contraception, and STIs.',
       problem4Title: 'Geographic Barriers',
-      problem4Text: 'Rural youth face long distances to clinics.',
+      problem4Text: 'Rural youth face long distances to clinics, reducing access to SRH services.',
       problem5Title: 'Language Gap',
-      problem5Text: 'Many digital resources are not available in Kinyarwanda.',
+      problem5Text: 'Most digital health resources are in English or French — not Kinyarwanda.',
       problem6Title: 'Exclusion of PWD',
-      problem6Text: 'Youth with disabilities are often left out of SRH education.',
-      ctaText: 'Experience IZERE right here. Ask a question in Kinyarwanda or English — it is completely private.',
+      problem6Text: 'Youth with disabilities are often entirely left out of SRH education and services.',
+      a11yLabel: 'Inclusive Design',
+      a11yHeading: 'Disability Inclusion &',
+      a11yAccent: 'Accessibility',
+      a11ySub:
+        'Young people with disabilities face even greater barriers to SRH services. IZERE Health Hub is designed to include them — not as an afterthought, but as a core design priority.',
+      a11yHearTitle: 'Hearing Impairments',
+      a11yHearText:
+        'Fully text-based on the web — no voice calls required. People who are Deaf or hard of hearing can use all features independently. Voice is optional.',
+      a11yVisionTitle: 'Visual Impairments',
+      a11yVisionText:
+        'High-contrast mode, large text option, and screen-reader compatible structure. All images have descriptive alt text.',
+      a11yMobilityTitle: 'Mobility / Physical Challenges',
+      a11yMobilityText:
+        'Access reliable health information from home — eliminating the need to physically travel to clinics for basic questions. Full keyboard navigation support.',
+      a11ySpeechTitle: 'Speech Impairments',
+      a11ySpeechText:
+        'Text-based interaction lets users with speech difficulties ask questions independently, without needing to speak.',
+      a11yLearnTitle: 'Learning Differences',
+      a11yLearnText:
+        'Plain, short language instead of complex medical terminology — making content accessible to everyone.',
+      a11yConnectTitle: 'Low Literacy & Connectivity',
+      a11yConnectText:
+        'Lightweight web chat works on mobile data and basic smartphones, with simple navigation that reduces heavy reading.',
+      a11yCommitTitle: 'Our Inclusive Design Commitment',
+      a11yCommitText:
+        'IZERE Health Hub will be tested with young people with disabilities and relevant inclusion stakeholders — including disability-focused youth groups and community health workers — to ensure the platform delivers usability, dignity, and genuine accessibility for all users.',
+      innovLabel: 'What Makes Us Unique',
+      innovHeading: 'Key',
+      innovAccent: 'Innovations',
+      innovLangTitle: 'Kinyarwanda-First',
+      innovLangText:
+        'Designed to understand youth expressions, slang, and mixed-language (Kinyarwanda + English) naturally.',
+      innovAiTitle: 'Knowledge-Grounded AI',
+      innovAiText:
+        'Answers are grounded in trusted SRH content. The assistant combines several relevant facts to match the question — not a single canned FAQ.',
+      innovInclusiveTitle: 'Disability-Inclusive',
+      innovInclusiveText:
+        'A Rwandan SRH platform with accessibility features for users with disabilities as a core priority.',
+      innovEmergencyTitle: 'Emergency Escalation',
+      innovEmergencyText:
+        'Detects urgent situations (assault, severe bleeding, pregnancy emergencies) and immediately points to human support pathways such as 114 and 912.',
+      innovAccessTitle: 'Always Available',
+      innovAccessText:
+        'SRH information 24/7 on the web — private, no registration, in English and Kinyarwanda.',
+      innovHybridTitle: 'Human + Digital Hybrid',
+      innovHybridText:
+        'Simple questions are answered privately online. Complex or sensitive cases are guided toward health workers, clinics, and counselors.',
+      contactLabel: 'Get In Touch',
+      contactHeading: 'Contact',
+      contactAccent: 'Us',
+      contactHotline: 'Health Hotline',
+      contactHotlineSub: 'Rwanda Ministry of Health',
+      contactEmergency: 'Emergency',
+      contactEmergencySub: 'Medical Emergency Services',
+      contactEmail: 'Email Us',
+      contactEmailSub: 'For partnerships & inquiries',
+      ctaTitle: 'Try IZERE Health Hub Now',
+      ctaText:
+        'Experience IZERE Health Hub right here. Ask a question in Kinyarwanda or English — it is completely private.',
+      ctaButton: 'Open IZERE Health Hub chat',
     },
     categories: {
       contraception: 'Contraception',
@@ -366,13 +429,14 @@ export const translations = {
     },
     home: {
       tagline: '"Izere" — Kwizera mu Kinyarwanda',
-      brandAccent: 'HealthBot',
+      brandAccent: 'Health Hub',
       badgePrivate: 'Mu ibanga kandi ntamenyekana',
       badgeWeb: 'Ikiganiro kuri urubuga',
       badgeLang: 'Icyongereza n\'Ikinyarwanda',
       badgeNoAccount: 'Nta kwiyandikisha',
-      headline: 'Amakuru y\'ubuzima bw\'imyororokere yizewe, mu ibanga, yubatswe ku rubyiruko rw\'u Rwanda.',
-      subheadline: 'Nta kwiyandikisha · Nta izina · Icyongereza n\'Ikinyarwanda · Biboneka amasaha 24/7',
+      headline:
+        'IZERE Health Hub ni igikorwa gikoresha ikoranabuhanga mu guhindura ubuvuzi mu Rwanda — binyuze mu gufasha abakozi b\'ubuzima, kwigisha urubyiruko n\'abaturage, n\'uburyo bwo kohereza ku serivisi. Itera amakuru n\'ubuvuzi bw\'imyororokere (SRH) byizewe, mu ibanga, kandi byoroshye ku rubyiruko. Kandi ifasha ku buzima bw\'ababyeyi (maternal health), kandi amakuru ya SRH aboneka amasaha 24/7.',
+      subheadline: 'Nta kwiyandikisha · Nta izina · Icyongereza n\'Ikinyarwanda · Amakuru ya SRH amasaha 24/7',
       startChatting: 'Tangira ikiganiro',
       learnMore: 'Menya byinshi',
       readMore: 'Soma byinshi',
@@ -416,7 +480,7 @@ export const translations = {
       featureAccessText: "Ibara ry'inyandiko, inyandiko nini, n'igishushanyo gikoreshwa na bose.",
       missionTitle: 'Intego yacu',
       missionText:
-        "IZERE iha urubyiruko rw'u Rwanda uburyo bwizewe kandi bw'ibanga bwo kubaza ibibazo by'ubuzima bw'imyororokere — utanga izina, imeri, cyangwa indangamuntu. Baza mu Kinyarwanda cyangwa Icyongereza ubone ibisubizo bisobanutse ako kanya.",
+        "IZERE Health Hub iha urubyiruko rw'u Rwanda uburyo bwizewe kandi bw'ibanga bwo kubaza ibibazo by'ubuzima bw'imyororokere — utanga izina, imeri, cyangwa indangamuntu. Baza mu Kinyarwanda cyangwa Icyongereza ubone ibisubizo bisobanutse amasaha 24/7. Kandi ifasha ku buzima bw'ababyeyi kandi ikumenyesha igihe ugomba gushaka ubuvuzi.",
       featureChatTitle: 'Umufasha wa AI',
       featureChatText:
         'Baza ibibazo mu Cyongereza cyangwa Ikinyarwanda ubone ibisubizo byihuse.',
@@ -437,11 +501,11 @@ export const translations = {
       topicSti: 'Indwara zandurira',
       topicStiDesc: 'Indwara zisanzwe, kwirinda, kwisuzumisha, no kuvurwa — nta isoni, ukuri gusa.',
       imageAlt: "Urubyiruko rwiga ku buzima bw'imyororokere na IZERE",
-      aboutTitle: 'IZERE ni iki?',
+      aboutTitle: 'IZERE Health Hub ni iki?',
       aboutText1:
-        "IZERE bisobanura 'kwizera' mu Kinyarwanda. Turi umufasha w'ubuzima wa AI wubatswe ku rubyiruko rw'u Rwanda rushaka ibisubizo by'ukuri ku mibonano, imibanire, inda, imihango, n'indwara zandurira — nta ubwoba cyangwa gucira urubanza.",
+        "IZERE bisobanura 'kwizera' mu Kinyarwanda. IZERE Health Hub ikoresha ikoranabuhanga mu guhindura ubuvuzi mu Rwanda: gufasha abakozi b'ubuzima, kwigisha urubyiruko n'abaturage, n'uburyo bwo kohereza ku serivisi. Yubatswe kugira ngo urubyiruko rubone amakuru n'ubuvuzi bw'imyororokere byizewe, mu ibanga — n'ubufasha ku buzima bw'ababyeyi.",
       aboutText2:
-        "Kiganira mu Cyongereza cyangwa Ikinyarwanda, igihe icyo aricyo cyose. Nta konti isabwa. Ibibazo byawe biguma mu ibanga. IZERE itanga amakuru yizewe kandi ikugira inama yo gusura ikigo nderabuzima iyo ukeneye ubuvuzi.",
+        "Kiganira mu Cyongereza cyangwa Ikinyarwanda, amasaha 24/7. Nta konti isabwa. Ibibazo byawe biguma mu ibanga. IZERE Health Hub itanga amakuru yizewe kandi ikugira inama yo gusura ikigo nderabuzima iyo ukeneye ubuvuzi.",
       whoForTitle: 'Yubatswe ku bwawe niba ushaka…',
       whoFor1: "Kubaza ibibazo by'isoni utanga izina",
       whoFor2: 'Kwiga mu Kinyarwanda cyangwa Icyongereza — uhitamo',
@@ -453,8 +517,8 @@ export const translations = {
         "IZERE ni umufasha wo kwigisha gusa. Ntabwo isuzuma indwara, itanga imiti, cyangwa isimbura abaganga. Ufite ibimenyetso bikomeye cyangwa byihutirwa, jya kwa muganga vuba.",
     },
     chat: {
-      title: 'Ikiganiro na IZERE',
-      subtitle: 'Baza mu Cyongereza cyangwa Ikinyarwanda — IZERE imenya ururimi rwawe ku buryo bwikora.',
+      title: 'Ikiganiro na IZERE Health Hub',
+      subtitle: 'Baza mu Cyongereza cyangwa Ikinyarwanda — IZERE Health Hub imenya ururimi rwawe ku buryo bwikora.',
       autoLangNote: 'Vuga cyangwa andika mu Cyongereza cyangwa Ikinyarwanda — igisubizo kiza mu rurimi rwawe.',
       startRecording: 'Tangira gufata amajwi',
       pauseRecording: 'Hagarika amajwi',
@@ -627,7 +691,7 @@ export const translations = {
     },
     footer: {
       about:
-        "Amakuru y'ubuzima bw'imyororokere yizewe, mu ibanga, ku rubyiruko rw'u Rwanda.",
+        "IZERE Health Hub: amakuru ya SRH amasaha 24/7, ubuzima bw'ababyeyi, n'uburyo bwo kohereza ku serivisi ku rubyiruko rw'u Rwanda.",
       exploreTitle: "Amakuru y'ubuzima",
       platformTitle: 'Urubuga',
       howItWorks: 'Uko ikora',
@@ -658,26 +722,88 @@ export const translations = {
       storyLabel: 'Inkuru yacu',
       title: 'Abo turi',
       heroDesc:
-        '"Izere" bisobanura kwizera mu Kinyarwanda — kwizera, ibanga, n\'ubufasha bwizewe ku buzima bw\'imyororokere ku rubyiruko rw\'u Rwanda.',
+        '"Izere" bisobanura kwizera mu Kinyarwanda. IZERE Health Hub ni igikorwa gikoresha ikoranabuhanga mu guhindura ubuvuzi mu Rwanda — gufasha abakozi b\'ubuzima, kwigisha urubyiruko n\'abaturage, n\'uburyo bwo kohereza ku serivisi. Itanga amakuru y\'ubuzima bw\'imyororokere yizewe, mu ibanga, amasaha 24/7, kandi ifasha ku buzima bw\'ababyeyi.',
+      missionTitle: 'Intego yacu',
+      missionText:
+        "Kuzamura uburyo bwo kubona amakuru y'ubuzima bw'imyororokere yizewe, mu ibanga, kandi yoroshye ku rubyiruko rw'u Rwanda binyuze muri IZERE Health Hub — kuri urubuga amasaha 24/7 — no gufasha ku buzima bw'ababyeyi, abakozi b'ubuzima, n'uburyo bwo kohereza ku serivisi.",
       visionTitle: 'Icyerekezo cyacu',
       visionText:
-        'u Rwanda aho buri mukiriya afite uburyo buringaniye bwo kubona amakuru yizewe, gufata ibyemezo byiza, no gushaka ubuvuzi nta ubwoba cyangwa isoni.',
+        "u Rwanda aho buri mukiriya — hatitawe ku gice, ubumuga, ubumenyi bwo gusoma, cyangwa imibereho — afite uburyo buringaniye bwo kubona amakuru yizewe, gufata ibyemezo byiza, no gushaka ubuvuzi nta ubwoba cyangwa isoni.",
       problemTitle: 'Ikibazo turimo gukemura',
       problemIntro:
-        "Urubyiruko mu Rwanda ruhura n'imbogamizi mu kubona amakuru n'ubuvuzi bw'imyororokere:",
+        "Mu Rwanda, urubyiruko rw'imyaka 15–30 ruhura n'imbogamizi nyinshi mu kubona amakuru n'ubuvuzi bw'imyororokere:",
       problem1Title: "Isoni n'ugucira urubanza",
       problem1Text: 'Ubwoba bwo gucirwa urubanza butuma urubyiruko rutabaza ku bigo nderabuzima cyangwa mu muryango.',
       problem2Title: 'Kutagira ibanga',
-      problem2Text: "Ibigo nderabuzima akenshi ntafite ibanga ku bibazo by'imyororokere.",
+      problem2Text: "Ibigo nderabuzima akenshi ntafite ibanga, bigatuma ibibazo by'imyororokere biba bitoroshye kubaza.",
       problem3Title: 'Amakuru atari ukuri',
       problem3Text: "Imyizerere n'imbuga nkoranyambaga bitanga amakuru atari ukuri ku VIH, kuboneza urubyaro, na STI.",
       problem4Title: "Intera n'ahantu",
       problem4Text: "Urubyiruko rw'icyaro ruhura n'intera ndende kujya ku bigo nderabuzima.",
       problem5Title: 'Ururimi',
-      problem5Text: 'Amakuru menshi kuri interineti ntari mu Kinyarwanda.',
+      problem5Text: 'Amakuru menshi kuri interineti ari mu Cyongereza cyangwa Igifaransa — ntabwo ari mu Kinyarwanda.',
       problem6Title: 'Gutandukanya abafite ubumuga',
-      problem6Text: "Urubyiruko rufite ubumuga akenshi rutabona amakuru y'ubuzima bw'imyororokere.",
-      ctaText: 'Gerageza IZERE hano. Baza ikibazo mu Kinyarwanda cyangwa Icyongereza — mu ibanga rwose.',
+      problem6Text: "Urubyiruko rufite ubumuga akenshi rutabona amakuru n'ubuvuzi bw'imyororokere.",
+      a11yLabel: 'Igishushanyo gikoreshwa na bose',
+      a11yHeading: "Kwinjiza abafite ubumuga n'",
+      a11yAccent: 'uburyo bwo gukoresha',
+      a11ySub:
+        "Urubyiruko rufite ubumuga ruhura n'imbogamizi ziruta izindi mu serivisi za SRH. IZERE Health Hub yubatswe kugira ngo irubone — ntabwo ari inyongera, ahubwo ni intego y'ibanze.",
+      a11yHearTitle: "Ubumuga bw'amatwi",
+      a11yHearText:
+        "Byose bishingiye ku nyandiko kuri urubuga — nta telefoni y'amajwi isabwa. Abatabona neza kumva bashobora gukoresha byose. Amajwi ni uburyo bw'inyongera.",
+      a11yVisionTitle: "Ubumuga bw'amaso",
+      a11yVisionText:
+        "Ibara ry'inyandiko, inyandiko nini, n'imiterere yoroheye abakoresha porogaramu zo gusoma. Amashusho yose afite ibisobanuro.",
+      a11yMobilityTitle: "Ibibazo byo kugenda / umubiri",
+      a11yMobilityText:
+        "Bona amakuru y'ubuzima uri mu rugo — nta ngendo z'ingenzi ku bibazo by'ibanze. Ushobora kuyobora n'urufunguzo rwa klaviye.",
+      a11ySpeechTitle: "Ubumuga bw'ijwi",
+      a11ySpeechText:
+        "Ikiganiro gishingiye ku nyandiko — andika ikibazo cyawe nta gukenera kuvuga.",
+      a11yLearnTitle: 'Impinduka zo kwiga',
+      a11yLearnText:
+        "Ururimi rworoshye n'ibisobanuro bigufi, aho gukoresha amagambo y'ubuvuzi atazwi.",
+      a11yConnectTitle: "Ubumenyi buke n'interineti nkeya",
+      a11yConnectText:
+        "Ikiganiro cyoroshye gikora kuri telefoni n'amakuru make, n'uburyo bworoshye bwo kuyobora.",
+      a11yCommitTitle: "Icyemezo cyacu cyo gukoreshwa na bose",
+      a11yCommitText:
+        "IZERE Health Hub izageragezwa n'urubyiruko rufite ubumuga n'abafatanyabikorwa — harimo amatsinda y'urubyiruko n'abakozi b'ubuzima — kugira ngo urubuga rube rworoshye, rufite icyubahiro, kandi rukoreshwa na bose.",
+      innovLabel: 'Ibitandukanya',
+      innovHeading: 'Ibihariye',
+      innovAccent: 'byacu',
+      innovLangTitle: 'Ikinyarwanda mbere',
+      innovLangText:
+        "Yubatswe gusobanukirwa imvugo y'urubyiruko n'ururimi ruvanganywe (Ikinyarwanda n'Icyongereza).",
+      innovAiTitle: 'AI ishingiye ku makuru yizewe',
+      innovAiText:
+        "Ibisubizo bishingiye ku makuru y'ubuzima yemewe. Umufasha ahuza amakuru menshi ajyanye n'ikibazo — ntabwo asubiza FAQ imwe gusa.",
+      innovInclusiveTitle: 'Abafite ubumuga barimo',
+      innovInclusiveText:
+        "Urubuga rwa SRH mu Rwanda rufite uburyo bwo gukoreshwa n'abafite ubumuga nk'intego y'ibanze.",
+      innovEmergencyTitle: "Uburyo bw'ihutirwa",
+      innovEmergencyText:
+        "Imenya ibihe byihutirwa (gutoteza, amaraso menshi, ibibazo by'inda) maze erekane 114 na 912.",
+      innovAccessTitle: 'Igihe cyose',
+      innovAccessText:
+        "Amakuru ya SRH amasaha 24/7 kuri urubuga — mu ibanga, nta kwiyandikisha, mu Cyongereza n'Ikinyarwanda.",
+      innovHybridTitle: "Abantu n'ikoranabuhanga",
+      innovHybridText:
+        "Ibibazo byoroshye bisubizwa mu ibanga. Ibibazo bigoye cyangwa byihutirwa biyoborwa ku bakozi b'ubuzima n'ibigo nderabuzima.",
+      contactLabel: 'Twandikire',
+      contactHeading: 'Twandikire',
+      contactAccent: 'nubufasha',
+      contactHotline: "Umurongo w'ubuzima",
+      contactHotlineSub: "Minisiteri y'Ubuzima",
+      contactEmergency: "Ubufasha bw'ihutirwa",
+      contactEmergencySub: "Serivisi z'ihutirwa",
+      contactEmail: 'Twandikire',
+      contactEmailSub: "Ku bufatanye n'ibibazo",
+      ctaTitle: 'Gerageza IZERE Health Hub ubu',
+      ctaText:
+        'Gerageza IZERE Health Hub hano. Baza ikibazo mu Kinyarwanda cyangwa Icyongereza — mu ibanga rwose.',
+      ctaButton: 'Fungura ikiganiro cya IZERE Health Hub',
     },
     categories: {
       contraception: 'Kuboneza urubyaro',
