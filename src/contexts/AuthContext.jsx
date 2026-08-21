@@ -45,7 +45,7 @@ export const AuthProvider = ({ children }) => {
     })();
   }, [refreshUser]);
 
-  const login = async (_firebaseUser, idToken) => {
+  const login = useCallback(async (idToken) => {
     try {
       const response = await verifyFirebaseToken(idToken);
       localStorage.setItem('token', response.token);
@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         error: typeof detail === 'string' ? detail : error.message,
       };
     }
-  };
+  }, [persistUser]);
 
   const logout = () => {
     localStorage.removeItem('token');

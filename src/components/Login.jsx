@@ -1,12 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useChatUI } from '../components/FloatingChat';
-import { GoogleAuthProvider, signInWithPopup, getAuth } from 'firebase/auth';
+import { useChatUI } from './FloatingChat';
+import { fetchGoogleConfig } from '../services/authService';
+
+const GSI_SRC = 'https://accounts.google.com/gsi/client';
+
+function loadGsiScript() {
+  if (document.querySelector(`script[src="${GSI_SRC}"]`)) {
+    return Promise.resolve();
+  }
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = GSI_SRC;
+    script.async = true;
+    script.defer = true;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Failed to load Google sign-in'));
+    document.head.appendChild(script);
+  });
+}
 
 const Login = () => {
   const [error, setError] = useState('');
+  const [ready, setReady] = useState(false);
+  const buttonRef = useRef(null);
   const { login } = useAuth();
   const { t } = useLanguage();
   const { openChat } = useChatUI();
@@ -14,27 +33,58 @@ const Login = () => {
   const location = useLocation();
   const from = location.state?.from || '/';
 
-  const handleGoogleSignIn = async () => {
-    try {
-      const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
-      const response = await login(result.user, idToken);
-      if (!response.success) {
-        setError(response.error || t('login.authError'));
-        return;
+  useEffect(() => {
+    let cancelled = false;
+
+    const start = async () => {
+      try {
+        const config = await fetchGoogleConfig();
+        const clientId = config.client_id || import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (!config.enabled && !clientId) {
+          setError(t('login.googleError'));
+          return;
+        }
+        await loadGsiScript();
+        if (cancelled || !window.google?.accounts?.id || !buttonRef.current) return;
+
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (response) => {
+            if (!response?.credential) {
+              setError(t('login.googleError'));
+              return;
+            }
+            const result = await login(response.credential);
+            if (!result.success) {
+              setError(result.error || t('login.authError'));
+              return;
+            }
+            if (result.user?.role === 'admin') {
+              navigate('/admin', { replace: true });
+            } else {
+              navigate(from, { replace: true });
+            }
+          },
+        });
+
+        window.google.accounts.id.renderButton(buttonRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: 320,
+          text: 'continue_with',
+        });
+        setReady(true);
+      } catch (err) {
+        console.error('Google sign-in setup error:', err);
+        if (!cancelled) setError(t('login.googleError'));
       }
-      if (response.user?.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else {
-        navigate(from, { replace: true });
-      }
-    } catch (err) {
-      console.error('Google sign-in error:', err);
-      setError(t('login.googleError'));
-    }
-  };
+    };
+
+    start();
+    return () => {
+      cancelled = true;
+    };
+  }, [from, login, navigate, t]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-pink-50 flex items-center justify-center">
@@ -49,13 +99,10 @@ const Login = () => {
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={handleGoogleSignIn}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-3 hover:bg-gray-50 transition-colors"
-        >
-          <span className="text-gray-700 font-medium">{t('login.google')}</span>
-        </button>
+        <div className="flex justify-center min-h-[44px]" ref={buttonRef} />
+        {!ready && !error && (
+          <p className="text-center text-sm text-gray-500 mt-2">{t('common.loading')}</p>
+        )}
 
         <button
           type="button"
