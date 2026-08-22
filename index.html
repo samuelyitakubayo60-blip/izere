@@ -11,6 +11,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   </head>
   <body>
+    <script>
+      (function () {
+        var path = sessionStorage.getItem('izere-spa-redirect');
+        if (path) {
+          sessionStorage.removeItem('izere-spa-redirect');
+          if (path !== location.pathname + location.search + location.hash) {
+            history.replaceState(null, '', path);
+          }
+        }
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
