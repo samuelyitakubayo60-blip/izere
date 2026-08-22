@@ -1,11 +1,10 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
-import { getTopicPage } from '../content';
 import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from './Icon';
 import TopicSectionRenderer from './TopicSectionRenderer';
 import { useChatUI } from './FloatingChat';
 import T from './T';
+import { getTopicPage } from '../content';
 
 const TOPIC_PATHS = {
   pregnancy: '/pregnancy',
@@ -15,10 +14,9 @@ const TOPIC_PATHS = {
 };
 
 export default function TopicPage({ topicKey }) {
-  const { language } = useLanguage();
   const { openChat } = useChatUI();
-  const page = getTopicPage(topicKey, language);
-  const fadeRef = useFadeIn([topicKey, language]);
+  const page = getTopicPage(topicKey);
+  const fadeRef = useFadeIn([topicKey]);
 
   if (!page) return null;
 
@@ -37,21 +35,24 @@ export default function TopicPage({ topicKey }) {
           <div className="breadcrumb-custom">
             <Link to="/"><T k="nav.home" /></Link>
             <Icon name="chevron-right" style={{ fontSize: '0.7rem' }} />
-            <span>{page.titleAccent} {page.titleRest}</span>
+            <span>
+              <T k={page.titleAccent} /> <T k={page.titleRest} />
+            </span>
           </div>
           <span className="section-label" style={page.labelStyle}>
-            {page.label}
+            <T k={page.label} />
           </span>
           <h1 className="hero-title">
-            <span className="gradient-text">{page.titleAccent}</span> {page.titleRest}
+            <span className="gradient-text"><T k={page.titleAccent} /></span>{' '}
+            <T k={page.titleRest} />
           </h1>
-          <p className="hero-desc mt-3">{page.description}</p>
+          <p className="hero-desc mt-3"><T k={page.description} /></p>
           {page.badges && (
             <div className="platform-badges mt-4">
               {page.badges.map((badge) => (
                 <span key={badge.text} className="platform-badge">
                   <Icon name={badge.icon} style={{ color: badge.color }} />
-                  {badge.text}
+                  <T k={badge.text} />
                 </span>
               ))}
             </div>
@@ -65,9 +66,11 @@ export default function TopicPage({ topicKey }) {
             <div className={`info-card ${page.banner.variant} mb-5 fade-in`} style={{ background: 'rgba(230,160,30,0.08)' }}>
               <h5>
                 <Icon name={page.banner.icon} className="me-2" />
-                {page.banner.title}
+                <T k={page.banner.title} />
               </h5>
-              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>{page.banner.text}</p>
+              <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+                <T k={page.banner.text} />
+              </p>
             </div>
           )}
 
@@ -94,7 +97,7 @@ export default function TopicPage({ topicKey }) {
                         className="topic-nav-link"
                       >
                         <Icon name={item.icon} className="me-2" style={{ width: '1rem' }} />
-                        {item.label}
+                        <T k={item.label} />
                       </button>
                     ))}
                   </div>
@@ -117,7 +120,9 @@ export default function TopicPage({ topicKey }) {
                     <Icon name="lightbulb" className="me-2" style={{ color: 'var(--warning)' }} />
                     <T k="topicPage.remember" />
                   </h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>{page.remember}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                    <T k={page.remember} />
+                  </p>
                 </div>
               </div>
             </div>

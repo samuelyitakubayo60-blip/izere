@@ -7,13 +7,17 @@ function InfoCard({ block }) {
     <div className={`info-card ${variant === 'primary' ? '' : variant} mt-3`} style={block.borderColor ? { borderLeftColor: block.borderColor } : undefined}>
       <h5>
         {block.icon && <Icon name={block.icon} className="me-2" />}
-        {block.title}
+        <T k={block.title} />
       </h5>
-      {block.text && <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>{block.text}</p>}
+      {block.text && (
+        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+          <T k={block.text} />
+        </p>
+      )}
       {block.list && (
         <ul>
           {block.list.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item}><T k={item} /></li>
           ))}
         </ul>
       )}
@@ -31,7 +35,7 @@ function ProsCons({ data }) {
         </h5>
         <ul>
           {data.pros.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item}><T k={item} /></li>
           ))}
         </ul>
       </div>
@@ -42,7 +46,7 @@ function ProsCons({ data }) {
         </h5>
         <ul>
           {data.cons.map((item) => (
-            <li key={item}>{item}</li>
+            <li key={item}><T k={item} /></li>
           ))}
         </ul>
       </div>
@@ -55,9 +59,13 @@ export default function TopicSectionRenderer({ section }) {
     <div className="method-card fade-in" id={section.id}>
       <h3>
         <Icon name={section.icon} style={{ fontSize: '1.25rem', color: 'var(--primary)' }} />
-        {section.title}
+        <T k={section.title} />
       </h3>
-      {section.intro && <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>{section.intro}</p>}
+      {section.intro && (
+        <p style={{ color: 'var(--text-muted)', marginBottom: '1rem' }}>
+          <T k={section.intro} />
+        </p>
+      )}
 
       {section.grid && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -65,9 +73,11 @@ export default function TopicSectionRenderer({ section }) {
             <div key={item.title} className="info-card h-full" style={{ marginBottom: 0 }}>
               <h5>
                 <Icon name={item.icon} className="me-2" style={{ color: 'var(--primary)' }} />
-                {item.title}
+                <T k={item.title} />
               </h5>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0 }}>{item.text}</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', margin: 0 }}>
+                <T k={item.text} />
+              </p>
             </div>
           ))}
         </div>
@@ -78,8 +88,10 @@ export default function TopicSectionRenderer({ section }) {
           {section.stats.map((item) => (
             <div key={item.label} className="glass-card text-center" style={{ padding: '1.25rem' }}>
               <Icon name={item.icon} style={{ fontSize: '1.75rem', color: 'var(--primary)', marginBottom: '0.5rem' }} />
-              <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{item.label}</div>
-              <div style={{ color: 'var(--primary)', fontSize: '1.3rem', fontWeight: 800 }}>{item.value}</div>
+              <div style={{ fontWeight: 700, fontSize: '0.9rem' }}><T k={item.label} /></div>
+              <div style={{ color: 'var(--primary)', fontSize: '1.3rem', fontWeight: 800 }}>
+                <T k={item.value} />
+              </div>
             </div>
           ))}
         </div>
@@ -90,8 +102,10 @@ export default function TopicSectionRenderer({ section }) {
           {section.glassGrid.map((item) => (
             <div key={item.title} className="glass-card text-center h-full" style={{ padding: '1.5rem' }}>
               <Icon name={item.icon} style={{ fontSize: '2rem', color: 'var(--primary)', marginBottom: '0.75rem' }} />
-              <h5 style={{ fontWeight: 700, fontSize: '0.95rem' }}>{item.title}</h5>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 }}>{item.text}</p>
+              <h5 style={{ fontWeight: 700, fontSize: '0.95rem' }}><T k={item.title} /></h5>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 }}>
+                <T k={item.text} />
+              </p>
             </div>
           ))}
         </div>
@@ -102,11 +116,13 @@ export default function TopicSectionRenderer({ section }) {
           {section.trimesters.map((item) => (
             <div key={item.title} className="glass-card" style={{ borderTop: `3px solid ${item.color}` }}>
               <Icon name={item.icon} style={{ fontSize: '1.5rem', color: item.color, marginBottom: '0.5rem' }} />
-              <div style={{ fontSize: '0.78rem', color: item.color, fontWeight: 700, marginBottom: '0.5rem' }}>{item.weeks}</div>
-              <h5 style={{ fontWeight: 700 }}>{item.title}</h5>
+              <div style={{ fontSize: '0.78rem', color: item.color, fontWeight: 700, marginBottom: '0.5rem' }}>
+                <T k={item.weeks} />
+              </div>
+              <h5 style={{ fontWeight: 700 }}><T k={item.title} /></h5>
               <ul style={{ color: 'var(--text-muted)', fontSize: '0.85rem', paddingLeft: '1rem', marginTop: '0.5rem' }}>
                 {item.list.map((li) => (
-                  <li key={li}>{li}</li>
+                  <li key={li}><T k={li} /></li>
                 ))}
               </ul>
             </div>
@@ -118,10 +134,10 @@ export default function TopicSectionRenderer({ section }) {
         <div className="cycle-timeline">
           {section.cycleTimeline.map((item) => (
             <div key={item.title} className="cycle-phase" style={{ borderTop: `3px solid ${item.color}` }}>
-              <div className="phase-day">{item.days}</div>
+              <div className="phase-day"><T k={item.days} /></div>
               <Icon name={item.icon} style={{ fontSize: '1.25rem', color: item.color, marginBottom: '0.4rem' }} />
-              <h5>{item.title}</h5>
-              <p>{item.text}</p>
+              <h5><T k={item.title} /></h5>
+              <p><T k={item.text} /></p>
             </div>
           ))}
         </div>
@@ -132,10 +148,10 @@ export default function TopicSectionRenderer({ section }) {
           {section.stiGrid.map((item) => (
             <div key={item.title} className="sti-card">
               <span className="sti-badge" style={item.badgeStyle}>
-                {item.badge}
+                <T k={item.badge} />
               </span>
-              <h4>{item.title}</h4>
-              <p>{item.text}</p>
+              <h4><T k={item.title} /></h4>
+              <p><T k={item.text} /></p>
             </div>
           ))}
         </div>
@@ -146,8 +162,12 @@ export default function TopicSectionRenderer({ section }) {
           {section.preventionGrid.map((item) => (
             <div key={item.title} className="glass-card" style={{ padding: '1.25rem' }}>
               <Icon name={item.icon} style={{ fontSize: '1.25rem', color: item.color, marginBottom: '0.5rem' }} />
-              <h5 style={{ fontSize: '0.95rem', fontWeight: 700, color: item.color }}>{item.title}</h5>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>{item.text}</p>
+              <h5 style={{ fontSize: '0.95rem', fontWeight: 700, color: item.color }}>
+                <T k={item.title} />
+              </h5>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                <T k={item.text} />
+              </p>
             </div>
           ))}
         </div>
@@ -158,7 +178,20 @@ export default function TopicSectionRenderer({ section }) {
       {section.dualInfo && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {section.dualInfo.map((block) => (
-            <InfoCard key={block.title} block={{ ...block, borderColor: block.variant === 'coral' ? 'var(--coral)' : block.variant === 'accent' ? 'var(--accent)' : block.variant === 'warning' ? 'var(--warning)' : undefined }} />
+            <InfoCard
+              key={block.title}
+              block={{
+                ...block,
+                borderColor:
+                  block.variant === 'coral'
+                    ? 'var(--coral)'
+                    : block.variant === 'accent'
+                      ? 'var(--accent)'
+                      : block.variant === 'warning'
+                        ? 'var(--warning)'
+                        : undefined,
+              }}
+            />
           ))}
         </div>
       )}

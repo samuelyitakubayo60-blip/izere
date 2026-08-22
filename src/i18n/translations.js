@@ -1,3 +1,5 @@
+import { topicEn, topicRw } from './topicStrings.js';
+
 export const translations = {
   en: {
     nav: {
@@ -439,6 +441,7 @@ export const translations = {
       loading: 'Loading...',
       disclaimer: 'Disclaimer',
     },
+    topic: topicEn,
   },
   rw: {
     nav: {
@@ -879,6 +882,7 @@ export const translations = {
       loading: 'Birimo gupakira...',
       disclaimer: 'Icyitonderwa',
     },
+    topic: topicRw,
   },
 };
 
