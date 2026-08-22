@@ -1,10 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-/**
- * Protect routes that require an authenticated admin (role === 'admin').
- */
-export default function ProtectedRoute({ children, adminOnly = false }) {
+export default function ProtectedRoute({ children, adminOnly = false, staffOnly = false }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -21,6 +18,10 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
   }
 
   if (adminOnly && user.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  if (staffOnly && user.role !== 'admin' && user.role !== 'editor') {
     return <Navigate to="/" replace />;
   }
 

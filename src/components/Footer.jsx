@@ -1,10 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useChatUI } from './FloatingChat';
 import Icon from './Icon';
+import T from './T';
 
 export default function Footer() {
-  const { t } = useLanguage();
   const { openChat } = useChatUI();
 
   return (
@@ -16,51 +15,52 @@ export default function Footer() {
               <Icon name="heartbeat" className="me-2" />
               IZERE
             </div>
-            <p className="footer-desc">{t('footer.about')}</p>
+            <p className="footer-desc"><T k="footer.about" /></p>
           </div>
 
           <div className="footer-links">
-            <h6>{t('footer.exploreTitle')}</h6>
-            <Link to="/contraception">{t('nav.contraception')}</Link>
-            <Link to="/pregnancy">{t('nav.pregnancy')}</Link>
-            <Link to="/menstrual">{t('nav.menstrual')}</Link>
-            <Link to="/sti">{t('nav.sti')}</Link>
-            <Link to="/about">{t('nav.about')}</Link>
+            <h6><T k="footer.exploreTitle" /></h6>
+            <Link to="/contraception"><T k="nav.contraception" /></Link>
+            <Link to="/pregnancy"><T k="nav.pregnancy" /></Link>
+            <Link to="/menstrual"><T k="nav.menstrual" /></Link>
+            <Link to="/sti"><T k="nav.sti" /></Link>
+            <Link to="/about"><T k="nav.about" /></Link>
+            <Link to="/donate"><T k="nav.donate" /></Link>
           </div>
 
           <div className="footer-links">
-            <h6>{t('footer.platformTitle')}</h6>
-            <Link to="/#how">{t('footer.howItWorks')}</Link>
-            <Link to="/#features">{t('footer.features')}</Link>
-            <Link to="/#accessibility">{t('footer.accessibility')}</Link>
+            <h6><T k="footer.platformTitle" /></h6>
+            <Link to="/#how"><T k="footer.howItWorks" /></Link>
+            <Link to="/#features"><T k="footer.features" /></Link>
+            <Link to="/#accessibility"><T k="footer.accessibility" /></Link>
             <button type="button" className="footer-link-btn" onClick={openChat}>
-              {t('footer.askIzere')}
+              <T k="footer.askIzere" />
             </button>
           </div>
 
           <div className="footer-links">
-            <h6>{t('footer.contactTitle')}</h6>
+            <h6><T k="footer.contactTitle" /></h6>
             <a href="mailto:izerehealth@gmail.com">
               <Icon name="envelope" className="me-2" style={{ color: 'var(--info)' }} />
-              {t('footer.email')}
+              <T k="footer.email" />
             </a>
             <a href="tel:+250798686657">
               <Icon name="phone" className="me-2" style={{ color: 'var(--primary)' }} />
-              {t('footer.phone')}
+              <T k="footer.phone" />
             </a>
             <a href="tel:114">
               <Icon name="phone-alt" className="me-2" style={{ color: 'var(--primary)' }} />
-              {t('footer.healthLine')}
+              <T k="footer.healthLine" />
             </a>
             <a href="tel:912">
               <Icon name="ambulance" className="me-2" style={{ color: 'var(--danger)' }} />
-              {t('footer.emergency')}
+              <T k="footer.emergency" />
             </a>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>{t('footer.rights')} {t('footer.disclaimer')}</p>
+          <p><T k="footer.rights" /> <T k="footer.disclaimer" /></p>
         </div>
       </div>
     </footer>

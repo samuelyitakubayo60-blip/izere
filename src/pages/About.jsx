@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useFadeIn } from '../hooks/useFadeIn';
 import { useChatUI } from '../components/FloatingChat';
 import Icon from '../components/Icon';
+import T from '../components/T';
 
 const PROBLEMS = [
   { icon: 'user-slash', n: 1 },
@@ -32,7 +32,6 @@ const INNOVATIONS = [
 ];
 
 export default function About() {
-  const { t } = useLanguage();
   const { openChat } = useChatUI();
   const fadeRef = useFadeIn([]);
 
@@ -47,15 +46,15 @@ export default function About() {
       >
         <div className="container">
           <div className="breadcrumb-custom">
-            <Link to="/">{t('nav.home')}</Link>
+            <Link to="/"><T k="nav.home" /></Link>
             <Icon name="chevron-right" style={{ fontSize: '0.7rem' }} />
-            <span>{t('nav.about')}</span>
+            <span><T k="nav.about" /></span>
           </div>
-          <span className="section-label">{t('about.storyLabel')}</span>
+          <span className="section-label"><T k="about.storyLabel" /></span>
           <h1 className="hero-title">
-            {t('about.title')} <span className="gradient-text">IZERE {t('home.brandAccent')}</span>
+            <T k="about.title" /> <span className="gradient-text">IZERE <T k="home.brandAccent" /></span>
           </h1>
-          <p className="hero-desc mt-3">{t('about.heroDesc')}</p>
+          <p className="hero-desc mt-3"><T k="about.heroDesc" /></p>
         </div>
       </section>
 
@@ -65,24 +64,24 @@ export default function About() {
             <div className="glass-card h-full" style={{ borderTop: '3px solid var(--primary)' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🎯</div>
               <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>
-                {t('about.missionTitle')}
+                <T k="about.missionTitle" />
               </h3>
-              <p style={{ color: 'var(--text-muted)' }}>{t('about.missionText')}</p>
+              <p style={{ color: 'var(--text-muted)' }}><T k="about.missionText" /></p>
             </div>
             <div className="glass-card h-full" style={{ borderTop: '3px solid var(--accent)' }}>
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🌟</div>
               <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>
-                {t('about.visionTitle')}
+                <T k="about.visionTitle" />
               </h3>
-              <p style={{ color: 'var(--text-muted)' }}>{t('about.visionText')}</p>
+              <p style={{ color: 'var(--text-muted)' }}><T k="about.visionText" /></p>
             </div>
           </div>
 
           <div className="method-card fade-in" id="problem">
             <h3>
-              <span style={{ fontSize: '1.5rem' }}>❓</span> {t('about.problemTitle')}
+              <span style={{ fontSize: '1.5rem' }}>❓</span> <T k="about.problemTitle" />
             </h3>
-            <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}>{t('about.problemIntro')}</p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1.25rem' }}><T k="about.problemIntro" /></p>
             <div className="a11y-grid">
               {PROBLEMS.map(({ icon, n }) => (
                 <div key={n} className="a11y-card">
@@ -90,8 +89,8 @@ export default function About() {
                     <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.4rem' }} />
                   </div>
                   <div>
-                    <h5>{t(`about.problem${n}Title`)}</h5>
-                    <p>{t(`about.problem${n}Text`)}</p>
+                    <h5><T k={`about.problem${n}Title`} /></h5>
+                    <p><T k={`about.problem${n}Text`} /></p>
                   </div>
                 </div>
               ))}
@@ -103,11 +102,11 @@ export default function About() {
       <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="disability">
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('about.a11yLabel')}</span>
+            <span className="section-label"><T k="about.a11yLabel" /></span>
             <h2 className="section-title">
-              {t('about.a11yHeading')} <span className="gradient-text">{t('about.a11yAccent')}</span>
+              <T k="about.a11yHeading" /> <span className="gradient-text"><T k="about.a11yAccent" /></span>
             </h2>
-            <p className="section-sub">{t('about.a11ySub')}</p>
+            <p className="section-sub"><T k="about.a11ySub" /></p>
           </div>
           <div className="a11y-grid fade-in">
             {A11Y.map(({ icon, key }) => (
@@ -116,8 +115,8 @@ export default function About() {
                   <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.5rem' }} />
                 </div>
                 <div>
-                  <h5>{t(`about.a11y${key}Title`)}</h5>
-                  <p>{t(`about.a11y${key}Text`)}</p>
+                  <h5><T k={`about.a11y${key}Title`} /></h5>
+                  <p><T k={`about.a11y${key}Text`} /></p>
                 </div>
               </div>
             ))}
@@ -126,8 +125,8 @@ export default function About() {
             className="glass-card mt-4 fade-in"
             style={{ background: 'rgba(26,160,120,0.06)', borderColor: 'rgba(26,160,120,0.2)' }}
           >
-            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}>{t('about.a11yCommitTitle')}</h4>
-            <p style={{ color: 'var(--text-muted)', margin: 0 }}>{t('about.a11yCommitText')}</p>
+            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}><T k="about.a11yCommitTitle" /></h4>
+            <p style={{ color: 'var(--text-muted)', margin: 0 }}><T k="about.a11yCommitText" /></p>
           </div>
         </div>
       </section>
@@ -135,9 +134,9 @@ export default function About() {
       <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="innovation">
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('about.innovLabel')}</span>
+            <span className="section-label"><T k="about.innovLabel" /></span>
             <h2 className="section-title">
-              {t('about.innovHeading')} <span className="gradient-text">{t('about.innovAccent')}</span>
+              <T k="about.innovHeading" /> <span className="gradient-text"><T k="about.innovAccent" /></span>
             </h2>
           </div>
           <div className="features-grid fade-in">
@@ -146,8 +145,8 @@ export default function About() {
                 <div className="feature-icon-wrap" style={{ background: bg }}>
                   <Icon name={icon} style={{ color }} />
                 </div>
-                <h4>{t(`about.innov${key}Title`)}</h4>
-                <p>{t(`about.innov${key}Text`)}</p>
+                <h4><T k={`about.innov${key}Title`} /></h4>
+                <p><T k={`about.innov${key}Text`} /></p>
               </div>
             ))}
           </div>
@@ -157,35 +156,35 @@ export default function About() {
       <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="contact">
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('about.contactLabel')}</span>
+            <span className="section-label"><T k="about.contactLabel" /></span>
             <h2 className="section-title">
-              {t('about.contactHeading')} <span className="gradient-text">{t('about.contactAccent')}</span>
+              <T k="about.contactHeading" /> <span className="gradient-text"><T k="about.contactAccent" /></span>
             </h2>
           </div>
           <div className="grid md:grid-cols-3 gap-4 fade-in">
             <div className="glass-card text-center h-full">
               <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📞</div>
-              <h5 style={{ fontWeight: 700 }}>{t('about.contactHotline')}</h5>
+              <h5 style={{ fontWeight: 700 }}><T k="about.contactHotline" /></h5>
               <a href="tel:114" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', textDecoration: 'none', display: 'block' }}>
                 114
               </a>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                {t('about.contactHotlineSub')}
+                <T k="about.contactHotlineSub" />
               </p>
             </div>
             <div className="glass-card text-center h-full">
               <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
-              <h5 style={{ fontWeight: 700 }}>{t('about.contactEmergency')}</h5>
+              <h5 style={{ fontWeight: 700 }}><T k="about.contactEmergency" /></h5>
               <a href="tel:912" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none', display: 'block' }}>
                 912
               </a>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                {t('about.contactEmergencySub')}
+                <T k="about.contactEmergencySub" />
               </p>
             </div>
             <div className="glass-card text-center h-full">
               <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📧</div>
-              <h5 style={{ fontWeight: 700 }}>{t('about.contactEmail')}</h5>
+              <h5 style={{ fontWeight: 700 }}><T k="about.contactEmail" /></h5>
               <a
                 href="mailto:izerehealth@gmail.com"
                 style={{ color: 'var(--info)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', display: 'block', marginTop: '0.75rem' }}
@@ -193,7 +192,7 @@ export default function About() {
                 izerehealth@gmail.com
               </a>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                {t('about.contactEmailSub')}
+                <T k="about.contactEmailSub" />
               </p>
             </div>
           </div>
@@ -205,10 +204,10 @@ export default function About() {
               padding: '2.5rem',
             }}
           >
-            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}>{t('about.ctaTitle')}</h4>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 1.5rem' }}>{t('about.ctaText')}</p>
+            <h4 style={{ fontWeight: 800, marginBottom: '0.75rem' }}><T k="about.ctaTitle" /></h4>
+            <p style={{ color: 'var(--text-muted)', maxWidth: '500px', margin: '0 auto 1.5rem' }}><T k="about.ctaText" /></p>
             <button type="button" className="btn-primary-custom" style={{ margin: '0 auto' }} onClick={openChat}>
-              <Icon name="comments" /> {t('about.ctaButton')}
+              <Icon name="comments" /> <T k="about.ctaButton" />
             </button>
           </div>
         </div>

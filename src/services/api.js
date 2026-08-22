@@ -1,15 +1,34 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+/** Hugging Face Space that hosts the FastAPI backend */
+const HF_SPACE_API = 'https://samuelyitakubayo-izere.hf.space';
+
+function resolveApiBase() {
+  const fromEnv = (import.meta.env.VITE_API_URL || '').trim().replace(/\/$/, '');
+  if (fromEnv) return fromEnv;
+
+  if (typeof window === 'undefined') return 'http://localhost:8000';
+
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return 'http://localhost:8000';
+  }
+  // Frontend and API on the same Space
+  if (host.includes('hf.space') || host.includes('huggingface.co')) {
+    return '';
+  }
+  // Production site (izerehealthhub.org) → Space API
+  return HF_SPACE_API;
+}
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: resolveApiBase(),
+  timeout: 25000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add token to requests if available
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -19,3 +38,4 @@ api.interceptors.request.use((config) => {
 });
 
 export default api;
+export { resolveApiBase, HF_SPACE_API };

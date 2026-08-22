@@ -5,6 +5,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../contexts/AuthContext';
 import { useChatUI } from './FloatingChat';
 import Icon from './Icon';
+import T from './T';
 
 const NAV_LINKS = [
   { to: '/', key: 'home', end: true },
@@ -13,11 +14,12 @@ const NAV_LINKS = [
   { to: '/menstrual', key: 'menstrual' },
   { to: '/sti', key: 'sti' },
   { to: '/about', key: 'about' },
+  { to: '/donate', key: 'donate' },
 ];
 
 export default function Navigation() {
   const { t } = useLanguage();
-  const { isAdmin, logout, user } = useAuth();
+  const { isAdmin, canEditSite, logout, user } = useAuth();
   const { openChat } = useChatUI();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [largeText, setLargeText] = useState(false);
@@ -62,12 +64,12 @@ export default function Navigation() {
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
             {NAV_LINKS.map(({ to, key, end }) => (
               <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
-                {t(`nav.${key}`)}
+                <T k={`nav.${key}`} />
               </NavLink>
             ))}
-            {isAdmin && (
+            {canEditSite && (
               <NavLink to="/admin" className={navClass} onClick={closeMobile}>
-                {t('nav.admin')}
+                <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
               </NavLink>
             )}
           </div>
@@ -104,12 +106,12 @@ export default function Navigation() {
             <div className="container flex flex-col gap-1">
               {NAV_LINKS.map(({ to, key, end }) => (
                 <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
-                  {t(`nav.${key}`)}
+                  <T k={`nav.${key}`} />
                 </NavLink>
               ))}
-              {isAdmin && (
+              {canEditSite && (
                 <NavLink to="/admin" className={navClass} onClick={closeMobile}>
-                  {t('nav.admin')}
+                  <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
                 </NavLink>
               )}
               <button type="button" className="btn-nav-cta mt-2 border-0 cursor-pointer justify-center" onClick={() => { openChat(); closeMobile(); }}>

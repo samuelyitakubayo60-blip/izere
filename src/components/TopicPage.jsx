@@ -5,6 +5,7 @@ import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from './Icon';
 import TopicSectionRenderer from './TopicSectionRenderer';
 import { useChatUI } from './FloatingChat';
+import T from './T';
 
 const TOPIC_PATHS = {
   pregnancy: '/pregnancy',
@@ -14,7 +15,7 @@ const TOPIC_PATHS = {
 };
 
 export default function TopicPage({ topicKey }) {
-  const { language, t } = useLanguage();
+  const { language } = useLanguage();
   const { openChat } = useChatUI();
   const page = getTopicPage(topicKey, language);
   const fadeRef = useFadeIn([topicKey, language]);
@@ -34,7 +35,7 @@ export default function TopicPage({ topicKey }) {
       <section className="page-hero" style={{ background: page.heroStyle }}>
         <div className="container">
           <div className="breadcrumb-custom">
-            <Link to="/">{t('nav.home')}</Link>
+            <Link to="/"><T k="nav.home" /></Link>
             <Icon name="chevron-right" style={{ fontSize: '0.7rem' }} />
             <span>{page.titleAccent} {page.titleRest}</span>
           </div>
@@ -73,7 +74,7 @@ export default function TopicPage({ topicKey }) {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               {page.sections.map((section) => (
-                <TopicSectionRenderer key={section.id} section={section} t={t} />
+                <TopicSectionRenderer key={section.id} section={section} />
               ))}
             </div>
 
@@ -82,7 +83,7 @@ export default function TopicPage({ topicKey }) {
                 <div className="glass-card mb-4">
                   <h5 style={{ fontWeight: 700, marginBottom: '1rem' }}>
                     <Icon name="list-ul" className="me-2" />
-                    {t('topicPage.quickNav')}
+                    <T k="topicPage.quickNav" />
                   </h5>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                     {page.nav.map((item) => (
@@ -102,19 +103,19 @@ export default function TopicPage({ topicKey }) {
                 <div className="glass-card mb-4" style={{ background: 'rgba(26,160,120,0.08)', borderColor: 'rgba(26,160,120,0.25)' }}>
                   <h5 style={{ fontWeight: 700, marginBottom: '0.75rem', color: 'var(--primary)' }}>
                     <Icon name="comments" className="me-2" />
-                    {t('topicPage.askIzere')}
+                    <T k="topicPage.askIzere" />
                   </h5>
-                  <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>{t('topicPage.askIzereDesc')}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}><T k="topicPage.askIzereDesc" /></p>
                   <button type="button" className="btn-primary-custom mt-2" style={{ width: '100%', justifyContent: 'center' }} onClick={openChat}>
                     <Icon name="comments" />
-                    {t('topicPage.askNow')}
+                    <T k="topicPage.askNow" />
                   </button>
                 </div>
 
                 <div className="glass-card">
                   <h5 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>
                     <Icon name="lightbulb" className="me-2" style={{ color: 'var(--warning)' }} />
-                    {t('topicPage.remember')}
+                    <T k="topicPage.remember" />
                   </h5>
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>{page.remember}</p>
                 </div>

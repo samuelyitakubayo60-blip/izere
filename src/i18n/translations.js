@@ -16,7 +16,39 @@ export const translations = {
       contrast: 'Contrast',
       largeText: 'Text',
       admin: 'Admin',
+      dashboard: 'Dashboard',
+      donate: 'Donate',
       staffLogin: 'Staff sign in',
+    },
+    editMode: {
+      banner: 'Edit mode: click highlighted text to change English and Kinyarwanda.',
+      save: 'Save',
+      cancel: 'Cancel',
+      english: 'English',
+      kinyarwanda: 'Kinyarwanda',
+      saving: 'Saving…',
+      error: 'Could not save. Try again.',
+    },
+    donate: {
+      label: 'Support',
+      title: 'Support IZERE Health Hub',
+      intro:
+        'IZERE is free for young people. Donations help us keep confidential SRH information online, improve Kinyarwanda content, and reach more districts in Rwanda.',
+      howTitle: 'How your gift is used',
+      how1: 'Hosting and keeping the chat available 24/7',
+      how2: 'Translating and reviewing trusted health information',
+      how3: 'Accessibility and youth outreach',
+      methodsTitle: 'Ways to give',
+      momoTitle: 'Mobile Money (MoMo)',
+      bankTitle: 'Bank transfer',
+      paypalTitle: 'PayPal',
+      nameLabel: 'Name',
+      numberLabel: 'Number',
+      bankLabel: 'Bank',
+      accountLabel: 'Account',
+      empty: 'Donation details will appear here once the team adds them in the admin dashboard.',
+      thanks: 'Thank you for supporting youth health in Rwanda.',
+      noteTitle: 'Note',
     },
     home: {
       tagline: '"Izere" — Trust in Kinyarwanda',
@@ -425,7 +457,39 @@ export const translations = {
       contrast: 'Kontraste',
       largeText: 'Inyandiko nini',
       admin: 'Ubuyobozi',
+      dashboard: 'Ikibaho',
+      donate: 'Tanga inkunga',
       staffLogin: 'Abakozi',
+    },
+    editMode: {
+      banner: 'Uburyo bwo guhindura: kanda inyandiko iri mu ruziga uhindure Icyongereza n’Ikinyarwanda.',
+      save: 'Bika',
+      cancel: 'Hagarika',
+      english: 'Icyongereza',
+      kinyarwanda: 'Ikinyarwanda',
+      saving: 'Birimo kubika…',
+      error: 'Ntibyashobotse kubika. Ongera ugerageze.',
+    },
+    donate: {
+      label: 'Inkunga',
+      title: 'Tera inkunga IZERE Health Hub',
+      intro:
+        'IZERE ni ubuntu ku rubyiruko. Inkunga ifasha gukomeza amakuru y’ubuzima mu ibanga, kunoza Ikinyarwanda, no kugera ku turere twinshi mu Rwanda.',
+      howTitle: 'Aho inkunga yawe ijya',
+      how1: 'Gukomeza ikiganiro kiri ho amasaha 24/7',
+      how2: 'Guhindura no gusuzuma amakuru yizewe y’ubuzima',
+      how3: 'Uburenganzira n’ubutumire ku rubyiruko',
+      methodsTitle: 'Uko utanga',
+      momoTitle: 'Mobile Money (MoMo)',
+      bankTitle: 'Konti ya banki',
+      paypalTitle: 'PayPal',
+      nameLabel: 'Amazina',
+      numberLabel: 'Numero',
+      bankLabel: 'Banki',
+      accountLabel: 'Konti',
+      empty: 'Amakuru yo gutanga inkunga azagaragara iyo itsinda yayashyizeho mu buyobozi.',
+      thanks: 'Murakoze gushyigikira ubuzima bw’urubyiruko mu Rwanda.',
+      noteTitle: 'Icyitonderwa',
     },
     home: {
       tagline: '"Izere" — Kwizera mu Kinyarwanda',
@@ -853,4 +917,11 @@ export function translate(lang, key) {
   };
   const tree = mergedTranslations?.[lang] ?? translations[lang];
   return resolve(tree) ?? resolve(translations.en) ?? key;
+}
+
+export function translateBoth(key) {
+  return {
+    en: translate('en', key),
+    rw: translate('rw', key),
+  };
 }

@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useChatUI } from '../components/FloatingChat';
 import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from '../components/Icon';
+import T from '../components/T';
 import izereImage from '../assets/izere.jpeg';
 
 const TOPICS = [
@@ -33,7 +33,6 @@ const A11Y = [
 ];
 
 export default function Home() {
-  const { t } = useLanguage();
   const { openChat } = useChatUI();
   const fadeRef = useFadeIn([]);
 
@@ -44,31 +43,31 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-10 items-center">
             <div>
               <div className="hero-badge">
-                <Icon name="shield-alt" /> {t('home.badgePrivate')}
+                <Icon name="shield-alt" /> <T k="home.badgePrivate" />
               </div>
               <h1 className="hero-title" id="hero-heading">
-                IZERE <span className="gradient-text">{t('home.brandAccent')}</span>
+                IZERE <span className="gradient-text"><T k="home.brandAccent" /></span>
               </h1>
-              <p className="hero-desc mt-3">{t('home.tagline')}</p>
-              <p className="hero-desc">{t('home.headline')}</p>
-              <p className="hero-desc" style={{ fontSize: '0.95rem' }}>{t('home.subheadline')}</p>
+              <p className="hero-desc mt-3"><T k="home.tagline" /></p>
+              <p className="hero-desc"><T k="home.headline" /></p>
+              <p className="hero-desc" style={{ fontSize: '0.95rem' }}><T k="home.subheadline" /></p>
               <div className="hero-btns flex flex-wrap gap-3 mt-4">
                 <button type="button" className="btn-primary-custom" onClick={openChat}>
-                  <Icon name="comments" /> {t('home.startChatting')}
+                  <Icon name="comments" /> <T k="home.startChatting" />
                 </button>
                 <Link to="/about" className="btn-outline-custom">
-                  <Icon name="info-circle" /> {t('home.learnMore')}
+                  <Icon name="info-circle" /> <T k="home.learnMore" />
                 </Link>
               </div>
               <div className="platform-badges mt-4">
-                <span className="platform-badge"><Icon name="globe" style={{ color: 'var(--accent)' }} /> {t('home.badgeWeb')}</span>
-                <span className="platform-badge"><Icon name="language" style={{ color: 'var(--warning)' }} /> {t('home.badgeLang')}</span>
-                <span className="platform-badge"><Icon name="lock" style={{ color: 'var(--primary)' }} /> {t('home.badgeNoAccount')}</span>
+                <span className="platform-badge"><Icon name="globe" style={{ color: 'var(--accent)' }} /> <T k="home.badgeWeb" /></span>
+                <span className="platform-badge"><Icon name="language" style={{ color: 'var(--warning)' }} /> <T k="home.badgeLang" /></span>
+                <span className="platform-badge"><Icon name="lock" style={{ color: 'var(--primary)' }} /> <T k="home.badgeNoAccount" /></span>
               </div>
             </div>
             <div className="phone-mockup-wrap">
               <div className="hero-image-frame">
-                <img src={izereImage} alt={t('home.imageAlt')} />
+                <img src={izereImage} alt="" />
               </div>
             </div>
           </div>
@@ -78,9 +77,9 @@ export default function Home() {
       <section id="topics" className="section">
         <div className="container">
           <div className="text-center mb-5">
-            <span className="section-label">{t('home.topicsTitle')}</span>
-            <h2 className="section-title">{t('home.topicsHeading')}</h2>
-            <p className="section-sub">{t('home.topicsIntro')}</p>
+            <span className="section-label"><T k="home.topicsTitle" /></span>
+            <h2 className="section-title"><T k="home.topicsHeading" /></h2>
+            <p className="section-sub"><T k="home.topicsIntro" /></p>
           </div>
           <div className="topic-grid fade-in">
             {TOPICS.map(({ to, cls, icon, ic, titleKey, descKey }) => (
@@ -88,10 +87,10 @@ export default function Home() {
                 <div className={`topic-icon ${ic}`}>
                   <Icon name={icon} />
                 </div>
-                <h3>{t(`home.${titleKey}`)}</h3>
-                <p>{t(`home.${descKey}`)}</p>
+                <h3><T k={`home.${titleKey}`} /></h3>
+                <p><T k={`home.${descKey}`} /></p>
                 <span className="topic-arrow">
-                  {t('home.readMore')} <Icon name="arrow-right" />
+                  <T k="home.readMore" /> <Icon name="arrow-right" />
                 </span>
               </Link>
             ))}
@@ -102,8 +101,8 @@ export default function Home() {
       <section id="features" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('home.whyIzere')}</span>
-            <h2 className="section-title">{t('home.whyHeading')}</h2>
+            <span className="section-label"><T k="home.whyIzere" /></span>
+            <h2 className="section-title"><T k="home.whyHeading" /></h2>
           </div>
           <div className="features-grid">
             {FEATURES.map(({ icon, color, bg, titleKey, textKey }) => (
@@ -111,8 +110,8 @@ export default function Home() {
                 <div className="feature-icon-wrap" style={{ background: bg }}>
                   <Icon name={icon} style={{ color }} />
                 </div>
-                <h4>{t(`home.${titleKey}`)}</h4>
-                <p>{t(`home.${textKey}`)}</p>
+                <h4><T k={`home.${titleKey}`} /></h4>
+                <p><T k={`home.${textKey}`} /></p>
               </div>
             ))}
           </div>
@@ -122,16 +121,16 @@ export default function Home() {
       <section id="how" className="section">
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('home.howLabel')}</span>
-            <h2 className="section-title">{t('home.howHeading')}</h2>
-            <p className="section-sub">{t('home.howSub')}</p>
+            <span className="section-label"><T k="home.howLabel" /></span>
+            <h2 className="section-title"><T k="home.howHeading" /></h2>
+            <p className="section-sub"><T k="home.howSub" /></p>
           </div>
           <div className="how-grid fade-in">
             {HOW_STEPS.map((key, i) => (
               <div key={key} className="how-step">
                 <div className="how-num">{i + 1}</div>
-                <h4>{t(`home.${key}Title`)}</h4>
-                <p>{t(`home.${key}Text`)}</p>
+                <h4><T k={`home.${key}Title`} /></h4>
+                <p><T k={`home.${key}Text`} /></p>
               </div>
             ))}
           </div>
@@ -150,7 +149,7 @@ export default function Home() {
               ].map(([key, val]) => (
                 <div key={key} className="stat-item">
                   <div className="stat-num">{val}</div>
-                  <div className="stat-label">{t(`home.${key}`)}</div>
+                  <div className="stat-label"><T k={`home.${key}`} /></div>
                 </div>
               ))}
             </div>
@@ -161,11 +160,11 @@ export default function Home() {
       <section id="accessibility" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
         <div className="container">
           <div className="text-center mb-5 fade-in">
-            <span className="section-label">{t('home.a11yLabel')}</span>
+            <span className="section-label"><T k="home.a11yLabel" /></span>
             <h2 className="section-title">
-              {t('home.a11yHeading')} <span className="gradient-text">{t('home.a11yAccent')}</span>
+              <T k="home.a11yHeading" /> <span className="gradient-text"><T k="home.a11yAccent" /></span>
             </h2>
-            <p className="section-sub">{t('home.a11ySub')}</p>
+            <p className="section-sub"><T k="home.a11ySub" /></p>
           </div>
           <div className="a11y-grid fade-in">
             {A11Y.map(({ icon, titleKey, textKey }) => (
@@ -174,8 +173,8 @@ export default function Home() {
                   <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.5rem' }} />
                 </div>
                 <div>
-                  <h5>{t(`home.${titleKey}`)}</h5>
-                  <p>{t(`home.${textKey}`)}</p>
+                  <h5><T k={`home.${titleKey}`} /></h5>
+                  <p><T k={`home.${textKey}`} /></p>
                 </div>
               </div>
             ))}
@@ -188,9 +187,11 @@ export default function Home() {
           <div className="info-card warning fade-in" style={{ background: 'rgba(230,160,30,0.08)' }}>
             <h5>
               <Icon name="exclamation-triangle" className="me-2" />
-              {t('home.noticeTitle')}
+              <T k="home.noticeTitle" />
             </h5>
-            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>{t('home.noticeText')}</p>
+            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.92rem' }}>
+              <T k="home.noticeText" />
+            </p>
           </div>
         </div>
       </section>

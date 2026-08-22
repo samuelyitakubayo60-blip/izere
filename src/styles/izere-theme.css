@@ -886,3 +886,98 @@ body {
   color: var(--text-primary);
   background: var(--bg-glass);
 }
+
+.izere-edit-banner {
+  position: sticky;
+  top: 64px;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 0.5rem 1rem;
+  background: rgba(26, 160, 120, 0.95);
+  color: #fff;
+  font-size: 0.88rem;
+}
+.izere-edit-banner a {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+}
+.izere-editable {
+  cursor: pointer;
+  outline: 1px dashed transparent;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.izere-editable:hover {
+  outline-color: var(--primary);
+  background: rgba(26, 160, 120, 0.12);
+}
+.izere-edit-icon {
+  font-size: 0.7em;
+  margin-left: 0.35em;
+  opacity: 0.55;
+}
+.izere-edit-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.izere-edit-modal {
+  background: #fff;
+  color: #111;
+  max-width: 560px;
+  width: 100%;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+.izere-edit-key {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0;
+  word-break: break-all;
+}
+.izere-edit-modal label {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.izere-edit-modal textarea {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font: inherit;
+  font-weight: 400;
+}
+.izere-edit-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.izere-edit-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+.izere-edit-actions button[type='submit'] {
+  background: var(--primary);
+  color: #fff;
+}
+.izere-edit-error {
+  color: #b00020;
+  margin: 0;
+  font-size: 0.85rem;
+}

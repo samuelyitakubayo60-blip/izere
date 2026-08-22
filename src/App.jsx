@@ -14,7 +14,9 @@ import Menstrual from './pages/Menstrual';
 import STI from './pages/STI';
 import Blog from './pages/Blog';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Donate from './pages/Donate';
 import Footer from './components/Footer';
+import EditModeBanner from './components/EditModeBanner';
 import './index.css';
 
 function App() {
@@ -25,10 +27,12 @@ function App() {
           <ChatUIProvider>
             <div className="izere-app">
               <Navigation />
+              <EditModeBanner />
               <main className="izere-main-with-nav">
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/donate" element={<Donate />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/contraception" element={<Contraception />} />
@@ -39,7 +43,7 @@ function App() {
                   <Route
                     path="/admin"
                     element={
-                      <ProtectedRoute adminOnly>
+                      <ProtectedRoute staffOnly>
                         <AdminDashboard />
                       </ProtectedRoute>
                     }

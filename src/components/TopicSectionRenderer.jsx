@@ -1,4 +1,5 @@
 import Icon from './Icon';
+import T from './T';
 
 function InfoCard({ block }) {
   const variant = block.variant || 'primary';
@@ -20,13 +21,13 @@ function InfoCard({ block }) {
   );
 }
 
-function ProsCons({ data, t }) {
+function ProsCons({ data }) {
   return (
     <div className="pros-cons">
       <div className="pros">
         <h5>
           <Icon name="check-circle" className="me-1" />
-          {t('topicPage.advantages')}
+          <T k="topicPage.advantages" />
         </h5>
         <ul>
           {data.pros.map((item) => (
@@ -37,7 +38,7 @@ function ProsCons({ data, t }) {
       <div className="cons">
         <h5>
           <Icon name="exclamation-circle" className="me-1" />
-          {t('topicPage.disadvantages')}
+          <T k="topicPage.disadvantages" />
         </h5>
         <ul>
           {data.cons.map((item) => (
@@ -49,7 +50,7 @@ function ProsCons({ data, t }) {
   );
 }
 
-export default function TopicSectionRenderer({ section, t }) {
+export default function TopicSectionRenderer({ section }) {
   return (
     <div className="method-card fade-in" id={section.id}>
       <h3>
@@ -152,7 +153,7 @@ export default function TopicSectionRenderer({ section, t }) {
         </div>
       )}
 
-      {section.prosCons && <ProsCons data={section.prosCons} t={t} />}
+      {section.prosCons && <ProsCons data={section.prosCons} />}
 
       {section.dualInfo && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -169,16 +170,16 @@ export default function TopicSectionRenderer({ section, t }) {
         <div className="mt-3 p-3" style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 'var(--radius-sm)', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.88rem', marginBottom: '0.5rem' }}>
             <Icon name="phone-alt" className="me-2" />
-            {t('topicPage.emergencyRwanda')}
+            <T k="topicPage.emergencyRwanda" />
           </p>
           <a href="tel:912" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none' }}>
             912
           </a>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}>{t('topicPage.emergency')}</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}><T k="topicPage.emergency" /></span>
           <a href="tel:114" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none', display: 'block', marginTop: '0.5rem' }}>
             114
           </a>
-          <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}>{t('topicPage.healthHotline')}</span>
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}><T k="topicPage.healthHotline" /></span>
         </div>
       )}
     </div>

@@ -51,3 +51,28 @@ export const importDefaultTranslations = async (overwrite = false) => {
   });
   return data;
 };
+
+export const upsertTranslationByPath = async (payload) => {
+  const { data } = await api.put('/api/admin/translations/by-path', payload);
+  return data;
+};
+
+export const listUsers = async () => {
+  const { data } = await api.get('/api/admin/users');
+  return data;
+};
+
+export const updateUserRole = async (id, role) => {
+  const { data } = await api.patch(`/api/admin/users/${id}`, { role });
+  return data;
+};
+
+export const getDonationSettingsAdmin = async () => {
+  const { data } = await api.get('/api/admin/donations');
+  return data;
+};
+
+export const updateDonationSettings = async (payload) => {
+  const { data } = await api.put('/api/admin/donations', payload);
+  return data;
+};
