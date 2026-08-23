@@ -46,22 +46,46 @@ export default function Navigation() {
   return (
     <div className="navbar-fixed-wrap">
       <nav className="navbar" aria-label="Main navigation">
-        <div className="container flex items-center justify-between flex-wrap gap-2 py-3">
-          <Link to="/" className="navbar-brand" onClick={closeMobile}>
-            <Icon name="heartbeat" className="me-2" style={{ color: 'var(--primary)' }} />
-            IZERE
-          </Link>
-
-          <div className="hidden lg:flex items-center gap-2 me-3">
-            <button type="button" className="a11y-btn" onClick={() => toggleA11y('contrast')}>
-              <Icon name="adjust" /> {t('nav.contrast')}
-            </button>
-            <button type="button" className="a11y-btn" onClick={() => toggleA11y('text')}>
-              <Icon name="text-height" /> {t('nav.largeText')}
-            </button>
+        <div className="container">
+          <div className="navbar-top">
+            <Link to="/" className="navbar-brand" onClick={closeMobile}>
+              <Icon name="heartbeat" className="navbar-brand-icon" />
+              <T k="nav.siteTitle" />
+            </Link>
+            <div className="navbar-top-actions">
+              <button type="button" className="a11y-btn hidden lg:inline-flex" onClick={() => toggleA11y('contrast')}>
+                <Icon name="adjust" /> {t('nav.contrast')}
+              </button>
+              <button type="button" className="a11y-btn hidden lg:inline-flex" onClick={() => toggleA11y('text')}>
+                <Icon name="text-height" /> {t('nav.largeText')}
+              </button>
+              {!user && (
+                <Link to="/login" className="nav-link hidden sm:inline text-sm">
+                  {t('nav.staffLogin')}
+                </Link>
+              )}
+              {user && (
+                <button type="button" onClick={logout} className="nav-link hidden sm:inline text-sm bg-transparent border-0 cursor-pointer">
+                  {t('nav.signOut')}
+                </button>
+              )}
+              <LanguageSwitcher />
+              <button type="button" className="btn-nav-cta hidden md:inline-flex items-center gap-2 border-0 cursor-pointer" onClick={openChat}>
+                <Icon name="comments" /> {t('nav.chatNow')}
+              </button>
+              <button
+                type="button"
+                className="lg:hidden a11y-btn"
+                onClick={() => setMobileOpen((o) => !o)}
+                aria-expanded={mobileOpen}
+                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              >
+                <Icon name={mobileOpen ? 'times' : 'bars'} />
+              </button>
+            </div>
           </div>
 
-          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          <div className="navbar-menu hidden lg:flex">
             {NAV_LINKS.map(({ to, key, end }) => (
               <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
                 <T k={`nav.${key}`} />
@@ -72,32 +96,6 @@ export default function Navigation() {
                 <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
               </NavLink>
             )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            {!user && (
-              <Link to="/login" className="nav-link hidden sm:inline text-sm">
-                {t('nav.staffLogin')}
-              </Link>
-            )}
-            {user && (
-              <button type="button" onClick={logout} className="nav-link hidden sm:inline text-sm bg-transparent border-0 cursor-pointer">
-                {t('nav.signOut')}
-              </button>
-            )}
-            <LanguageSwitcher />
-            <button type="button" className="btn-nav-cta hidden md:inline-flex items-center gap-2 border-0 cursor-pointer" onClick={openChat}>
-              <Icon name="comments" /> {t('nav.chatNow')}
-            </button>
-            <button
-              type="button"
-              className="lg:hidden a11y-btn"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-expanded={mobileOpen}
-              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-            >
-              <Icon name={mobileOpen ? 'times' : 'bars'} />
-            </button>
           </div>
         </div>
 

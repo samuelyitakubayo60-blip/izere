@@ -21,6 +21,7 @@ export const translations = {
       dashboard: 'Dashboard',
       donate: 'Donate',
       staffLogin: 'Staff sign in',
+      siteTitle: 'IZERE Health Hub',
     },
     editMode: {
       banner: 'Edit mode: click highlighted text to change English and Kinyarwanda.',
@@ -463,6 +464,7 @@ export const translations = {
       dashboard: 'Ikibaho',
       donate: 'Tanga inkunga',
       staffLogin: 'Abakozi',
+      siteTitle: 'IZERE Health Hub',
     },
     editMode: {
       banner: 'Uburyo bwo guhindura: kanda inyandiko iri mu ruziga uhindure Icyongereza n’Ikinyarwanda.',

@@ -13,7 +13,7 @@ export default function Footer() {
           <div>
             <div className="footer-brand">
               <Icon name="heartbeat" className="me-2" />
-              IZERE
+              <T k="nav.siteTitle" />
             </div>
             <p className="footer-desc"><T k="footer.about" /></p>
           </div>

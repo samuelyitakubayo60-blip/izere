@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -19,9 +19,31 @@ import {
 
 const CATEGORIES = ['contraception', 'pregnancy', 'menstrual', 'sti'];
 
+const TABS = [
+  { id: 'kb', label: 'Chat knowledge', admin: true },
+  { id: 'tr', label: 'Site text', admin: false },
+  { id: 'users', label: 'Staff', admin: true },
+  { id: 'donate', label: 'Donations', admin: true },
+];
+
+function Notice({ children }) {
+  if (!children) return null;
+  return <p className="admin-notice">{children}</p>;
+}
+
+function Field({ label, children }) {
+  return (
+    <label className="admin-field">
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+
 function KnowledgePanel() {
   const [items, setItems] = useState([]);
   const [editId, setEditId] = useState(null);
+  const [query, setQuery] = useState('');
   const [form, setForm] = useState({
     category: 'contraception',
     title: '',
@@ -91,88 +113,79 @@ function KnowledgePanel() {
     }
   };
 
+  const filtered = items.filter((row) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return `${row.title} ${row.category} ${row.keywords || ''}`.toLowerCase().includes(q);
+  });
+
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Knowledge base (chatbot)</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        Trusted health facts for RAG. Always add <strong>English and Kinyarwanda</strong>.
-      </p>
-      {msg && <p className="text-sm mb-3 text-pink-700">{msg}</p>}
-      <form onSubmit={onSave} className="grid gap-3 mb-8 bg-white p-4 rounded-lg shadow-sm">
-        <select
-          value={form.category}
-          onChange={(e) => setForm({ ...form, category: e.target.value })}
-          className="border rounded px-3 py-2"
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
+    <div className="admin-split">
+      <div>
+        <h2>Chat knowledge</h2>
+        <p className="admin-lead">Facts the chatbot uses. Fill English and Kinyarwanda.</p>
+        <input
+          className="admin-input"
+          placeholder="Search titles…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <ul className="admin-list">
+          {filtered.map((row) => (
+            <li key={row.id}>
+              <button type="button" className={editId === row.id ? 'is-active' : ''} onClick={() => onEdit(row.id)}>
+                <strong>{row.title}</strong>
+                <span>
+                  {row.category}
+                  {row.content_rw ? ' · Kinyarwanda ✓' : ' · Kinyarwanda missing'}
+                </span>
+              </button>
+            </li>
           ))}
-        </select>
-        <input
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
-          className="border rounded px-3 py-2"
-          required
-        />
-        <input
-          placeholder="Slug (optional)"
-          value={form.slug}
-          onChange={(e) => setForm({ ...form, slug: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          placeholder="Keywords: condom, ibigabo, …"
-          value={form.keywords}
-          onChange={(e) => setForm({ ...form, keywords: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <textarea
-          placeholder="English content"
-          value={form.content_en}
-          onChange={(e) => setForm({ ...form, content_en: e.target.value })}
-          className="border rounded px-3 py-2 min-h-[100px]"
-          required
-        />
-        <textarea
-          placeholder="Kinyarwanda content"
-          value={form.content_rw}
-          onChange={(e) => setForm({ ...form, content_rw: e.target.value })}
-          className="border rounded px-3 py-2 min-h-[100px]"
-        />
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            checked={form.published}
-            onChange={(e) => setForm({ ...form, published: e.target.checked })}
-          />
+        </ul>
+      </div>
+      <form onSubmit={onSave} className="admin-card">
+        <h3>{editId ? 'Edit entry' : 'New entry'}</h3>
+        <Notice>{msg}</Notice>
+        <Field label="Topic">
+          <select
+            className="admin-input"
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Title">
+          <input className="admin-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+        </Field>
+        <div className="admin-row">
+          <Field label="Slug (optional)">
+            <input className="admin-input" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
+          </Field>
+          <Field label="Keywords">
+            <input className="admin-input" value={form.keywords} onChange={(e) => setForm({ ...form, keywords: e.target.value })} placeholder="condom, agakingirizo" />
+          </Field>
+        </div>
+        <Field label="English">
+          <textarea className="admin-input admin-area" value={form.content_en} onChange={(e) => setForm({ ...form, content_en: e.target.value })} required />
+        </Field>
+        <Field label="Kinyarwanda">
+          <textarea className="admin-input admin-area" value={form.content_rw} onChange={(e) => setForm({ ...form, content_rw: e.target.value })} />
+        </Field>
+        <label className="admin-check">
+          <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
           Published
         </label>
-        <div className="flex gap-2">
-          <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded-lg">
-            {editId ? 'Update' : 'Create'}
-          </button>
+        <div className="admin-actions">
+          <button type="submit" className="admin-btn-primary">{editId ? 'Update' : 'Add'}</button>
           {editId && (
-            <button type="button" onClick={reset} className="border px-4 py-2 rounded-lg">
-              Cancel
-            </button>
+            <button type="button" className="admin-btn-ghost" onClick={reset}>New entry</button>
           )}
         </div>
       </form>
-      <ul className="divide-y bg-white rounded-lg shadow-sm">
-        {items.map((row) => (
-          <li key={row.id} className="p-3 flex justify-between items-center text-sm">
-            <span>
-              <strong>{row.title}</strong>
-              <span className="text-gray-500 ml-2">({row.category})</span>
-              {row.content_rw ? ' · RW ✓' : ' · RW —'}
-            </span>
-            <button type="button" onClick={() => onEdit(row.id)} className="text-pink-600">
-              Edit
-            </button>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
@@ -184,6 +197,8 @@ function TranslationsPanel() {
   const [form, setForm] = useState({ namespace: 'nav', key: '', text_en: '', text_rw: '' });
   const [msg, setMsg] = useState('');
   const [importing, setImporting] = useState(false);
+  const [query, setQuery] = useState('');
+  const [ns, setNs] = useState('all');
 
   const load = async () => {
     try {
@@ -197,18 +212,27 @@ function TranslationsPanel() {
     load();
   }, []);
 
+  const namespaces = useMemo(
+    () => ['all', ...Array.from(new Set(rows.map((r) => r.namespace))).sort()],
+    [rows],
+  );
+
+  const filtered = rows.filter((row) => {
+    if (ns !== 'all' && row.namespace !== ns) return false;
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return `${row.namespace}.${row.key} ${row.text_en} ${row.text_rw || ''}`.toLowerCase().includes(q);
+  });
+
   const onSave = async (e) => {
     e.preventDefault();
     try {
-      if (editId) {
-        await updateTranslation(editId, form);
-      } else {
-        await createTranslation(form);
-      }
+      if (editId) await updateTranslation(editId, form);
+      else await createTranslation(form);
       setMsg('Saved. Site text updated.');
       await reloadFromApi();
       setEditId(null);
-      setForm({ namespace: 'nav', key: '', text_en: '', text_rw: '' });
+      setForm({ namespace: form.namespace || 'nav', key: '', text_en: '', text_rw: '' });
       load();
     } catch (err) {
       const d = err.response?.data?.detail;
@@ -217,18 +241,13 @@ function TranslationsPanel() {
   };
 
   const onImportDefaults = async (overwrite = false) => {
-    if (
-      overwrite &&
-      !window.confirm('Overwrite all existing translations with defaults from translations.js?')
-    ) {
+    if (overwrite && !window.confirm('Reset all site text from the default file? Staff edits will be overwritten.')) {
       return;
     }
     setImporting(true);
     try {
       const stats = await importDefaultTranslations(overwrite);
-      setMsg(
-        `Import done: ${stats.created} created, ${stats.updated} updated, ${stats.skipped} skipped (${stats.total_keys} keys in file).`,
-      );
+      setMsg(`Import: ${stats.created} new, ${stats.updated} updated, ${stats.skipped} skipped.`);
       await reloadFromApi();
       load();
     } catch (err) {
@@ -239,143 +258,83 @@ function TranslationsPanel() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Site translations</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        Menus, page titles, labels — namespace e.g. nav, home, chat, pages.contraception.
-      </p>
-      <div className="flex flex-wrap gap-2 mb-4">
-        <button
-          type="button"
-          disabled={importing}
-          onClick={() => onImportDefaults(false)}
-          className="border border-pink-600 text-pink-600 px-3 py-2 rounded-lg text-sm disabled:opacity-50"
-        >
-          {importing ? 'Importing…' : 'Import missing from translations.js'}
-        </button>
-        <button
-          type="button"
-          disabled={importing}
-          onClick={() => onImportDefaults(true)}
-          className="border border-gray-400 text-gray-700 px-3 py-2 rounded-lg text-sm disabled:opacity-50"
-        >
-          Reset all from defaults
-        </button>
+    <div className="admin-split">
+      <div>
+        <h2>Site text</h2>
+        <p className="admin-lead">Or click the pencil on any public page. This list is for finding a key quickly.</p>
+        <div className="admin-row">
+          <input className="admin-input" placeholder="Search keys or words…" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <select className="admin-input" value={ns} onChange={(e) => setNs(e.target.value)}>
+            {namespaces.map((n) => (
+              <option key={n} value={n}>{n === 'all' ? 'All sections' : n}</option>
+            ))}
+          </select>
+        </div>
+        <p className="admin-count">{filtered.length} strings</p>
+        <ul className="admin-list admin-list-tall">
+          {filtered.map((row) => (
+            <li key={row.id}>
+              <button
+                type="button"
+                className={editId === row.id ? 'is-active' : ''}
+                onClick={() => {
+                  setEditId(row.id);
+                  setForm({
+                    namespace: row.namespace,
+                    key: row.key,
+                    text_en: row.text_en,
+                    text_rw: row.text_rw || '',
+                  });
+                }}
+              >
+                <strong>{row.namespace}.{row.key}</strong>
+                <span>{row.text_en}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
-      {msg && <p className="text-sm mb-3 text-pink-700">{msg}</p>}
-      <form onSubmit={onSave} className="grid gap-3 mb-8 bg-white p-4 rounded-lg shadow-sm">
-        <input
-          placeholder="Namespace"
-          value={form.namespace}
-          onChange={(e) => setForm({ ...form, namespace: e.target.value })}
-          className="border rounded px-3 py-2"
-          required
-        />
-        <input
-          placeholder="Key (e.g. home, title)"
-          value={form.key}
-          onChange={(e) => setForm({ ...form, key: e.target.value })}
-          className="border rounded px-3 py-2"
-          required
-          disabled={!!editId}
-        />
-        <input
-          placeholder="English"
-          value={form.text_en}
-          onChange={(e) => setForm({ ...form, text_en: e.target.value })}
-          className="border rounded px-3 py-2"
-          required
-        />
-        <input
-          placeholder="Kinyarwanda"
-          value={form.text_rw}
-          onChange={(e) => setForm({ ...form, text_rw: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded-lg w-fit">
-          {editId ? 'Update' : 'Create'}
-        </button>
-      </form>
-      <ul className="divide-y bg-white rounded-lg shadow-sm text-sm max-h-96 overflow-auto">
-        {rows.map((row) => (
-          <li
-            key={row.id}
-            className="p-3 cursor-pointer hover:bg-pink-50"
-            onClick={() => {
-              setEditId(row.id);
-              setForm({
-                namespace: row.namespace,
-                key: row.key,
-                text_en: row.text_en,
-                text_rw: row.text_rw || '',
-              });
-            }}
-          >
-            <strong>{row.namespace}.{row.key}</strong>
-            <div className="text-gray-600 truncate">EN: {row.text_en}</div>
-            <div className="text-gray-600 truncate">RW: {row.text_rw || '—'}</div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default function AdminDashboard() {
-  const { isAdmin } = useAuth();
-  const [tab, setTab] = useState(isAdmin ? 'kb' : 'tr');
-
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{isAdmin ? 'Admin' : 'Editor'}</h1>
-        <Link to="/" className="text-pink-600 text-sm">
-          ← Back to site
-        </Link>
-      </div>
-      <p className="text-sm text-gray-600 mb-4">
-        Click highlighted text on any public page to edit English and Kinyarwanda. Use this dashboard for the chatbot knowledge base, staff roles, and donation details.
-      </p>
-      <div className="flex flex-wrap gap-2 mb-6">
-        {isAdmin && (
-          <button
-            type="button"
-            onClick={() => setTab('kb')}
-            className={`px-4 py-2 rounded-lg ${tab === 'kb' ? 'bg-pink-600 text-white' : 'bg-gray-200'}`}
-          >
-            Knowledge base
+      <form onSubmit={onSave} className="admin-card">
+        <h3>{editId ? 'Edit string' : 'Add string'}</h3>
+        <Notice>{msg}</Notice>
+        <div className="admin-row">
+          <Field label="Section">
+            <input className="admin-input" value={form.namespace} onChange={(e) => setForm({ ...form, namespace: e.target.value })} required />
+          </Field>
+          <Field label="Key">
+            <input className="admin-input" value={form.key} onChange={(e) => setForm({ ...form, key: e.target.value })} required disabled={!!editId} />
+          </Field>
+        </div>
+        <Field label="English">
+          <textarea className="admin-input admin-area" value={form.text_en} onChange={(e) => setForm({ ...form, text_en: e.target.value })} required />
+        </Field>
+        <Field label="Kinyarwanda">
+          <textarea className="admin-input admin-area" value={form.text_rw} onChange={(e) => setForm({ ...form, text_rw: e.target.value })} />
+        </Field>
+        <div className="admin-actions">
+          <button type="submit" className="admin-btn-primary">{editId ? 'Update' : 'Add'}</button>
+          {editId && (
+            <button
+              type="button"
+              className="admin-btn-ghost"
+              onClick={() => {
+                setEditId(null);
+                setForm({ namespace: 'nav', key: '', text_en: '', text_rw: '' });
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="admin-import">
+          <button type="button" className="admin-btn-ghost" disabled={importing} onClick={() => onImportDefaults(false)}>
+            {importing ? 'Working…' : 'Add missing keys'}
           </button>
-        )}
-        <button
-          type="button"
-          onClick={() => setTab('tr')}
-          className={`px-4 py-2 rounded-lg ${tab === 'tr' ? 'bg-pink-600 text-white' : 'bg-gray-200'}`}
-        >
-          Site translations
-        </button>
-        {isAdmin && (
-          <>
-            <button
-              type="button"
-              onClick={() => setTab('users')}
-              className={`px-4 py-2 rounded-lg ${tab === 'users' ? 'bg-pink-600 text-white' : 'bg-gray-200'}`}
-            >
-              Staff
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab('donate')}
-              className={`px-4 py-2 rounded-lg ${tab === 'donate' ? 'bg-pink-600 text-white' : 'bg-gray-200'}`}
-            >
-              Donations
-            </button>
-          </>
-        )}
-      </div>
-      {tab === 'kb' && isAdmin && <KnowledgePanel />}
-      {tab === 'tr' && <TranslationsPanel />}
-      {tab === 'users' && isAdmin && <UsersPanel />}
-      {tab === 'donate' && isAdmin && <DonationsPanel />}
+          <button type="button" className="admin-btn-danger" disabled={importing} onClick={() => onImportDefaults(true)}>
+            Reset from file
+          </button>
+        </div>
+      </form>
     </div>
   );
 }
@@ -399,7 +358,7 @@ function UsersPanel() {
   const onRole = async (id, role) => {
     try {
       await updateUserRole(id, role);
-      setMsg('Role saved. They must sign in again if the menu does not update.');
+      setMsg('Role saved.');
       load();
     } catch (e) {
       setMsg(e.response?.data?.detail || e.message);
@@ -408,30 +367,35 @@ function UsersPanel() {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-2">Staff</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        Google sign-in first, then set role here. <strong>editor</strong> can click text on the site. <strong>admin</strong> can also manage knowledge and donations.
-      </p>
-      {msg && <p className="text-sm mb-3 text-pink-700">{msg}</p>}
-      <ul className="divide-y bg-white rounded-lg shadow-sm">
-        {users.map((u) => (
-          <li key={u.id} className="p-3 flex flex-wrap justify-between items-center gap-2 text-sm">
-            <span>
-              <strong>{u.display_name || u.email}</strong>
-              <span className="text-gray-500 ml-2">{u.email}</span>
-            </span>
-            <select
-              value={u.role}
-              onChange={(e) => onRole(u.id, e.target.value)}
-              className="border rounded px-2 py-1"
-            >
-              <option value="user">user</option>
-              <option value="editor">editor</option>
-              <option value="admin">admin</option>
-            </select>
-          </li>
-        ))}
-      </ul>
+      <h2>Staff</h2>
+      <p className="admin-lead">They sign in with Google first. Then set role: editor (page text) or admin (everything).</p>
+      <Notice>{msg}</Notice>
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id}>
+                <td>{u.display_name || '—'}</td>
+                <td>{u.email}</td>
+                <td>
+                  <select className="admin-input admin-select-sm" value={u.role} onChange={(e) => onRole(u.id, e.target.value)}>
+                    <option value="user">Visitor</option>
+                    <option value="editor">Editor</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -468,66 +432,98 @@ function DonationsPanel() {
     e.preventDefault();
     try {
       await updateDonationSettings(form);
-      setMsg('Donation details saved. They appear on /donate.');
+      setMsg('Saved. Visible on the Donate page.');
     } catch (err) {
       setMsg(err.response?.data?.detail || err.message);
     }
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Donation details</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        Shown on the public Donate page. Leave a field empty to hide that method. Payments stay off-site (MoMo, bank, PayPal).
+    <form onSubmit={onSave}>
+      <h2>Donations</h2>
+      <p className="admin-lead">Shown on /donate. Leave a field empty to hide that method.</p>
+      <Notice>{msg}</Notice>
+      <div className="admin-grid-3">
+        <div className="admin-card">
+          <h3>Mobile Money</h3>
+          <Field label="Name">
+            <input className="admin-input" value={form.momo_name} onChange={(e) => setForm({ ...form, momo_name: e.target.value })} />
+          </Field>
+          <Field label="Number">
+            <input className="admin-input" value={form.momo_number} onChange={(e) => setForm({ ...form, momo_number: e.target.value })} />
+          </Field>
+        </div>
+        <div className="admin-card">
+          <h3>Bank</h3>
+          <Field label="Bank name">
+            <input className="admin-input" value={form.bank_name} onChange={(e) => setForm({ ...form, bank_name: e.target.value })} />
+          </Field>
+          <Field label="Account">
+            <input className="admin-input" value={form.bank_account} onChange={(e) => setForm({ ...form, bank_account: e.target.value })} />
+          </Field>
+        </div>
+        <div className="admin-card">
+          <h3>PayPal</h3>
+          <Field label="URL (optional)">
+            <input className="admin-input" value={form.paypal_url} onChange={(e) => setForm({ ...form, paypal_url: e.target.value })} />
+          </Field>
+        </div>
+      </div>
+      <div className="admin-card" style={{ marginTop: '1rem' }}>
+        <h3>Notes on the Donate page</h3>
+        <div className="admin-row">
+          <Field label="English">
+            <textarea className="admin-input admin-area" value={form.extra_note_en} onChange={(e) => setForm({ ...form, extra_note_en: e.target.value })} />
+          </Field>
+          <Field label="Kinyarwanda">
+            <textarea className="admin-input admin-area" value={form.extra_note_rw} onChange={(e) => setForm({ ...form, extra_note_rw: e.target.value })} />
+          </Field>
+        </div>
+        <div className="admin-actions">
+          <button type="submit" className="admin-btn-primary">Save donation details</button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+export default function AdminDashboard() {
+  const { isAdmin } = useAuth();
+  const [tab, setTab] = useState(isAdmin ? 'kb' : 'tr');
+  const tabs = TABS.filter((t) => isAdmin || !t.admin);
+
+  return (
+    <div className="admin-page">
+      <header className="admin-header">
+        <div>
+          <p className="admin-kicker">IZERE Health Hub</p>
+          <h1>{isAdmin ? 'Admin dashboard' : 'Editor dashboard'}</h1>
+        </div>
+        <Link to="/" className="admin-back">← Back to site</Link>
+      </header>
+      <p className="admin-lead">
+        On public pages, click the pencil on any sentence. Use the tabs below for chatbot facts, staff, and donations.
       </p>
-      {msg && <p className="text-sm mb-3 text-pink-700">{msg}</p>}
-      <form onSubmit={onSave} className="grid gap-3 bg-white p-4 rounded-lg shadow-sm">
-        <input
-          placeholder="MoMo name"
-          value={form.momo_name}
-          onChange={(e) => setForm({ ...form, momo_name: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          placeholder="MoMo number"
-          value={form.momo_number}
-          onChange={(e) => setForm({ ...form, momo_number: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          placeholder="Bank name"
-          value={form.bank_name}
-          onChange={(e) => setForm({ ...form, bank_name: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          placeholder="Bank account"
-          value={form.bank_account}
-          onChange={(e) => setForm({ ...form, bank_account: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <input
-          placeholder="PayPal URL (optional)"
-          value={form.paypal_url}
-          onChange={(e) => setForm({ ...form, paypal_url: e.target.value })}
-          className="border rounded px-3 py-2"
-        />
-        <textarea
-          placeholder="Extra note (English)"
-          value={form.extra_note_en}
-          onChange={(e) => setForm({ ...form, extra_note_en: e.target.value })}
-          className="border rounded px-3 py-2 min-h-[80px]"
-        />
-        <textarea
-          placeholder="Extra note (Kinyarwanda)"
-          value={form.extra_note_rw}
-          onChange={(e) => setForm({ ...form, extra_note_rw: e.target.value })}
-          className="border rounded px-3 py-2 min-h-[80px]"
-        />
-        <button type="submit" className="bg-pink-600 text-white px-4 py-2 rounded-lg w-fit">
-          Save
-        </button>
-      </form>
+      <div className="admin-tabs" role="tablist">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            className={tab === t.id ? 'is-active' : ''}
+            onClick={() => setTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <div className="admin-body">
+        {tab === 'kb' && isAdmin && <KnowledgePanel />}
+        {tab === 'tr' && <TranslationsPanel />}
+        {tab === 'users' && isAdmin && <UsersPanel />}
+        {tab === 'donate' && isAdmin && <DonationsPanel />}
+      </div>
     </div>
   );
 }
