@@ -15,6 +15,8 @@ import STI from './pages/STI';
 import Blog from './pages/Blog';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Donate from './pages/Donate';
+import { CartProvider } from './contexts/CartContext';
+import Shop from './pages/Shop';
 import Footer from './components/Footer';
 import EditModeBanner from './components/EditModeBanner';
 import './index.css';
@@ -23,6 +25,7 @@ function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
+        <CartProvider>
         <Router>
           <ChatUIProvider>
             <div className="izere-app">
@@ -33,6 +36,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/donate" element={<Donate />} />
+                  <Route path="/shop" element={<Shop />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/chat" element={<Chat />} />
                   <Route path="/contraception" element={<Contraception />} />
@@ -54,6 +58,7 @@ function App() {
             </div>
           </ChatUIProvider>
         </Router>
+        </CartProvider>
       </AuthProvider>
     </LanguageProvider>
   );

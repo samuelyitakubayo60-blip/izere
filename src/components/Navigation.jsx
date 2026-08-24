@@ -6,6 +6,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useChatUI } from './FloatingChat';
 import Icon from './Icon';
 import T from './T';
+import { useCart } from '../contexts/CartContext';
+import logo from '../assets/logo.png';
 
 const NAV_LINKS = [
   { to: '/', key: 'home', end: true },
@@ -13,6 +15,7 @@ const NAV_LINKS = [
   { to: '/pregnancy', key: 'pregnancy' },
   { to: '/menstrual', key: 'menstrual' },
   { to: '/sti', key: 'sti' },
+  { to: '/shop', key: 'shop' },
   { to: '/about', key: 'about' },
   { to: '/donate', key: 'donate' },
 ];
@@ -20,6 +23,7 @@ const NAV_LINKS = [
 export default function Navigation() {
   const { t } = useLanguage();
   const { isAdmin, canEditSite, logout, user } = useAuth();
+  const { count } = useCart();
   const { openChat } = useChatUI();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [largeText, setLargeText] = useState(false);
@@ -49,7 +53,7 @@ export default function Navigation() {
         <div className="container">
           <div className="navbar-top">
             <Link to="/" className="navbar-brand" onClick={closeMobile}>
-              <Icon name="heartbeat" className="navbar-brand-icon" />
+              <img src={logo} alt="" className="navbar-brand-logo" />
               <T k="nav.siteTitle" />
             </Link>
             <div className="navbar-top-actions">
@@ -89,6 +93,7 @@ export default function Navigation() {
             {NAV_LINKS.map(({ to, key, end }) => (
               <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
                 <T k={`nav.${key}`} />
+                {key === 'shop' && count > 0 ? ` (${count})` : ''}
               </NavLink>
             ))}
             {canEditSite && (

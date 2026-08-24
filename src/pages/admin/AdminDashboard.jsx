@@ -16,12 +16,20 @@ import {
   getDonationSettingsAdmin,
   updateDonationSettings,
 } from '../../services/adminService';
+import {
+  adminCreateShopProduct,
+  adminListShopOrders,
+  adminListShopProducts,
+  adminUpdateShopOrder,
+  adminUpdateShopProduct,
+} from '../../services/shopService';
 
 const CATEGORIES = ['contraception', 'pregnancy', 'menstrual', 'sti'];
 
 const TABS = [
   { id: 'kb', label: 'Chat knowledge', admin: true },
   { id: 'tr', label: 'Site text', admin: false },
+  { id: 'shop', label: 'Shop', admin: true },
   { id: 'users', label: 'Staff', admin: true },
   { id: 'donate', label: 'Donations', admin: true },
 ];
@@ -400,6 +408,190 @@ function UsersPanel() {
   );
 }
 
+const EMPTY_PRODUCT = {
+  category: 'hygiene',
+  name_en: '',
+  name_rw: '',
+  description_en: '',
+  description_rw: '',
+  price_rwf: 0,
+  unit_en: 'pack',
+  unit_rw: '',
+  image_url: '',
+  in_stock: true,
+  published: true,
+};
+
+function ShopPanel() {
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [form, setForm] = useState(EMPTY_PRODUCT);
+  const [msg, setMsg] = useState('');
+
+  const load = async () => {
+    try {
+      const [p, o] = await Promise.all([adminListShopProducts(), adminListShopOrders()]);
+      setProducts(p);
+      setOrders(o);
+    } catch (e) {
+      setMsg(e.response?.data?.detail || e.message);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const onAdd = async (e) => {
+    e.preventDefault();
+    try {
+      await adminCreateShopProduct({
+        ...form,
+        price_rwf: Number(form.price_rwf) || 0,
+        image_url: form.image_url || null,
+        name_rw: form.name_rw || null,
+        description_en: form.description_en || null,
+        description_rw: form.description_rw || null,
+        unit_rw: form.unit_rw || null,
+      });
+      setForm(EMPTY_PRODUCT);
+      setMsg('Product added. It appears in the Shop for visitors.');
+      load();
+    } catch (err) {
+      setMsg(err.response?.data?.detail || err.message);
+    }
+  };
+
+  const onPatch = async (id, payload) => {
+    try {
+      await adminUpdateShopProduct(id, payload);
+      load();
+    } catch (err) {
+      setMsg(err.response?.data?.detail || err.message);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Shop</h2>
+      <p className="admin-lead">
+        Only an <strong>admin</strong> can add or edit products. Editors cannot. Visitors only buy from the Shop page.
+      </p>
+      <Notice>{msg}</Notice>
+      <form onSubmit={onAdd} className="admin-card" style={{ marginBottom: '1.25rem' }}>
+        <h3>Add a product</h3>
+        <div className="admin-row">
+          <Field label="English name">
+            <input className="admin-input" required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} />
+          </Field>
+          <Field label="Kinyarwanda name">
+            <input className="admin-input" value={form.name_rw} onChange={(e) => setForm({ ...form, name_rw: e.target.value })} />
+          </Field>
+        </div>
+        <div className="admin-row">
+          <Field label="Type">
+            <select className="admin-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+              <option value="menstrual">Pads</option>
+              <option value="prevention">Condoms</option>
+              <option value="testing">Test kits</option>
+              <option value="mama">Mama kits</option>
+              <option value="hygiene">Hygiene</option>
+            </select>
+          </Field>
+          <Field label="Price (RWF)">
+            <input className="admin-input" type="number" min="0" value={form.price_rwf} onChange={(e) => setForm({ ...form, price_rwf: e.target.value })} />
+          </Field>
+          <Field label="Unit">
+            <input className="admin-input" value={form.unit_en} onChange={(e) => setForm({ ...form, unit_en: e.target.value })} />
+          </Field>
+        </div>
+        <Field label="Image URL (optional — e.g. /shop/pads.svg or a photo link)">
+          <input className="admin-input" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
+        </Field>
+        <Field label="English description">
+          <textarea className="admin-input admin-area" value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} />
+        </Field>
+        <div className="admin-actions">
+          <button type="submit" className="admin-btn-primary">Add product</button>
+        </div>
+      </form>
+
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Live</th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name_en}</td>
+                <td>{p.category}</td>
+                <td>
+                  <input
+                    className="admin-input admin-select-sm"
+                    type="number"
+                    defaultValue={p.price_rwf}
+                    onBlur={(e) => onPatch(p.id, { price_rwf: Number(e.target.value) })}
+                  />
+                </td>
+                <td>
+                  <input type="checkbox" checked={p.in_stock} onChange={(e) => onPatch(p.id, { in_stock: e.target.checked })} />
+                </td>
+                <td>
+                  <input type="checkbox" checked={p.published} onChange={(e) => onPatch(p.id, { published: e.target.checked })} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <h3 style={{ marginTop: '1.5rem' }}>Orders</h3>
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Phone</th>
+              <th>Place</th>
+              <th>Products</th>
+              <th>Delivery</th>
+              <th>Total</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.id}>
+                <td>{o.id}</td>
+                <td>{o.phone}</td>
+                <td>{[o.province, o.district, o.village].filter(Boolean).join(' · ') || 'Pickup'}</td>
+                <td>{o.products_rwf} RWF</td>
+                <td>{o.delivery_rwf} RWF</td>
+                <td>{o.total_rwf} RWF</td>
+                <td>
+                  <select className="admin-input admin-select-sm" value={o.status} onChange={(e) => adminUpdateShopOrder(o.id, e.target.value).then(load)}>
+                    <option value="pending">pending</option>
+                    <option value="confirmed">confirmed</option>
+                    <option value="fulfilled">fulfilled</option>
+                    <option value="cancelled">cancelled</option>
+                  </select>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 function DonationsPanel() {
   const [form, setForm] = useState({
     momo_name: '',
@@ -502,7 +694,7 @@ export default function AdminDashboard() {
         <Link to="/" className="admin-back">← Back to site</Link>
       </header>
       <p className="admin-lead">
-        On public pages, click the pencil on any sentence. Use the tabs below for chatbot facts, staff, and donations.
+        On public pages, click the pencil on any sentence. Admins also manage shop products and orders.
       </p>
       <div className="admin-tabs" role="tablist">
         {tabs.map((t) => (
@@ -521,6 +713,7 @@ export default function AdminDashboard() {
       <div className="admin-body">
         {tab === 'kb' && isAdmin && <KnowledgePanel />}
         {tab === 'tr' && <TranslationsPanel />}
+        {tab === 'shop' && isAdmin && <ShopPanel />}
         {tab === 'users' && isAdmin && <UsersPanel />}
         {tab === 'donate' && isAdmin && <DonationsPanel />}
       </div>

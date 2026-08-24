@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useChatUI } from './FloatingChat';
 import Icon from './Icon';
 import T from './T';
+import logo from '../assets/logo.png';
 
 export default function Footer() {
   const { openChat } = useChatUI();
@@ -12,7 +13,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="footer-brand">
-              <Icon name="heartbeat" className="me-2" />
+              <img src={logo} alt="" className="footer-brand-logo" />
               <T k="nav.siteTitle" />
             </div>
             <p className="footer-desc"><T k="footer.about" /></p>
@@ -26,6 +27,7 @@ export default function Footer() {
             <Link to="/sti"><T k="nav.sti" /></Link>
             <Link to="/about"><T k="nav.about" /></Link>
             <Link to="/donate"><T k="nav.donate" /></Link>
+            <Link to="/shop"><T k="nav.shop" /></Link>
           </div>
 
           <div className="footer-links">
