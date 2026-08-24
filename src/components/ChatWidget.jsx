@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sendMessage, escalateChat, getChatMessages, getChatSession } from '../services/chatService';
+import { sendMessage, escalateChat, getChatMessages, getChatSession, isWaitPlaceholder } from '../services/chatService';
 import { transcribeAudio, synthesizeSpeech } from '../services/voiceService';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
@@ -155,6 +155,10 @@ export default function ChatWidget({ compact = false, dark = false }) {
       storeSessionId(response.session_id);
       if (response.escalated) setEscalated(true);
 
+      if (!response.response?.trim() || isWaitPlaceholder(response.response)) {
+        throw Object.assign(new Error('timeout'), { code: 'ECONNABORTED' });
+      }
+
       const assistantMsg = {
         id: response.message_id,
         role: 'assistant',
@@ -173,7 +177,11 @@ export default function ChatWidget({ compact = false, dark = false }) {
       });
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages((prev) => [...prev, { role: 'assistant', content: t('chat.error'), language }]);
+      const timedOut = error?.code === 'ECONNABORTED';
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: t(timedOut ? 'chat.timeout' : 'chat.error'), language },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -479,6 +487,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
                     <span />
                     <span />
                   </div>
+                  <p className={`mt-2 text-xs ${embedded ? 'text-gray-400' : 'text-gray-500'}`}>{t('chat.thinking')}</p>
                 </div>
               </div>
             )}
