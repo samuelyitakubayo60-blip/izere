@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sendMessage } from '../services/chatService';
+import { sendMessage, escalateChat, getChatMessages, getChatSession } from '../services/chatService';
 import { transcribeAudio, synthesizeSpeech } from '../services/voiceService';
 import { useLanguage } from '../contexts/LanguageContext';
 import {
@@ -16,10 +16,18 @@ import {
 } from '../utils/anonymousSession';
 import Icon from './Icon';
 
-/** idle → recording ↔ paused */
 const REC_IDLE = 'idle';
 const REC_RECORDING = 'recording';
 const REC_PAUSED = 'paused';
+
+function mapServerMessages(rows) {
+  return rows.map((m) => ({
+    id: m.id,
+    role: m.role,
+    content: m.content,
+    language: m.language,
+  }));
+}
 
 export default function ChatWidget({ compact = false, dark = false }) {
   const { language, t } = useLanguage();
@@ -33,6 +41,8 @@ export default function ChatWidget({ compact = false, dark = false }) {
   const [playingId, setPlayingId] = useState(null);
   const [playbackPaused, setPlaybackPaused] = useState(false);
   const [useBrowserTts, setUseBrowserTts] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const [escalating, setEscalating] = useState(false);
 
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -52,13 +62,37 @@ export default function ChatWidget({ compact = false, dark = false }) {
   }, [messages, isLoading]);
 
   useEffect(() => {
-    return () => {
-      stopPlayback();
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+    const existing = getStoredSessionId();
+    if (!existing) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [session, rows] = await Promise.all([getChatSession(existing), getChatMessages(existing)]);
+        if (cancelled) return;
+        setEscalated(Boolean(session.escalated) && session.escalation_status !== 'closed');
+        setMessages(mapServerMessages(rows));
+      } catch {
+        /* session may be gone */
       }
+    })();
+    return () => {
+      cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!sessionId || !escalated) return undefined;
+    const tick = async () => {
+      try {
+        const rows = await getChatMessages(sessionId);
+        setMessages((prev) => (rows.length <= prev.length ? prev : mapServerMessages(rows)));
+      } catch {
+        /* keep last view */
+      }
+    };
+    const id = setInterval(tick, 8000);
+    return () => clearInterval(id);
+  }, [sessionId, escalated]);
 
   const stopPlayback = useCallback(() => {
     if (audioRef.current) {
@@ -74,6 +108,15 @@ export default function ChatWidget({ compact = false, dark = false }) {
     setPlaybackPaused(false);
     setUseBrowserTts(false);
   }, []);
+
+  useEffect(() => {
+    return () => {
+      stopPlayback();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stopPlayback]);
 
   const submitText = async (text) => {
     const trimmed = text.trim();
@@ -110,9 +153,10 @@ export default function ChatWidget({ compact = false, dark = false }) {
 
       setSessionId(response.session_id);
       storeSessionId(response.session_id);
+      if (response.escalated) setEscalated(true);
 
       const assistantMsg = {
-        id: Date.now(),
+        id: response.message_id,
         role: 'assistant',
         content: response.response,
         language: response.detected_language || response.language,
@@ -129,10 +173,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
       });
     } catch (error) {
       console.error('Error sending message:', error);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: t('chat.error'), language },
-      ]);
+      setMessages((prev) => [...prev, { role: 'assistant', content: t('chat.error'), language }]);
     } finally {
       setIsLoading(false);
     }
@@ -298,11 +339,48 @@ export default function ChatWidget({ compact = false, dark = false }) {
     setSessionId(null);
     setMessages([]);
     setVoiceError('');
+    setEscalated(false);
+  };
+
+  const handleEscalate = async () => {
+    if (!sessionId || escalated || escalating) return;
+    setEscalating(true);
+    setVoiceError('');
+    try {
+      const response = await escalateChat(sessionId);
+      setEscalated(true);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: response.message_id,
+          role: 'assistant',
+          content: response.response,
+          language: response.language,
+        },
+      ]);
+    } catch (err) {
+      console.error('Escalate failed:', err);
+      setVoiceError(t('chat.escalateError'));
+    } finally {
+      setEscalating(false);
+    }
   };
 
   const messageHeight = compact ? 'flex-1 min-h-[240px]' : 'h-[500px]';
   const isRecActive = recState !== REC_IDLE;
   const embedded = compact && dark;
+
+  const escalateButton = sessionId && !escalated && (
+    <button
+      type="button"
+      onClick={handleEscalate}
+      disabled={escalating}
+      className={embedded ? 'text-xs text-primary-custom hover:underline' : 'text-sm text-green-700 hover:text-green-900 underline'}
+      title={t('chat.counselorFee')}
+    >
+      {escalating ? '…' : t('chat.talkToCounselor')}
+    </button>
+  );
 
   return (
     <div className={compact ? 'flex flex-col h-full min-h-0 bg-transparent overflow-hidden' : ''}>
@@ -322,16 +400,17 @@ export default function ChatWidget({ compact = false, dark = false }) {
             <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-2">{voiceError}</p>
           )}
           {messages.length > 0 && (
-            <button type="button" onClick={handleNewChat} className="text-sm text-red-600 hover:text-red-800 underline">
-              {t('chat.newChat')}
-            </button>
+            <div className="flex flex-wrap gap-3 items-center">
+              <button type="button" onClick={handleNewChat} className="text-sm text-red-600 hover:text-red-800 underline">
+                {t('chat.newChat')}
+              </button>
+              {escalateButton}
+            </div>
           )}
         </div>
       )}
 
-      {embedded && voiceError && (
-        <p className="text-xs text-red-400 px-4 py-2">{voiceError}</p>
-      )}
+      {embedded && voiceError && <p className="text-xs text-red-400 px-4 py-2">{voiceError}</p>}
 
       <div
         ref={messagesContainerRef}
@@ -352,17 +431,23 @@ export default function ChatWidget({ compact = false, dark = false }) {
             {messages.map((message, index) => {
               const msgId = message.id ?? index;
               const isPlaying = playingId === msgId;
+              const isUser = message.role === 'user';
               return (
-                <div key={msgId} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div key={msgId} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
                   <div
                     className={
                       embedded
-                        ? `cb-msg ${message.role === 'user' ? 'user' : 'bot'}`
-                        : `max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${message.role === 'user' ? 'bg-red-600 text-white' : 'bg-white text-gray-800 shadow-sm border border-gray-100'}`
+                        ? `cb-msg ${isUser ? 'user' : 'bot'}`
+                        : `max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${isUser ? 'bg-red-600 text-white' : 'bg-white text-gray-800 shadow-sm border border-gray-100'}`
                     }
                   >
+                    {message.role === 'counselor' && (
+                      <p className={`text-xs font-semibold mb-1 ${embedded ? 'text-primary-custom' : 'text-green-700'}`}>
+                        {t('chat.counselorLabel')}
+                      </p>
+                    )}
                     <p className="whitespace-pre-wrap">{message.content}</p>
-                    {message.role === 'assistant' && (
+                    {!isUser && (
                       <button
                         type="button"
                         onClick={() => togglePlayback(msgId, message.content, message.language)}
@@ -370,11 +455,17 @@ export default function ChatWidget({ compact = false, dark = false }) {
                         className={`mt-2 text-xs flex items-center gap-1 font-medium ${embedded ? 'text-primary-custom' : 'text-red-600 hover:text-red-800'}`}
                       >
                         <Icon name={isPlaying && !playbackPaused ? 'pause' : isPlaying ? 'play' : 'volume-up'} />
-                        {isPlaying && !playbackPaused ? t('chat.pauseListen') : isPlaying ? t('chat.resumeListen') : t('chat.listen')}
+                        {isPlaying && !playbackPaused
+                          ? t('chat.pauseListen')
+                          : isPlaying
+                            ? t('chat.resumeListen')
+                            : t('chat.listen')}
                       </button>
                     )}
                     {message.needsMedical && (
-                      <p className={`mt-2 text-xs font-medium ${embedded ? 'text-yellow-400' : 'text-orange-700'}`}>{t('chat.medicalWarning')}</p>
+                      <p className={`mt-2 text-xs font-medium ${embedded ? 'text-yellow-400' : 'text-orange-700'}`}>
+                        {t('chat.medicalWarning')}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -397,10 +488,12 @@ export default function ChatWidget({ compact = false, dark = false }) {
       </div>
 
       {embedded && messages.length > 0 && (
-        <div className="px-4 pb-2 shrink-0">
+        <div className="px-4 pb-2 shrink-0 flex flex-wrap gap-3">
           <button type="button" onClick={handleNewChat} className="text-xs text-primary-custom hover:underline">
             {t('chat.newChat')}
           </button>
+          {escalateButton}
+          {escalated && <span className="text-xs text-gray-400">{t('chat.waitingCounselor')}</span>}
         </div>
       )}
 
@@ -493,4 +586,3 @@ function getSupportedMimeType() {
   const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
   return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
 }
-

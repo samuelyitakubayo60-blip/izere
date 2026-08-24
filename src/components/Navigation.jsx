@@ -22,7 +22,7 @@ const NAV_LINKS = [
 
 export default function Navigation() {
   const { t } = useLanguage();
-  const { isAdmin, canEditSite, logout, user } = useAuth();
+  const { isAdmin, canAccessDashboard, isCounselor, logout, user } = useAuth();
   const { count } = useCart();
   const { openChat } = useChatUI();
   const [largeText, setLargeText] = useState(false);
@@ -92,9 +92,9 @@ export default function Navigation() {
                 {key === 'shop' && count > 0 ? ` (${count})` : ''}
               </NavLink>
             ))}
-            {canEditSite && (
+            {canAccessDashboard && (
               <NavLink to="/admin" className={navClass}>
-                <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
+                <T k={isAdmin ? 'nav.admin' : isCounselor ? 'nav.counselInbox' : 'nav.dashboard'} />
               </NavLink>
             )}
           </div>

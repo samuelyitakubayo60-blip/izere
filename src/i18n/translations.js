@@ -23,6 +23,7 @@ export const translations = {
       shop: 'Shop',
       staffLogin: 'Staff sign in',
       siteTitle: 'IZERE Health Hub',
+      counselInbox: 'Counselor inbox',
     },
     editMode: {
       banner: 'Edit mode: click highlighted text to change English and Kinyarwanda.',
@@ -223,6 +224,11 @@ export const translations = {
       sending: 'Sending...',
       error: 'Sorry, there was an error. Please try again.',
       medicalWarning: 'Consider speaking with a healthcare provider.',
+      talkToCounselor: 'Talk to a counselor (500 RWF)',
+      counselorFee: 'AI chat stays free. A private counselor review is 500 RWF.',
+      escalateError: 'Could not reach a counselor. Try again.',
+      counselorLabel: 'Counselor',
+      waitingCounselor: 'Waiting for a counselor…',
       disclaimer:
         'This chatbot provides educational information only. It does not replace professional medical advice. For serious symptoms or emergencies, please consult a healthcare provider.',
     },
@@ -519,6 +525,7 @@ export const translations = {
       shop: 'Isoko',
       staffLogin: 'Abakozi',
       siteTitle: 'IZERE Health Hub',
+      counselInbox: 'Ibiganiro by’abahanga',
     },
     editMode: {
       banner: 'Uburyo bwo guhindura: kanda inyandiko iri mu ruziga uhindure Icyongereza n’Ikinyarwanda.',
@@ -719,6 +726,11 @@ export const translations = {
       sending: 'Birimo koherezwa...',
       error: 'Ihangane, habaye ikosa. Ongera ugerageze.',
       medicalWarning: 'Gerageza kuvugana na muganga.',
+      talkToCounselor: 'Vugana n’umuhanga (500 RWF)',
+      counselorFee: 'Ikiganiro na AI ni ubuntu. Gusuzumwa n’umuhanga ni 500 RWF.',
+      escalateError: 'Ntibyashobotse kugera ku muhanga. Ongera ugerageze.',
+      counselorLabel: 'Umuhanga',
+      waitingCounselor: 'Turategereje umuhanga…',
       disclaimer:
         "Iyi chatbot itanga amakuru yo kwigisha gusa. Ntabwo isimbura inama y'umuganga. Ku bimenyetso bikomeye cyangwa byihutirwa, jya kwa muganga.",
     },

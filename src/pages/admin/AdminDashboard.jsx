@@ -23,15 +23,22 @@ import {
   adminUpdateShopOrder,
   adminUpdateShopProduct,
 } from '../../services/shopService';
+import {
+  closeCounselSession,
+  getCounselMessages,
+  listCounselInbox,
+  replyCounselSession,
+} from '../../services/counselService';
 
 const CATEGORIES = ['contraception', 'pregnancy', 'menstrual', 'sti'];
 
 const TABS = [
-  { id: 'kb', label: 'Chat knowledge', admin: true },
-  { id: 'tr', label: 'Site text', admin: false },
-  { id: 'shop', label: 'Shop', admin: true },
-  { id: 'users', label: 'Staff', admin: true },
-  { id: 'donate', label: 'Donations', admin: true },
+  { id: 'kb', label: 'Chat knowledge', roles: ['admin'] },
+  { id: 'tr', label: 'Site text', roles: ['admin', 'editor'] },
+  { id: 'shop', label: 'Shop', roles: ['admin'] },
+  { id: 'counsel', label: 'Counselor inbox', roles: ['admin', 'counselor'] },
+  { id: 'users', label: 'Staff', roles: ['admin'] },
+  { id: 'donate', label: 'Donations', roles: ['admin'] },
 ];
 
 function Notice({ children }) {
@@ -376,7 +383,7 @@ function UsersPanel() {
   return (
     <div>
       <h2>Staff</h2>
-      <p className="admin-lead">They sign in with Google first. Then set role: editor (page text) or admin (everything).</p>
+      <p className="admin-lead">They sign in with Google first. Then set role: editor (page text), counselor (private inbox), or admin (everything).</p>
       <Notice>{msg}</Notice>
       <div className="admin-table-wrap">
         <table className="admin-table">
@@ -396,6 +403,7 @@ function UsersPanel() {
                   <select className="admin-input admin-select-sm" value={u.role} onChange={(e) => onRole(u.id, e.target.value)}>
                     <option value="user">Visitor</option>
                     <option value="editor">Editor</option>
+                    <option value="counselor">Counselor</option>
                     <option value="admin">Admin</option>
                   </select>
                 </td>
@@ -679,22 +687,173 @@ function DonationsPanel() {
   );
 }
 
+function CounselPanel() {
+  const [items, setItems] = useState([]);
+  const [status, setStatus] = useState('');
+  const [activeId, setActiveId] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [reply, setReply] = useState('');
+  const [msg, setMsg] = useState('');
+
+  const loadInbox = async () => {
+    try {
+      setItems(await listCounselInbox(status || undefined));
+    } catch (e) {
+      setMsg(e.response?.data?.detail || e.message);
+    }
+  };
+
+  const loadThread = async (id) => {
+    try {
+      setMessages(await getCounselMessages(id));
+    } catch (e) {
+      setMsg(e.response?.data?.detail || e.message);
+    }
+  };
+
+  useEffect(() => {
+    loadInbox();
+  }, [status]);
+
+  useEffect(() => {
+    if (!activeId) return undefined;
+    loadThread(activeId);
+    const tick = setInterval(() => loadThread(activeId), 8000);
+    return () => clearInterval(tick);
+  }, [activeId]);
+
+  const onReply = async (e) => {
+    e.preventDefault();
+    if (!activeId || !reply.trim()) return;
+    try {
+      await replyCounselSession(activeId, reply.trim());
+      setReply('');
+      await Promise.all([loadThread(activeId), loadInbox()]);
+    } catch (err) {
+      setMsg(err.response?.data?.detail || err.message);
+    }
+  };
+
+  const onClose = async () => {
+    if (!activeId) return;
+    try {
+      await closeCounselSession(activeId);
+      setActiveId(null);
+      setMessages([]);
+      loadInbox();
+    } catch (err) {
+      setMsg(err.response?.data?.detail || err.message);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Counselor inbox</h2>
+      <p className="admin-lead">
+        Private chats that asked for a counselor (500 RWF review). Reply here — the visitor sees it in their chat.
+      </p>
+      <Notice>{msg}</Notice>
+      <div className="admin-row" style={{ marginBottom: '1rem' }}>
+        <select className="admin-input" value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="">All</option>
+          <option value="waiting">Waiting</option>
+          <option value="open">In progress</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button type="button" className="admin-btn-ghost" onClick={loadInbox}>
+          Refresh
+        </button>
+      </div>
+      <div className="admin-split">
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Status</th>
+                <th>Last message</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.length === 0 && (
+                <tr>
+                  <td colSpan={3}>No escalated chats yet.</td>
+                </tr>
+              )}
+              {items.map((row) => (
+                <tr
+                  key={row.id}
+                  className={activeId === row.id ? 'is-active' : ''}
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => setActiveId(row.id)}
+                >
+                  <td>#{row.id}</td>
+                  <td>{row.escalation_status || '—'}</td>
+                  <td>{row.last_message || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="admin-card">
+          {!activeId ? (
+            <p className="admin-lead">Select a conversation.</p>
+          ) : (
+            <>
+              <h3>Chat #{activeId}</h3>
+              <div className="admin-list admin-list-tall" style={{ maxHeight: '320px', overflow: 'auto', marginBottom: '1rem' }}>
+                {messages.map((m) => (
+                  <p key={m.id} style={{ margin: '0.4rem 0' }}>
+                    <strong>{m.role}:</strong> {m.content}
+                  </p>
+                ))}
+              </div>
+              <form onSubmit={onReply}>
+                <Field label="Reply">
+                  <textarea
+                    className="admin-input admin-area"
+                    value={reply}
+                    onChange={(e) => setReply(e.target.value)}
+                    rows={4}
+                  />
+                </Field>
+                <div className="admin-actions">
+                  <button type="submit" className="admin-btn-primary">
+                    Send reply
+                  </button>
+                  <button type="button" className="admin-btn-ghost" onClick={onClose}>
+                    Close conversation
+                  </button>
+                </div>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
-  const { isAdmin } = useAuth();
-  const [tab, setTab] = useState(isAdmin ? 'kb' : 'tr');
-  const tabs = TABS.filter((t) => isAdmin || !t.admin);
+  const { isAdmin, isCounselor } = useAuth();
+  const role = isAdmin ? 'admin' : isCounselor ? 'counselor' : 'editor';
+  const [tab, setTab] = useState(isAdmin ? 'kb' : isCounselor ? 'counsel' : 'tr');
+  const tabs = TABS.filter((t) => t.roles.includes(role));
+  const title = isAdmin ? 'Admin dashboard' : isCounselor ? 'Counselor inbox' : 'Editor dashboard';
 
   return (
     <div className="admin-page">
       <header className="admin-header">
         <div>
           <p className="admin-kicker">IZERE Health Hub</p>
-          <h1>{isAdmin ? 'Admin dashboard' : 'Editor dashboard'}</h1>
+          <h1>{title}</h1>
         </div>
         <Link to="/" className="admin-back">← Back to site</Link>
       </header>
       <p className="admin-lead">
-        On public pages, click the pencil on any sentence. Admins also manage shop products and orders.
+        {isCounselor && !isAdmin
+          ? 'Reply to private chats that asked for a counselor. Chat stays anonymous.'
+          : 'On public pages, click the pencil on any sentence. Admins also manage shop products, orders, and the counselor inbox.'}
       </p>
       <div className="admin-tabs" role="tablist">
         {tabs.map((t) => (
@@ -712,8 +871,9 @@ export default function AdminDashboard() {
       </div>
       <div className="admin-body">
         {tab === 'kb' && isAdmin && <KnowledgePanel />}
-        {tab === 'tr' && <TranslationsPanel />}
+        {tab === 'tr' && !isCounselor && <TranslationsPanel />}
         {tab === 'shop' && isAdmin && <ShopPanel />}
+        {tab === 'counsel' && (isAdmin || isCounselor) && <CounselPanel />}
         {tab === 'users' && isAdmin && <UsersPanel />}
         {tab === 'donate' && isAdmin && <DonationsPanel />}
       </div>

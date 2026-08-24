@@ -21,7 +21,7 @@ export default function ProtectedRoute({ children, adminOnly = false, staffOnly 
     return <Navigate to="/" replace />;
   }
 
-  if (staffOnly && user.role !== 'admin' && user.role !== 'editor') {
+  if (staffOnly && user.role !== 'admin' && user.role !== 'editor' && user.role !== 'counselor') {
     return <Navigate to="/" replace />;
   }
 
