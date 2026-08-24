@@ -178,10 +178,32 @@ export default function ChatWidget({ compact = false, dark = false }) {
     } catch (error) {
       console.error('Error sending message:', error);
       const timedOut = error?.code === 'ECONNABORTED';
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: t(timedOut ? 'chat.timeout' : 'chat.error'), language },
-      ]);
+      let recovered = null;
+      if (timedOut && sessionId) {
+        try {
+          const rows = await getChatMessages(sessionId);
+          recovered = [...rows].reverse().find(
+            (m) => m.role === 'assistant' && m.content && !isWaitPlaceholder(m.content)
+          );
+        } catch {
+          recovered = null;
+        }
+      }
+      if (recovered?.content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: recovered.content,
+            language: recovered.language || language,
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: t(timedOut ? 'chat.timeout' : 'chat.error'), language },
+        ]);
+      }
     } finally {
       setIsLoading(false);
     }

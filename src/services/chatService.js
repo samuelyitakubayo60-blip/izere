@@ -16,7 +16,7 @@ export const getChatMessages = async (sessionId) => {
   return response.data;
 };
 
-const CHAT_TIMEOUT_MS = 240000;
+const CHAT_TIMEOUT_MS = 480000;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -29,7 +29,9 @@ export function isWaitPlaceholder(text) {
     value.includes('irimo kwandika') ||
     value.includes('writing your answer') ||
     value.includes('keep this chat open') ||
-    value.includes('ntuhagarike')
+    value.includes('ntuhagarike') ||
+    value.includes('iracyakora') ||
+    value.includes('still working')
   );
 }
 
@@ -44,28 +46,33 @@ function assistantAfterUser(rows, userText) {
   return null;
 }
 
+function toChatPayload(found, sessionId) {
+  return {
+    response: found.content,
+    language: found.language,
+    detected_language: found.language,
+    session_id: sessionId,
+    message_id: found.id,
+    needs_medical_attention: false,
+    model: null,
+    provider: 'kakugo-local',
+    grounded: true,
+    escalated: false,
+    pending: false,
+  };
+}
+
 export async function waitForAssistantReply(sessionId, userText) {
   const deadline = Date.now() + CHAT_TIMEOUT_MS;
   while (Date.now() < deadline) {
-    await sleep(2500);
+    await sleep(3000);
     const rows = await getChatMessages(sessionId);
     const found = assistantAfterUser(rows, userText);
-    if (found?.content) {
-      return {
-        response: found.content,
-        language: found.language,
-        detected_language: found.language,
-        session_id: sessionId,
-        message_id: found.id,
-        needs_medical_attention: false,
-        model: null,
-        provider: 'kakugo-local',
-        grounded: true,
-        escalated: false,
-        pending: false,
-      };
-    }
+    if (found?.content) return toChatPayload(found, sessionId);
   }
+  const lastRows = await getChatMessages(sessionId);
+  const lastFound = assistantAfterUser(lastRows, userText);
+  if (lastFound?.content) return toChatPayload(lastFound, sessionId);
   const err = new Error('timeout');
   err.code = 'ECONNABORTED';
   throw err;
