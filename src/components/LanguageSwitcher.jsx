@@ -4,7 +4,7 @@ export default function LanguageSwitcher({ className = '' }) {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className={`lang-switcher ${className}`} role="group" aria-label="Site language">
+    <div className={`lang-switcher lang-switcher ${className}`} role="group" aria-label="Site language">
       {[
         { code: 'en', label: 'EN' },
         { code: 'rw', label: 'RW' },

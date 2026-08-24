@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
@@ -8,6 +7,7 @@ import Icon from './Icon';
 import T from './T';
 import { useCart } from '../contexts/CartContext';
 import logo from '../assets/logo.png';
+import { useState } from 'react';
 
 const NAV_LINKS = [
   { to: '/', key: 'home', end: true },
@@ -25,11 +25,8 @@ export default function Navigation() {
   const { isAdmin, canEditSite, logout, user } = useAuth();
   const { count } = useCart();
   const { openChat } = useChatUI();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [largeText, setLargeText] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
-
-  const closeMobile = () => setMobileOpen(false);
 
   const toggleA11y = (mode) => {
     if (mode === 'contrast') {
@@ -52,77 +49,56 @@ export default function Navigation() {
       <nav className="navbar" aria-label="Main navigation">
         <div className="container">
           <div className="navbar-top">
-            <Link to="/" className="navbar-brand" onClick={closeMobile}>
-              <img src={logo} alt="" className="navbar-brand-logo" />
+            <Link to="/" className="navbar-brand">
+              <img src={logo} alt="IZERE" className="navbar-brand-logo" />
               <T k="nav.siteTitle" />
             </Link>
+
             <div className="navbar-top-actions">
-              <button type="button" className="a11y-btn hidden lg:inline-flex" onClick={() => toggleA11y('contrast')}>
+              <button
+                type="button"
+                className={`a11y-btn${highContrast ? ' is-on' : ''}`}
+                onClick={() => toggleA11y('contrast')}
+              >
                 <Icon name="adjust" /> {t('nav.contrast')}
               </button>
-              <button type="button" className="a11y-btn hidden lg:inline-flex" onClick={() => toggleA11y('text')}>
+              <button
+                type="button"
+                className={`a11y-btn${largeText ? ' is-on' : ''}`}
+                onClick={() => toggleA11y('text')}
+              >
                 <Icon name="text-height" /> {t('nav.largeText')}
               </button>
-              {!user && (
-                <Link to="/login" className="nav-link hidden sm:inline text-sm">
+              {!user ? (
+                <Link to="/login" className="a11y-btn navbar-auth">
                   {t('nav.staffLogin')}
                 </Link>
-              )}
-              {user && (
-                <button type="button" onClick={logout} className="nav-link hidden sm:inline text-sm bg-transparent border-0 cursor-pointer">
+              ) : (
+                <button type="button" onClick={logout} className="a11y-btn navbar-auth">
                   {t('nav.signOut')}
                 </button>
               )}
               <LanguageSwitcher />
-              <button type="button" className="btn-nav-cta hidden md:inline-flex items-center gap-2 border-0 cursor-pointer" onClick={openChat}>
+              <button type="button" className="btn-nav-cta border-0 cursor-pointer" onClick={openChat}>
                 <Icon name="comments" /> {t('nav.chatNow')}
-              </button>
-              <button
-                type="button"
-                className="lg:hidden a11y-btn"
-                onClick={() => setMobileOpen((o) => !o)}
-                aria-expanded={mobileOpen}
-                aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
-              >
-                <Icon name={mobileOpen ? 'times' : 'bars'} />
               </button>
             </div>
           </div>
 
-          <div className="navbar-menu hidden lg:flex">
+          <div className="navbar-menu">
             {NAV_LINKS.map(({ to, key, end }) => (
-              <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
+              <NavLink key={key} to={to} end={end} className={navClass}>
                 <T k={`nav.${key}`} />
                 {key === 'shop' && count > 0 ? ` (${count})` : ''}
               </NavLink>
             ))}
             {canEditSite && (
-              <NavLink to="/admin" className={navClass} onClick={closeMobile}>
+              <NavLink to="/admin" className={navClass}>
                 <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
               </NavLink>
             )}
           </div>
         </div>
-
-        {mobileOpen && (
-          <div className="lg:hidden mobile-nav-panel px-4 py-4">
-            <div className="container flex flex-col gap-1">
-              {NAV_LINKS.map(({ to, key, end }) => (
-                <NavLink key={key} to={to} end={end} className={navClass} onClick={closeMobile}>
-                  <T k={`nav.${key}`} />
-                </NavLink>
-              ))}
-              {canEditSite && (
-                <NavLink to="/admin" className={navClass} onClick={closeMobile}>
-                  <T k={isAdmin ? 'nav.admin' : 'nav.dashboard'} />
-                </NavLink>
-              )}
-              <button type="button" className="btn-nav-cta mt-2 border-0 cursor-pointer justify-center" onClick={() => { openChat(); closeMobile(); }}>
-                <Icon name="comments" /> {t('nav.chatNow')}
-              </button>
-            </div>
-          </div>
-        )}
       </nav>
     </div>
   );
