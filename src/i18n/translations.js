@@ -4,6 +4,7 @@ export const translations = {
   en: {
     nav: {
       home: 'Home',
+      services: 'Services',
       chat: 'Chat',
       contraception: 'Contraception',
       pregnancy: 'Pregnancy',
@@ -24,6 +25,8 @@ export const translations = {
       staffLogin: 'Staff sign in',
       siteTitle: 'IZERE Health Hub',
       counselInbox: 'Counselor inbox',
+      openMenu: 'Open menu',
+      closeMenu: 'Close menu',
     },
     editMode: {
       banner: 'Edit mode: click highlighted text to change English and Kinyarwanda.',
@@ -506,6 +509,7 @@ export const translations = {
   rw: {
     nav: {
       home: 'Ahabanza',
+      services: 'Serivisi',
       chat: 'Ikiganiro',
       contraception: 'Kuboneza urubyaro',
       pregnancy: 'Gutwita',
@@ -526,6 +530,8 @@ export const translations = {
       staffLogin: 'Abakozi',
       siteTitle: 'IZERE Health Hub',
       counselInbox: 'Ibiganiro by’abahanga',
+      openMenu: 'Fungura menu',
+      closeMenu: 'Funga menu',
     },
     editMode: {
       banner: 'Uburyo bwo guhindura: kanda inyandiko iri mu ruziga uhindure Icyongereza n’Ikinyarwanda.',
