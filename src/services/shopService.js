@@ -35,6 +35,20 @@ export const adminUpdateShopProduct = async (id, payload) => {
   return data;
 };
 
+export const adminUploadShopProductImage = async (id, file) => {
+  const body = new FormData();
+  body.append('file', file);
+  const { data } = await api.post(`/api/shop/admin/products/${id}/image`, body, {
+    timeout: 60000,
+  });
+  return data;
+};
+
+export const adminDeleteShopProduct = async (id) => {
+  const { data } = await api.delete(`/api/shop/admin/products/${id}`);
+  return data;
+};
+
 export const adminListShopOrders = async () => {
   const { data } = await api.get('/api/shop/admin/orders');
   return data;

@@ -18,10 +18,12 @@ import {
 } from '../../services/adminService';
 import {
   adminCreateShopProduct,
+  adminDeleteShopProduct,
   adminListShopOrders,
   adminListShopProducts,
   adminUpdateShopOrder,
   adminUpdateShopProduct,
+  adminUploadShopProductImage,
 } from '../../services/shopService';
 import {
   closeCounselSession,
@@ -433,7 +435,10 @@ const EMPTY_PRODUCT = {
 function ShopPanel() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [editId, setEditId] = useState(null);
   const [form, setForm] = useState(EMPTY_PRODUCT);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
   const [msg, setMsg] = useState('');
 
   const load = async () => {
@@ -450,29 +455,101 @@ function ShopPanel() {
     load();
   }, []);
 
-  const onAdd = async (e) => {
+  const reset = () => {
+    setEditId(null);
+    setForm(EMPTY_PRODUCT);
+    setImageFile(null);
+    setImagePreview('');
+  };
+
+  const onEdit = (row) => {
+    setEditId(row.id);
+    setForm({
+      category: row.category || 'hygiene',
+      name_en: row.name_en || '',
+      name_rw: row.name_rw || '',
+      description_en: row.description_en || '',
+      description_rw: row.description_rw || '',
+      price_rwf: row.price_rwf || 0,
+      unit_en: row.unit_en || 'pack',
+      unit_rw: row.unit_rw || '',
+      image_url: row.image_url || '',
+      in_stock: row.in_stock !== false,
+      published: row.published !== false,
+    });
+    setImageFile(null);
+    setImagePreview(row.image_url || '');
+  };
+
+  const onPickImage = (file) => {
+    setImageFile(file || null);
+    if (file) setImagePreview(URL.createObjectURL(file));
+    else setImagePreview(form.image_url || '');
+  };
+
+  const saveFields = async () => {
+    const payload = {
+      category: form.category,
+      name_en: form.name_en,
+      name_rw: form.name_rw || null,
+      description_en: form.description_en || null,
+      description_rw: form.description_rw || null,
+      price_rwf: Number(form.price_rwf) || 0,
+      unit_en: form.unit_en || 'pack',
+      unit_rw: form.unit_rw || null,
+      in_stock: form.in_stock,
+      published: form.published,
+    };
+    if (editId) {
+      return adminUpdateShopProduct(editId, payload);
+    }
+    return adminCreateShopProduct(payload);
+  };
+
+  const onSave = async (e) => {
     e.preventDefault();
     try {
-      await adminCreateShopProduct({
-        ...form,
-        price_rwf: Number(form.price_rwf) || 0,
-        image_url: form.image_url || null,
-        name_rw: form.name_rw || null,
-        description_en: form.description_en || null,
-        description_rw: form.description_rw || null,
-        unit_rw: form.unit_rw || null,
-      });
-      setForm(EMPTY_PRODUCT);
-      setMsg('Product added. It appears in the Shop for visitors.');
+      let product = await saveFields();
+      if (imageFile) {
+        product = await adminUploadShopProductImage(product.id, imageFile);
+      }
+      setMsg(editId ? 'Product updated.' : 'Product added. It appears in the Shop for visitors.');
+      reset();
+      if (product?.image_url) {
+        /* list refresh shows the Cloudinary URL */
+      }
       load();
     } catch (err) {
       setMsg(err.response?.data?.detail || err.message);
     }
   };
 
-  const onPatch = async (id, payload) => {
+  const onDelete = async () => {
+    if (!editId) return;
+    if (!window.confirm('Remove this product from the shop? Past orders keep their line items.')) return;
     try {
-      await adminUpdateShopProduct(id, payload);
+      await adminDeleteShopProduct(editId);
+      setMsg('Product removed.');
+      reset();
+      load();
+    } catch (err) {
+      setMsg(err.response?.data?.detail || err.message);
+    }
+  };
+
+  const onClearImage = async () => {
+    if (!editId) {
+      onPickImage(null);
+      setForm({ ...form, image_url: '' });
+      setImagePreview('');
+      return;
+    }
+    try {
+      await adminUpdateShopProduct(editId, { image_url: null });
+      setForm({ ...form, image_url: '' });
+      setImageFile(null);
+      setImagePreview('');
+      setMsg('Image removed.');
       load();
     } catch (err) {
       setMsg(err.response?.data?.detail || err.message);
@@ -483,81 +560,92 @@ function ShopPanel() {
     <div>
       <h2>Shop</h2>
       <p className="admin-lead">
-        Only an <strong>admin</strong> can add or edit products. Editors cannot. Visitors only buy from the Shop page.
+        Add, edit, or remove products (name, price, description, photo). Photos are stored on Cloudinary.
+        Only an <strong>admin</strong> can change the catalogue.
       </p>
       <Notice>{msg}</Notice>
-      <form onSubmit={onAdd} className="admin-card" style={{ marginBottom: '1.25rem' }}>
-        <h3>Add a product</h3>
-        <div className="admin-row">
-          <Field label="English name">
-            <input className="admin-input" required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} />
-          </Field>
-          <Field label="Kinyarwanda name">
-            <input className="admin-input" value={form.name_rw} onChange={(e) => setForm({ ...form, name_rw: e.target.value })} />
-          </Field>
-        </div>
-        <div className="admin-row">
-          <Field label="Type">
-            <select className="admin-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-              <option value="menstrual">Pads</option>
-              <option value="prevention">Condoms</option>
-              <option value="testing">Test kits</option>
-              <option value="mama">Mama kits</option>
-              <option value="hygiene">Hygiene</option>
-            </select>
-          </Field>
-          <Field label="Price (RWF)">
-            <input className="admin-input" type="number" min="0" value={form.price_rwf} onChange={(e) => setForm({ ...form, price_rwf: e.target.value })} />
-          </Field>
-          <Field label="Unit">
-            <input className="admin-input" value={form.unit_en} onChange={(e) => setForm({ ...form, unit_en: e.target.value })} />
-          </Field>
-        </div>
-        <Field label="Image URL (optional — e.g. /shop/pads.svg or a photo link)">
-          <input className="admin-input" value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} />
-        </Field>
-        <Field label="English description">
-          <textarea className="admin-input admin-area" value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} />
-        </Field>
-        <div className="admin-actions">
-          <button type="submit" className="admin-btn-primary">Add product</button>
-        </div>
-      </form>
-
-      <div className="admin-table-wrap">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Type</th>
-              <th>Price</th>
-              <th>Stock</th>
-              <th>Live</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="admin-split">
+        <div>
+          <ul className="admin-list">
             {products.map((p) => (
-              <tr key={p.id}>
-                <td>{p.name_en}</td>
-                <td>{p.category}</td>
-                <td>
-                  <input
-                    className="admin-input admin-select-sm"
-                    type="number"
-                    defaultValue={p.price_rwf}
-                    onBlur={(e) => onPatch(p.id, { price_rwf: Number(e.target.value) })}
-                  />
-                </td>
-                <td>
-                  <input type="checkbox" checked={p.in_stock} onChange={(e) => onPatch(p.id, { in_stock: e.target.checked })} />
-                </td>
-                <td>
-                  <input type="checkbox" checked={p.published} onChange={(e) => onPatch(p.id, { published: e.target.checked })} />
-                </td>
-              </tr>
+              <li key={p.id}>
+                <button type="button" className={editId === p.id ? 'is-active' : ''} onClick={() => onEdit(p)}>
+                  {p.image_url ? <img className="admin-product-thumb" src={p.image_url} alt="" /> : null}
+                  <strong>{p.name_en}</strong>
+                  <span>
+                    {p.category} · {p.price_rwf} RWF
+                    {p.published ? '' : ' · hidden'}
+                  </span>
+                </button>
+              </li>
             ))}
-          </tbody>
-        </table>
+          </ul>
+        </div>
+        <form onSubmit={onSave} className="admin-card">
+          <h3>{editId ? 'Edit product' : 'Add a product'}</h3>
+          <div className="admin-row">
+            <Field label="English name">
+              <input className="admin-input" required value={form.name_en} onChange={(e) => setForm({ ...form, name_en: e.target.value })} />
+            </Field>
+            <Field label="Kinyarwanda name">
+              <input className="admin-input" value={form.name_rw} onChange={(e) => setForm({ ...form, name_rw: e.target.value })} />
+            </Field>
+          </div>
+          <div className="admin-row">
+            <Field label="Type">
+              <select className="admin-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                <option value="menstrual">Pads</option>
+                <option value="prevention">Condoms</option>
+                <option value="testing">Test kits</option>
+                <option value="mama">Mama kits</option>
+                <option value="hygiene">Hygiene</option>
+              </select>
+            </Field>
+            <Field label="Price (RWF)">
+              <input className="admin-input" type="number" min="0" value={form.price_rwf} onChange={(e) => setForm({ ...form, price_rwf: e.target.value })} />
+            </Field>
+            <Field label="Unit">
+              <input className="admin-input" value={form.unit_en} onChange={(e) => setForm({ ...form, unit_en: e.target.value })} />
+            </Field>
+          </div>
+          <Field label="Product photo">
+            <input
+              className="admin-input"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={(e) => onPickImage(e.target.files?.[0])}
+            />
+          </Field>
+          {imagePreview ? (
+            <div className="admin-product-preview">
+              <img src={imagePreview} alt="Product preview" />
+              <button type="button" className="admin-btn-ghost" onClick={onClearImage}>Remove photo</button>
+            </div>
+          ) : null}
+          <Field label="English description">
+            <textarea className="admin-input admin-area" value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} />
+          </Field>
+          <Field label="Kinyarwanda description">
+            <textarea className="admin-input admin-area" value={form.description_rw} onChange={(e) => setForm({ ...form, description_rw: e.target.value })} />
+          </Field>
+          <label className="admin-check">
+            <input type="checkbox" checked={form.in_stock} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} />
+            In stock
+          </label>
+          <label className="admin-check">
+            <input type="checkbox" checked={form.published} onChange={(e) => setForm({ ...form, published: e.target.checked })} />
+            Live on shop
+          </label>
+          <div className="admin-actions">
+            <button type="submit" className="admin-btn-primary">{editId ? 'Update product' : 'Add product'}</button>
+            {editId && (
+              <>
+                <button type="button" className="admin-btn-ghost" onClick={reset}>New product</button>
+                <button type="button" className="admin-btn-danger" onClick={onDelete}>Delete product</button>
+              </>
+            )}
+          </div>
+        </form>
       </div>
 
       <h3 style={{ marginTop: '1.5rem' }}>Orders</h3>
@@ -750,7 +838,7 @@ function CounselPanel() {
     <div>
       <h2>Counselor inbox</h2>
       <p className="admin-lead">
-        Private chats that asked for a counselor (500 RWF review). Reply here — the visitor sees it in their chat.
+        Private chats that asked for a counselor. Reply here — the visitor sees it in their chat. This is free.
       </p>
       <Notice>{msg}</Notice>
       <div className="admin-row" style={{ marginBottom: '1rem' }}>

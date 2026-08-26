@@ -1349,6 +1349,28 @@ body {
   padding: 0.55rem 1.1rem;
   cursor: pointer;
 }
+.admin-product-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+  margin-bottom: 0.35rem;
+  background: #fff;
+}
+.admin-product-preview {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0.85rem;
+}
+.admin-product-preview img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 10px;
+  background: #fff;
+}
 .admin-notice {
   background: rgba(26,160,120,0.12);
   border: 1px solid rgba(26,160,120,0.3);
