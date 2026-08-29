@@ -45,11 +45,6 @@ export default function About() {
         }}
       >
         <div className="container">
-          <div className="breadcrumb-custom">
-            <Link to="/"><T k="nav.home" /></Link>
-            <Icon name="chevron-right" style={{ fontSize: '0.7rem' }} />
-            <span><T k="nav.about" /></span>
-          </div>
           <span className="section-label"><T k="about.storyLabel" /></span>
           <h1 className="hero-title">
             <T k="about.title" /> <span className="gradient-text">IZERE <T k="home.brandAccent" /></span>
@@ -155,49 +150,8 @@ export default function About() {
 
       <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="contact">
         <div className="container">
-          <div className="text-center mb-5 fade-in">
-            <span className="section-label"><T k="about.contactLabel" /></span>
-            <h2 className="section-title">
-              <T k="about.contactHeading" /> <span className="gradient-text"><T k="about.contactAccent" /></span>
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4 fade-in">
-            <div className="glass-card text-center h-full">
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📞</div>
-              <h5 style={{ fontWeight: 700 }}><T k="about.contactHotline" /></h5>
-              <a href="tel:114" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', textDecoration: 'none', display: 'block' }}>
-                114
-              </a>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                <T k="about.contactHotlineSub" />
-              </p>
-            </div>
-            <div className="glass-card text-center h-full">
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>🚨</div>
-              <h5 style={{ fontWeight: 700 }}><T k="about.contactEmergency" /></h5>
-              <a href="tel:912" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none', display: 'block' }}>
-                912
-              </a>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                <T k="about.contactEmergencySub" />
-              </p>
-            </div>
-            <div className="glass-card text-center h-full">
-              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📧</div>
-              <h5 style={{ fontWeight: 700 }}><T k="about.contactEmail" /></h5>
-              <a
-                href="mailto:izerehealth@gmail.com"
-                style={{ color: 'var(--info)', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', display: 'block', marginTop: '0.75rem' }}
-              >
-                izerehealth@gmail.com
-              </a>
-              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
-                <T k="about.contactEmailSub" />
-              </p>
-            </div>
-          </div>
           <div
-            className="glass-card mt-4 fade-in text-center"
+            className="glass-card fade-in text-center"
             style={{
               background: 'linear-gradient(135deg,rgba(26,160,120,0.08),rgba(130,60,200,0.08))',
               borderColor: 'rgba(26,160,120,0.2)',

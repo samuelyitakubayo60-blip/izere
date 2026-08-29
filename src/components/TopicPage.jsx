@@ -24,13 +24,6 @@ export default function TopicPage({ topicKey }) {
     <div ref={fadeRef}>
       <section className="page-hero" style={{ background: page.heroStyle }}>
         <div className="container">
-          <div className="breadcrumb-custom">
-            <Link to="/"><T k="nav.home" /></Link>
-            <Icon name="chevron-right" style={{ fontSize: '0.7rem' }} />
-            <span>
-              <T k={page.titleAccent} /> <T k={page.titleRest} />
-            </span>
-          </div>
           <span className="section-label" style={page.labelStyle}>
             <T k={page.label} />
           </span>

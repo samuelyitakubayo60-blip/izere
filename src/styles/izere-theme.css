@@ -89,7 +89,7 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  padding: 0.45rem 0;
+  padding: 0.25rem 0;
   transition: var(--transition);
 }
 .navbar-main {
@@ -351,7 +351,7 @@ body.nav-mobile-open { overflow: hidden; }
               var(--bg-dark);
   display: flex;
   align-items: center;
-  padding: 2rem 0 1.5rem;
+  padding: 1rem 0 1rem;
   position: relative;
   overflow: hidden;
   width: 100%;
@@ -504,7 +504,7 @@ body.nav-mobile-open { overflow: hidden; }
 @keyframes typing { 0%,60%,100%{opacity:0.3;transform:translateY(0)} 30%{opacity:1;transform:translateY(-4px)} }
 
 /* ===== SECTION COMMON ===== */
-.section { padding: 2.25rem 0; width: 100%; }
+.section { padding: 1.5rem 0; width: 100%; }
 .section-label {
   display: inline-block;
   background: rgba(26,160,120,0.12);

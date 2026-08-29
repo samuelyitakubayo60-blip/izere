@@ -115,9 +115,6 @@ export default function Navigation() {
       <button type="button" className="nav-dropdown-item nav-dropdown-btn" onClick={() => toggleA11y('text')}>
         <Icon name="text-height" /> <T k="nav.largeText" />
       </button>
-      <NavLink to="/#accessibility" className="nav-dropdown-item" role="menuitem">
-        <Icon name="universal-access" /> <T k="nav.accessibility" />
-      </NavLink>
     </>
   );
 
@@ -160,6 +157,9 @@ export default function Navigation() {
       </NavLink>
       <NavLink to="/about" className={navClass}>
         <T k="nav.about" />
+      </NavLink>
+      <NavLink to="/contact" className={navClass}>
+        <T k="nav.contact" />
       </NavLink>
       <NavLink to="/donate" className="btn-nav-donate">
         <T k="nav.donate" />
@@ -255,6 +255,9 @@ export default function Navigation() {
             </NavLink>
             <NavLink to="/about" className={navClass}>
               <T k="nav.about" />
+            </NavLink>
+            <NavLink to="/contact" className={navClass}>
+              <T k="nav.contact" />
             </NavLink>
             <NavLink to="/donate" className="btn-nav-donate">
               <T k="nav.donate" />
