@@ -16,14 +16,6 @@ const SERVICE_LINKS = [
   { to: '/sti', key: 'sti' },
 ];
 
-const ABOUT_LINKS = [
-  { to: '/about', key: 'aboutIzere' },
-  { to: '/about#mission', key: 'aboutMission' },
-  { to: '/about#vision', key: 'aboutVision' },
-  { to: '/about#partners', key: 'aboutPartners' },
-  { to: '/about#contact', key: 'aboutContact' },
-];
-
 const REPRODUCTIVE_HEALTH_LINKS = [
   { to: '/contraception', key: 'contraception' },
   { to: '/pregnancy', key: 'pregnancy' },
@@ -109,7 +101,6 @@ export default function Navigation() {
 
   const navClass = ({ isActive }) => `nav-link${isActive ? ' nav-link-active' : ''}`;
   const servicesActive = SERVICE_LINKS.some((s) => location.pathname === s.to);
-  const aboutActive = location.pathname === '/about';
   const dashboardKey = isAdmin ? 'nav.admin' : isCounselor ? 'nav.counselInbox' : 'nav.dashboard';
 
   const settingsMenu = (
@@ -167,13 +158,9 @@ export default function Navigation() {
         <T k="nav.shop" />
         {count > 0 ? ` (${count})` : ''}
       </NavLink>
-      <Dropdown id="nav-about" label={<T k="nav.about" />} active={aboutActive}>
-        {ABOUT_LINKS.map(({ to, key }) => (
-          <NavLink key={key} to={to} className="nav-dropdown-item" role="menuitem">
-            <T k={`nav.${key}`} />
-          </NavLink>
-        ))}
-      </Dropdown>
+      <NavLink to="/about" className={navClass}>
+        <T k="nav.about" />
+      </NavLink>
       <NavLink to="/donate" className="btn-nav-donate">
         <T k="nav.donate" />
       </NavLink>
@@ -266,14 +253,9 @@ export default function Navigation() {
               <T k="nav.shop" />
               {count > 0 ? ` (${count})` : ''}
             </NavLink>
-            <p className="navbar-mobile-label">
+            <NavLink to="/about" className={navClass}>
               <T k="nav.about" />
-            </p>
-            {ABOUT_LINKS.map(({ to, key }) => (
-              <NavLink key={key} to={to} className="nav-link navbar-mobile-sub">
-                <T k={`nav.${key}`} />
-              </NavLink>
-            ))}
+            </NavLink>
             <NavLink to="/donate" className="btn-nav-donate">
               <T k="nav.donate" />
             </NavLink>
