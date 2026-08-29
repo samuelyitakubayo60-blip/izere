@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useChatUI } from './FloatingChat';
 import { fetchGoogleConfig } from '../services/authService';
+import { trackEvent } from '../utils/analytics';
 
 const GSI_SRC = 'https://accounts.google.com/gsi/client';
 
@@ -58,6 +59,9 @@ const Login = () => {
             if (!result.success) {
               setError(result.error || t('login.authError'));
               return;
+            }
+            if (['admin', 'editor', 'counselor'].includes(result.user?.role)) {
+              trackEvent('staff_login', { role: result.user.role });
             }
             if (result.user?.role === 'admin') {
               navigate('/admin', { replace: true });

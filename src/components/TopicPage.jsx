@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from './Icon';
 import TopicSectionRenderer from './TopicSectionRenderer';
 import { useChatUI } from './FloatingChat';
 import T from './T';
 import { getTopicPage } from '../content';
+import { trackEvent } from '../utils/analytics';
 
 const TOPIC_PATHS = {
   pregnancy: '/pregnancy',
@@ -17,6 +18,15 @@ export default function TopicPage({ topicKey }) {
   const { openChat } = useChatUI();
   const page = getTopicPage(topicKey);
   const fadeRef = useFadeIn([topicKey]);
+
+  useEffect(() => {
+    if (page) {
+      trackEvent('article_viewed', {
+        article_id: topicKey,
+        article_title: page.titleRest || topicKey,
+      });
+    }
+  }, [topicKey, page]);
 
   if (!page) return null;
 

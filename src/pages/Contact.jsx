@@ -4,6 +4,7 @@ import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from '../components/Icon';
 import T from '../components/T';
 import { submitContactForm } from '../services/contactService';
+import { trackEvent } from '../utils/analytics';
 
 export default function Contact() {
   const { t } = useLanguage();
@@ -236,8 +237,9 @@ export default function Contact() {
                       <h5 style={{ fontWeight: 700, margin: 0 }}>
                         <T k="contactPage.whatsapp" />
                       </h5>
-                      <a
+                       <a
                         href="https://wa.me/250798686657"
+                        onClick={() => trackEvent('referral_clicked', { type: 'whatsapp', destination: 'whatsapp_support' })}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
@@ -253,6 +255,7 @@ export default function Contact() {
                       </a>
                       <a
                         href="tel:+250798686657"
+                        onClick={() => trackEvent('referral_clicked', { type: 'phone', destination: 'phone_support' })}
                         style={{
                           fontSize: '0.9rem',
                           color: 'var(--text-muted)',
@@ -286,6 +289,7 @@ export default function Contact() {
                       </h5>
                       <a
                         href="mailto:izerehealth@gmail.com"
+                        onClick={() => trackEvent('referral_clicked', { type: 'email', destination: 'email_support' })}
                         style={{
                           fontSize: '1.1rem',
                           fontWeight: 600,

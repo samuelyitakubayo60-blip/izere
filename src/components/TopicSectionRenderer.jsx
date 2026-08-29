@@ -1,5 +1,6 @@
 import Icon from './Icon';
 import T from './T';
+import { trackEvent } from '../utils/analytics';
 
 function InfoCard({ block }) {
   const variant = block.variant || 'primary';
@@ -205,11 +206,19 @@ export default function TopicSectionRenderer({ section }) {
             <Icon name="phone-alt" className="me-2" />
             <T k="topicPage.emergencyRwanda" />
           </p>
-          <a href="tel:912" style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none' }}>
+          <a
+            href="tel:912"
+            onClick={() => trackEvent('referral_clicked', { type: 'phone', destination: '912' })}
+            style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--danger)', textDecoration: 'none' }}
+          >
             912
           </a>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}><T k="topicPage.emergency" /></span>
-          <a href="tel:114" style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none', display: 'block', marginTop: '0.5rem' }}>
+          <a
+            href="tel:114"
+            onClick={() => trackEvent('referral_clicked', { type: 'phone', destination: '114' })}
+            style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary)', textDecoration: 'none', display: 'block', marginTop: '0.5rem' }}
+          >
             114
           </a>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', display: 'block' }}><T k="topicPage.healthHotline" /></span>

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import ChatWidget from './ChatWidget';
 import { useLanguage } from '../contexts/LanguageContext';
+import { trackEvent } from '../utils/analytics';
 import Icon from './Icon';
 
 const ChatUIContext = createContext(null);
@@ -11,9 +12,20 @@ export function ChatUIProvider({ children }) {
   const location = useLocation();
   const { t } = useLanguage();
 
-  const openChat = useCallback(() => setIsOpen(true), []);
+  const openChat = useCallback(() => {
+    setIsOpen(true);
+    trackEvent('chatbot_opened', { source: 'fab' });
+  }, []);
   const closeChat = useCallback(() => setIsOpen(false), []);
-  const toggleChat = useCallback(() => setIsOpen((o) => !o), []);
+  const toggleChat = useCallback(() => {
+    setIsOpen((o) => {
+      const next = !o;
+      if (next) {
+        trackEvent('chatbot_opened', { source: 'fab' });
+      }
+      return next;
+    });
+  }, []);
 
   const hideFab = location.pathname === '/chat';
 

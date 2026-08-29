@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { sendMessage, escalateChat, getChatMessages, getChatSession, isWaitPlaceholder } from '../services/chatService';
 import { transcribeAudio, synthesizeSpeech } from '../services/voiceService';
 import { useLanguage } from '../contexts/LanguageContext';
+import { trackEvent } from '../utils/analytics';
 import {
   speakWithBrowser,
   pauseBrowserSpeech,
@@ -214,6 +215,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
     if (!input.trim()) return;
     const text = input.trim();
     setInput('');
+    trackEvent('question_asked', { input_type: 'text', language });
     await submitText(text);
   };
 
@@ -247,6 +249,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
       const { text } = await transcribeAudio(blob, language);
       if (text?.trim()) {
         setInput(text);
+        trackEvent('question_asked', { input_type: 'voice', language });
         await submitText(text);
       } else {
         setVoiceError(t('chat.voiceNoText'));
@@ -376,6 +379,7 @@ export default function ChatWidget({ compact = false, dark = false }) {
     if (!sessionId || escalated || escalating) return;
     setEscalating(true);
     setVoiceError('');
+    trackEvent('counselor_contacted');
     try {
       const response = await escalateChat(sessionId);
       setEscalated(true);

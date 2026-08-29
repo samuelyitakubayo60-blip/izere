@@ -1,11 +1,19 @@
+import { useEffect } from 'react';
 import ChatWidget from '../components/ChatWidget';
+import { trackEvent } from '../utils/analytics';
 
-const Chat = () => (
+const Chat = () => {
+  useEffect(() => {
+    trackEvent('chatbot_opened', { source: 'page' });
+  }, []);
+
+  return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-pink-50 pb-24">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <ChatWidget />
       </div>
     </div>
-);
+  );
+};
 
 export default Chat;
