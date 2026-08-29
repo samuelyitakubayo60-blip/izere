@@ -68,7 +68,7 @@ export default function About() {
               </h3>
               <p style={{ color: 'var(--text-muted)' }}><T k="about.missionText" /></p>
             </div>
-            <div className="glass-card h-full" style={{ borderTop: '3px solid var(--accent)' }}>
+            <div className="glass-card h-full" style={{ borderTop: '3px solid var(--accent)' }} id="vision">
               <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🌟</div>
               <h3 style={{ fontFamily: 'var(--font-head)', fontWeight: 800, marginBottom: '1rem' }}>
                 <T k="about.visionTitle" />

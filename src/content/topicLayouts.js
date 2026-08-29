@@ -28,38 +28,7 @@ export const topicLayouts = {
         "text": "topic.contraception.badges.2.text"
       }
     ],
-    "nav": [
-      {
-        "id": "condoms",
-        "icon": "shield-alt",
-        "label": "topic.contraception.nav.condoms.label"
-      },
-      {
-        "id": "pills",
-        "icon": "pills",
-        "label": "topic.contraception.nav.pills.label"
-      },
-      {
-        "id": "injectables",
-        "icon": "syringe",
-        "label": "topic.contraception.nav.injectables.label"
-      },
-      {
-        "id": "implants",
-        "icon": "hand-holding-medical",
-        "label": "topic.contraception.nav.implants.label"
-      },
-      {
-        "id": "iud",
-        "icon": "circle-notch",
-        "label": "topic.contraception.nav.iud.label"
-      },
-      {
-        "id": "emergency",
-        "icon": "bolt",
-        "label": "topic.contraception.nav.emergency.label"
-      }
-    ],
+
     "remember": "topic.contraception.remember",
     "sections": [
       {
@@ -207,33 +176,7 @@ export const topicLayouts = {
     "titleAccent": "topic.pregnancy.titleAccent",
     "titleRest": "topic.pregnancy.titleRest",
     "description": "topic.pregnancy.description",
-    "nav": [
-      {
-        "id": "signs",
-        "icon": "search",
-        "label": "topic.pregnancy.nav.signs.label"
-      },
-      {
-        "id": "confirm",
-        "icon": "check-circle",
-        "label": "topic.pregnancy.nav.confirm.label"
-      },
-      {
-        "id": "stages",
-        "icon": "calendar-alt",
-        "label": "topic.pregnancy.nav.stages.label"
-      },
-      {
-        "id": "antenatal",
-        "icon": "hospital",
-        "label": "topic.pregnancy.nav.antenatal.label"
-      },
-      {
-        "id": "danger",
-        "icon": "exclamation-triangle",
-        "label": "topic.pregnancy.nav.danger.label"
-      }
-    ],
+
     "remember": "topic.pregnancy.remember",
     "sections": [
       {
@@ -418,38 +361,7 @@ export const topicLayouts = {
     "titleAccent": "topic.menstrual.titleAccent",
     "titleRest": "topic.menstrual.titleRest",
     "description": "topic.menstrual.description",
-    "nav": [
-      {
-        "id": "what",
-        "icon": "tint",
-        "label": "topic.menstrual.nav.what.label"
-      },
-      {
-        "id": "phases",
-        "icon": "sync-alt",
-        "label": "topic.menstrual.nav.phases.label"
-      },
-      {
-        "id": "pms",
-        "icon": "comment-dots",
-        "label": "topic.menstrual.nav.pms.label"
-      },
-      {
-        "id": "tracking",
-        "icon": "mobile-alt",
-        "label": "topic.menstrual.nav.tracking.label"
-      },
-      {
-        "id": "hygiene",
-        "icon": "soap",
-        "label": "topic.menstrual.nav.hygiene.label"
-      },
-      {
-        "id": "problems",
-        "icon": "stethoscope",
-        "label": "topic.menstrual.nav.problems.label"
-      }
-    ],
+
     "remember": "topic.menstrual.remember",
     "sections": [
       {
@@ -674,33 +586,6 @@ export const topicLayouts = {
         "icon": "lock",
         "color": "var(--accent)",
         "text": "topic.sti.badges.2.text"
-      }
-    ],
-    "nav": [
-      {
-        "id": "what",
-        "icon": "virus",
-        "label": "topic.sti.nav.what.label"
-      },
-      {
-        "id": "common",
-        "icon": "list-alt",
-        "label": "topic.sti.nav.common.label"
-      },
-      {
-        "id": "symptoms",
-        "icon": "search",
-        "label": "topic.sti.nav.symptoms.label"
-      },
-      {
-        "id": "prevention",
-        "icon": "shield-alt",
-        "label": "topic.sti.nav.prevention.label"
-      },
-      {
-        "id": "testing",
-        "icon": "vial",
-        "label": "topic.sti.nav.testing.label"
       }
     ],
     "remember": "topic.sti.remember",

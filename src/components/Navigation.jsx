@@ -16,6 +16,56 @@ const SERVICE_LINKS = [
   { to: '/sti', key: 'sti' },
 ];
 
+const ABOUT_LINKS = [
+  { to: '/about', key: 'aboutIzere' },
+  { to: '/about#mission', key: 'aboutMission' },
+  { to: '/about#vision', key: 'aboutVision' },
+  { to: '/about#partners', key: 'aboutPartners' },
+  { to: '/about#contact', key: 'aboutContact' },
+];
+
+const REPRODUCTIVE_HEALTH_LINKS = [
+  { to: '/contraception', key: 'contraception' },
+  { to: '/pregnancy', key: 'pregnancy' },
+  { to: '/menstrual', key: 'menstrual' },
+];
+
+function Dropdown({ id, label, active, children, alignEnd }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname, location.hash]);
+
+  useEffect(() => {
+    const onDoc = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
+
+  return (
+    <div className={`nav-dropdown${open ? ' is-open' : ''}${alignEnd ? ' nav-dropdown-end' : ''}`} ref={ref}>
+      <button
+        type="button"
+        className={`nav-link nav-dropdown-toggle${active ? ' nav-link-active' : ''}`}
+        aria-expanded={open}
+        aria-haspopup="true"
+        aria-controls={id}
+        onClick={() => setOpen((o) => !o)}
+      >
+        {label} <Icon name="chevron-down" />
+      </button>
+      <div className="nav-dropdown-menu" id={id} role="menu">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function Navigation() {
   const { t } = useLanguage();
   const { isAdmin, canAccessDashboard, isCounselor, logout, user } = useAuth();
@@ -24,9 +74,7 @@ export default function Navigation() {
   const location = useLocation();
   const [largeText, setLargeText] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const servicesRef = useRef(null);
 
   const toggleA11y = (mode) => {
     if (mode === 'contrast') {
@@ -44,25 +92,11 @@ export default function Navigation() {
 
   useEffect(() => {
     setMobileOpen(false);
-    setServicesOpen(false);
-  }, [location.pathname]);
-
-  useEffect(() => {
-    const onDoc = (e) => {
-      if (servicesRef.current && !servicesRef.current.contains(e.target)) {
-        setServicesOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
-  }, []);
+  }, [location.pathname, location.hash]);
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === 'Escape') {
-        setServicesOpen(false);
-        setMobileOpen(false);
-      }
+      if (e.key === 'Escape') setMobileOpen(false);
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -75,67 +109,25 @@ export default function Navigation() {
 
   const navClass = ({ isActive }) => `nav-link${isActive ? ' nav-link-active' : ''}`;
   const servicesActive = SERVICE_LINKS.some((s) => location.pathname === s.to);
+  const aboutActive = location.pathname === '/about';
   const dashboardKey = isAdmin ? 'nav.admin' : isCounselor ? 'nav.counselInbox' : 'nav.dashboard';
 
-  const utility = (
-    <div className="navbar-utility-actions">
-      <button
-        type="button"
-        className={`a11y-btn${highContrast ? ' is-on' : ''}`}
-        onClick={() => toggleA11y('contrast')}
-      >
-        <Icon name="adjust" /> {t('nav.contrast')}
-      </button>
-      <button
-        type="button"
-        className={`a11y-btn${largeText ? ' is-on' : ''}`}
-        onClick={() => toggleA11y('text')}
-      >
-        <Icon name="text-height" /> {t('nav.largeText')}
-      </button>
-      <LanguageSwitcher />
-      {!user ? (
-        <Link to="/login" className="a11y-btn navbar-auth">
-          {t('nav.staffLogin')}
-        </Link>
-      ) : (
-        <button type="button" onClick={logout} className="a11y-btn navbar-auth">
-          {t('nav.signOut')}
-        </button>
-      )}
-      {canAccessDashboard && (
-        <NavLink to="/admin" className="a11y-btn navbar-auth">
-          <T k={dashboardKey} />
-        </NavLink>
-      )}
-    </div>
-  );
-
-  const servicesMenu = (
-    <div className={`nav-dropdown${servicesOpen ? ' is-open' : ''}`} ref={servicesRef}>
-      <button
-        type="button"
-        className={`nav-link nav-dropdown-toggle${servicesActive ? ' nav-link-active' : ''}`}
-        aria-expanded={servicesOpen}
-        aria-haspopup="true"
-        onClick={() => setServicesOpen((o) => !o)}
-      >
-        <T k="nav.services" /> <Icon name="chevron-down" />
-      </button>
-      <div className="nav-dropdown-menu" role="menu">
-        {SERVICE_LINKS.map(({ to, key }) => (
-          <NavLink
-            key={key}
-            to={to}
-            className={({ isActive }) => `nav-dropdown-item${isActive ? ' nav-link-active' : ''}`}
-            role="menuitem"
-            onClick={() => setServicesOpen(false)}
-          >
-            <T k={`nav.${key}`} />
-          </NavLink>
-        ))}
+  const settingsMenu = (
+    <>
+      <div className="nav-settings-row" role="none">
+        <span><T k="nav.language" /></span>
+        <LanguageSwitcher />
       </div>
-    </div>
+      <button type="button" className="nav-dropdown-item nav-dropdown-btn" onClick={() => toggleA11y('contrast')}>
+        <Icon name="adjust" /> <T k="nav.contrast" />
+      </button>
+      <button type="button" className="nav-dropdown-item nav-dropdown-btn" onClick={() => toggleA11y('text')}>
+        <Icon name="text-height" /> <T k="nav.largeText" />
+      </button>
+      <NavLink to="/#accessibility" className="nav-dropdown-item" role="menuitem">
+        <Icon name="universal-access" /> <T k="nav.accessibility" />
+      </NavLink>
+    </>
   );
 
   const primaryLinks = (
@@ -143,29 +135,80 @@ export default function Navigation() {
       <NavLink to="/" end className={navClass}>
         <T k="nav.home" />
       </NavLink>
-      {servicesMenu}
+      <Dropdown id="nav-services" label={<T k="nav.services" />} active={servicesActive}>
+        <NavLink
+          to="/contraception"
+          className={({ isActive }) => `nav-dropdown-item${isActive ? ' nav-link-active' : ''}`}
+          role="menuitem"
+        >
+          <T k="nav.reproductiveHealth" />
+        </NavLink>
+        {REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
+          <NavLink
+            key={key}
+            to={to}
+            className={({ isActive }) => `nav-dropdown-item nav-dropdown-sub${isActive ? ' nav-link-active' : ''}`}
+            role="menuitem"
+            style={{ paddingLeft: '1.5rem' }}
+          >
+            <T k={`nav.${key}`} />
+          </NavLink>
+        ))}
+        <NavLink
+          to="/sti"
+          className={({ isActive }) => `nav-dropdown-item${isActive ? ' nav-link-active' : ''}`}
+          role="menuitem"
+        >
+          <T k="nav.sti" />
+        </NavLink>
+      </Dropdown>
       <NavLink to="/shop" className={navClass}>
         <Icon name="store" className="nav-link-icon" />
         <T k="nav.shop" />
         {count > 0 ? ` (${count})` : ''}
       </NavLink>
-      <NavLink to="/about" className={navClass}>
-        <T k="nav.about" />
-      </NavLink>
+      <Dropdown id="nav-about" label={<T k="nav.about" />} active={aboutActive}>
+        {ABOUT_LINKS.map(({ to, key }) => (
+          <NavLink key={key} to={to} className="nav-dropdown-item" role="menuitem">
+            <T k={`nav.${key}`} />
+          </NavLink>
+        ))}
+      </Dropdown>
       <NavLink to="/donate" className="btn-nav-donate">
         <T k="nav.donate" />
       </NavLink>
-      <button type="button" className="btn-nav-cta btn-nav-chat border-0 cursor-pointer" onClick={openChat}>
-        <Icon name="comments" /> {t('nav.chatNow')}
-      </button>
+      <Dropdown
+        id="nav-settings"
+        label={(
+          <>
+            <Icon name="cog" /> <T k="nav.settings" />
+          </>
+        )}
+        alignEnd
+      >
+        {settingsMenu}
+      </Dropdown>
+      {!user ? (
+        <Link to="/login" className="nav-link">
+          {t('nav.staffLogin')}
+        </Link>
+      ) : (
+        <>
+          {canAccessDashboard && (
+            <NavLink to="/admin" className={navClass}>
+              <T k={dashboardKey} />
+            </NavLink>
+          )}
+          <button type="button" onClick={logout} className="nav-link">
+            {t('nav.signOut')}
+          </button>
+        </>
+      )}
     </>
   );
 
   return (
     <div className="navbar-fixed-wrap">
-      <div className="navbar-utility">
-        <div className="container navbar-utility-inner">{utility}</div>
-      </div>
       <nav className="navbar" aria-label="Main navigation">
         <div className="container">
           <div className="navbar-main">
@@ -191,43 +234,69 @@ export default function Navigation() {
       {mobileOpen && (
         <div className="navbar-mobile" id="izere-mobile-menu">
           <div className="container">
-            <NavLink to="/" end className={navClass} onClick={() => setMobileOpen(false)}>
+            <NavLink to="/" end className={navClass}>
               <T k="nav.home" />
             </NavLink>
             <p className="navbar-mobile-label">
               <T k="nav.services" />
             </p>
-            {SERVICE_LINKS.map(({ to, key }) => (
+            <NavLink
+              to="/contraception"
+              className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
+            >
+              <T k="nav.reproductiveHealth" />
+            </NavLink>
+            {REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
               <NavLink
                 key={key}
                 to={to}
-                className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
-                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) => `nav-link navbar-mobile-sub navbar-mobile-sub-sub${isActive ? ' nav-link-active' : ''}`}
+                style={{ paddingLeft: '2.2rem' }}
               >
                 <T k={`nav.${key}`} />
               </NavLink>
             ))}
-            <NavLink to="/shop" className={navClass} onClick={() => setMobileOpen(false)}>
+            <NavLink
+              to="/sti"
+              className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
+            >
+              <T k="nav.sti" />
+            </NavLink>
+            <NavLink to="/shop" className={navClass}>
               <T k="nav.shop" />
               {count > 0 ? ` (${count})` : ''}
             </NavLink>
-            <NavLink to="/about" className={navClass} onClick={() => setMobileOpen(false)}>
+            <p className="navbar-mobile-label">
               <T k="nav.about" />
-            </NavLink>
-            <NavLink to="/donate" className="btn-nav-donate" onClick={() => setMobileOpen(false)}>
+            </p>
+            {ABOUT_LINKS.map(({ to, key }) => (
+              <NavLink key={key} to={to} className="nav-link navbar-mobile-sub">
+                <T k={`nav.${key}`} />
+              </NavLink>
+            ))}
+            <NavLink to="/donate" className="btn-nav-donate">
               <T k="nav.donate" />
             </NavLink>
-            <button
-              type="button"
-              className="btn-nav-cta btn-nav-chat border-0 cursor-pointer"
-              onClick={() => {
-                setMobileOpen(false);
-                openChat();
-              }}
-            >
-              <Icon name="comments" /> {t('nav.chatNow')}
-            </button>
-            <div className="navbar-mobile-utility">{utility}</div>
+            <p className="navbar-mobile-label">
+              <T k="nav.settings" />
+            </p>
+            <div className="navbar-mobile-utility">{settingsMenu}</div>
+            {!user ? (
+              <Link to="/login" className="nav-link">
+                {t('nav.staffLogin')}
+              </Link>
+            ) : (
+              <>
+                {canAccessDashboard && (
+                  <NavLink to="/admin" className={navClass}>
+                    <T k={dashboardKey} />
+                  </NavLink>
+                )}
+                <button type="button" onClick={logout} className="nav-link">
+                  {t('nav.signOut')}
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}

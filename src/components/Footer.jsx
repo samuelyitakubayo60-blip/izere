@@ -4,6 +4,13 @@ import Icon from './Icon';
 import T from './T';
 import logo from '../assets/logo.png';
 
+const SOCIAL = [
+  { href: 'https://rw.linkedin.com/in/izere-health-hub-169724424', icon: 'linkedin-in', label: 'LinkedIn' },
+  { href: 'https://www.instagram.com/izerehealthhub/', icon: 'instagram', label: 'Instagram' },
+  { href: 'https://x.com/izerehealthhub', icon: 'x-twitter', label: 'X' },
+  { href: 'https://vm.tiktok.com/ZS9ktydP2jeJS-JoTRg/', icon: 'tiktok', label: 'TikTok' },
+];
+
 export default function Footer() {
   const { openChat } = useChatUI();
 
@@ -31,13 +38,20 @@ export default function Footer() {
           </div>
 
           <div className="footer-links">
-            <h6><T k="footer.platformTitle" /></h6>
-            <Link to="/#how"><T k="footer.howItWorks" /></Link>
-            <Link to="/#features"><T k="footer.features" /></Link>
-            <Link to="/#accessibility"><T k="footer.accessibility" /></Link>
-            <button type="button" className="footer-link-btn" onClick={openChat}>
-              <T k="footer.askIzere" />
-            </button>
+            <h6><T k="footer.socialTitle" /></h6>
+            <div className="footer-social">
+              {SOCIAL.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={item.label}
+                >
+                  <Icon name={item.icon} brand />
+                </a>
+              ))}
+            </div>
           </div>
 
           <div className="footer-links">

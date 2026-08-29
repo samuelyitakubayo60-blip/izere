@@ -10,6 +10,7 @@ const TOPICS = [
   { to: '/pregnancy', cls: 't-pregnancy', icon: 'baby', ic: 'ic-pregnancy', titleKey: 'topicPregnancy', descKey: 'topicPregnancyDesc' },
   { to: '/menstrual', cls: 't-menstrual', icon: 'calendar-alt', ic: 'ic-menstrual', titleKey: 'topicMenstrual', descKey: 'topicMenstrualDesc' },
   { to: '/sti', cls: 't-std', icon: 'shield-virus', ic: 'ic-std', titleKey: 'topicSti', descKey: 'topicStiDesc' },
+  { to: '/donate', cls: 't-donate', icon: 'heart', ic: 'ic-donate', titleKey: 'topicDonate', descKey: 'topicDonateDesc' },
 ];
 
 const FEATURES = [
