@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ChatUIProvider } from './components/FloatingChat';
 import Navigation from './components/Navigation';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -24,6 +25,7 @@ import './index.css';
 
 function App() {
   return (
+    <ThemeProvider>
     <LanguageProvider>
       <AuthProvider>
         <CartProvider>
@@ -63,6 +65,7 @@ function App() {
         </CartProvider>
       </AuthProvider>
     </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

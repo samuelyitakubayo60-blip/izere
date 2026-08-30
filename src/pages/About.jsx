@@ -37,13 +37,7 @@ export default function About() {
 
   return (
     <div ref={fadeRef}>
-      <section
-        className="page-hero"
-        style={{
-          background:
-            'radial-gradient(ellipse at 20% 50%,hsl(170,40%,10%) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,hsl(280,30%,12%) 0%,transparent 50%),var(--bg-dark)',
-        }}
-      >
+      <section className="page-hero">
         <div className="container">
           <span className="section-label"><T k="about.storyLabel" /></span>
           <h1 className="hero-title">
@@ -94,7 +88,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="disability">
+      <section className="section section-alt" id="disability">
         <div className="container">
           <div className="text-center mb-5 fade-in">
             <span className="section-label"><T k="about.a11yLabel" /></span>
@@ -126,7 +120,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="innovation">
+      <section className="section section-alt" id="innovation">
         <div className="container">
           <div className="text-center mb-5 fade-in">
             <span className="section-label"><T k="about.innovLabel" /></span>
@@ -148,7 +142,7 @@ export default function About() {
         </div>
       </section>
 
-      <section className="section" style={{ background: 'hsl(220,18%,10%)' }} id="contact">
+      <section className="section section-alt" id="contact">
         <div className="container">
           <div
             className="glass-card fade-in text-center"

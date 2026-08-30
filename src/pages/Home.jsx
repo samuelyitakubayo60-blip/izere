@@ -10,6 +10,7 @@ const TOPICS = [
   { to: '/pregnancy', cls: 't-pregnancy', icon: 'baby', ic: 'ic-pregnancy', titleKey: 'topicPregnancy', descKey: 'topicPregnancyDesc' },
   { to: '/menstrual', cls: 't-menstrual', icon: 'calendar-alt', ic: 'ic-menstrual', titleKey: 'topicMenstrual', descKey: 'topicMenstrualDesc' },
   { to: '/sti', cls: 't-std', icon: 'shield-virus', ic: 'ic-std', titleKey: 'topicSti', descKey: 'topicStiDesc' },
+  { to: '/shop', cls: 't-shop', icon: 'store', ic: 'ic-shop', titleKey: 'topicShop', descKey: 'topicShopDesc' },
   { to: '/donate', cls: 't-donate', icon: 'heart', ic: 'ic-donate', titleKey: 'topicDonate', descKey: 'topicDonateDesc' },
 ];
 
@@ -99,7 +100,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
+      <section id="features" className="section section-alt">
         <div className="container">
           <div className="text-center mb-5 fade-in">
             <span className="section-label"><T k="home.whyIzere" /></span>
@@ -158,7 +159,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="accessibility" className="section" style={{ background: 'hsl(220,18%,10%)' }}>
+      <section id="accessibility" className="section section-alt">
         <div className="container">
           <div className="text-center mb-5 fade-in">
             <span className="section-label"><T k="home.a11yLabel" /></span>

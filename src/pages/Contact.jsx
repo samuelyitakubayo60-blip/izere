@@ -61,13 +61,7 @@ export default function Contact() {
 
   return (
     <div ref={fadeRef}>
-      <section
-        className="page-hero"
-        style={{
-          background:
-            'radial-gradient(ellipse at 20% 50%,hsl(170,40%,10%) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,hsl(280,30%,12%) 0%,transparent 50%),var(--bg-dark)',
-        }}
-      >
+      <section className="page-hero">
         <div className="container">
           <span className="section-label"><T k="contactPage.subtitle" /></span>
           <h1 className="hero-title"><T k="contactPage.title" /></h1>

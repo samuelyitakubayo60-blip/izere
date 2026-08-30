@@ -1,12 +1,14 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 import { useAuth } from '../contexts/AuthContext';
 import { useChatUI } from './FloatingChat';
 import Icon from './Icon';
 import T from './T';
 import { useCart } from '../contexts/CartContext';
 import logo from '../assets/logo.png';
+import { SOCIAL_LINKS } from '../data/socialLinks';
 import { useEffect, useRef, useState } from 'react';
 
 const SERVICE_LINKS = [
@@ -88,7 +90,6 @@ export default function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesExpanded, setServicesExpanded] = useState(false);
   const [rhExpanded, setRhExpanded] = useState(false);
-  const [settingsExpanded, setSettingsExpanded] = useState(false);
   const [desktopRhOpen, setDesktopRhOpen] = useState(false);
 
   const toggleA11y = (mode) => {
@@ -109,7 +110,6 @@ export default function Navigation() {
     setMobileOpen(false);
     setServicesExpanded(false);
     setRhExpanded(false);
-    setSettingsExpanded(false);
     setDesktopRhOpen(false);
   }, [location.pathname]);
 
@@ -130,29 +130,6 @@ export default function Navigation() {
   const servicesActive = SERVICE_LINKS.some((s) => location.pathname === s.to);
   const rhActive = REPRODUCTIVE_HEALTH_LINKS.some((s) => location.pathname === s.to);
   const dashboardKey = isAdmin ? 'nav.admin' : isCounselor ? 'nav.counselInbox' : 'nav.dashboard';
-
-  const settingsItems = (
-    <>
-      <div className="nav-settings-row">
-        <span><T k="nav.language" /></span>
-        <LanguageSwitcher />
-      </div>
-      <button
-        type="button"
-        className={`nav-dropdown-item nav-dropdown-btn${highContrast ? ' is-on' : ''}`}
-        onClick={() => toggleA11y('contrast')}
-      >
-        <Icon name="adjust" /> <T k="nav.contrast" />
-      </button>
-      <button
-        type="button"
-        className={`nav-dropdown-item nav-dropdown-btn${largeText ? ' is-on' : ''}`}
-        onClick={() => toggleA11y('text')}
-      >
-        <Icon name="text-height" /> <T k="nav.largeText" />
-      </button>
-    </>
-  );
 
   const primaryLinks = (
     <>
@@ -206,17 +183,6 @@ export default function Navigation() {
       <button type="button" className="btn-nav-cta btn-nav-chat border-0 cursor-pointer" onClick={openChat}>
         <Icon name="comments" /> {t('nav.chatNow')}
       </button>
-      <Dropdown
-        id="nav-settings"
-        label={(
-          <>
-            <Icon name="cog" /> <T k="nav.settings" />
-          </>
-        )}
-        alignEnd
-      >
-        {settingsItems}
-      </Dropdown>
       {!user ? (
         <Link to="/login" className="nav-link">
           {t('nav.staffLogin')}
@@ -238,6 +204,45 @@ export default function Navigation() {
 
   return (
     <div className="navbar-fixed-wrap">
+      <div className="navbar-utility">
+        <div className="container navbar-utility-inner">
+          <div className="navbar-utility-social" aria-label={t('footer.socialTitle')}>
+            {SOCIAL_LINKS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={item.label}
+              >
+                <Icon name={item.icon} brand />
+              </a>
+            ))}
+          </div>
+          <div className="navbar-utility-actions" aria-label={t('nav.settings')}>
+            <LanguageSwitcher />
+            <ThemeSwitcher />
+            <button
+              type="button"
+              className={`navbar-tool-btn${highContrast ? ' is-on' : ''}`}
+              onClick={() => toggleA11y('contrast')}
+              title={t('nav.contrast')}
+              aria-label={t('nav.contrast')}
+            >
+              <Icon name="adjust" /> <span className="navbar-tool-label"><T k="nav.contrast" /></span>
+            </button>
+            <button
+              type="button"
+              className={`navbar-tool-btn${largeText ? ' is-on' : ''}`}
+              onClick={() => toggleA11y('text')}
+              title={t('nav.largeText')}
+              aria-label={t('nav.largeText')}
+            >
+              <Icon name="text-height" /> <span className="navbar-tool-label"><T k="nav.largeText" /></span>
+            </button>
+          </div>
+        </div>
+      </div>
       <nav className="navbar" aria-label="Main navigation">
         <div className="container">
           <div className="navbar-main">
@@ -318,17 +323,6 @@ export default function Navigation() {
             >
               <Icon name="comments" /> {t('nav.chatNow')}
             </button>
-            <Accordion
-              label={(
-                <>
-                  <Icon name="cog" /> <T k="nav.settings" />
-                </>
-              )}
-              open={settingsExpanded}
-              onToggle={() => setSettingsExpanded((o) => !o)}
-            >
-              <div className="navbar-mobile-settings">{settingsItems}</div>
-            </Accordion>
             {!user ? (
               <Link to="/login" className="nav-link">
                 {t('nav.staffLogin')}
