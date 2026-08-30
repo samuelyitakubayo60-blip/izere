@@ -29,7 +29,7 @@ function Dropdown({ id, label, active, children, alignEnd }) {
 
   useEffect(() => {
     setOpen(false);
-  }, [location.pathname, location.hash]);
+  }, [location.pathname]);
 
   useEffect(() => {
     const onDoc = (e) => {
@@ -49,11 +49,30 @@ function Dropdown({ id, label, active, children, alignEnd }) {
         aria-controls={id}
         onClick={() => setOpen((o) => !o)}
       >
-        {label} <Icon name="chevron-down" />
+        {label} <Icon name={open ? 'chevron-up' : 'chevron-down'} />
       </button>
-      <div className="nav-dropdown-menu" id={id} role="menu">
-        {children}
-      </div>
+      {open ? (
+        <div className="nav-dropdown-menu" id={id} role="menu">
+          {children}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function Accordion({ label, open, onToggle, active, children }) {
+  return (
+    <div className="nav-acc">
+      <button
+        type="button"
+        className={`navbar-mobile-toggle${active ? ' is-active' : ''}`}
+        aria-expanded={open}
+        onClick={onToggle}
+      >
+        <span>{label}</span>
+        <Icon name={open ? 'chevron-up' : 'chevron-down'} />
+      </button>
+      {open ? <div className="navbar-mobile-accordion-content">{children}</div> : null}
     </div>
   );
 }
@@ -67,6 +86,10 @@ export default function Navigation() {
   const [largeText, setLargeText] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
+  const [rhExpanded, setRhExpanded] = useState(false);
+  const [settingsExpanded, setSettingsExpanded] = useState(false);
+  const [desktopRhOpen, setDesktopRhOpen] = useState(false);
 
   const toggleA11y = (mode) => {
     if (mode === 'contrast') {
@@ -84,7 +107,11 @@ export default function Navigation() {
 
   useEffect(() => {
     setMobileOpen(false);
-  }, [location.pathname, location.hash]);
+    setServicesExpanded(false);
+    setRhExpanded(false);
+    setSettingsExpanded(false);
+    setDesktopRhOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -101,18 +128,27 @@ export default function Navigation() {
 
   const navClass = ({ isActive }) => `nav-link${isActive ? ' nav-link-active' : ''}`;
   const servicesActive = SERVICE_LINKS.some((s) => location.pathname === s.to);
+  const rhActive = REPRODUCTIVE_HEALTH_LINKS.some((s) => location.pathname === s.to);
   const dashboardKey = isAdmin ? 'nav.admin' : isCounselor ? 'nav.counselInbox' : 'nav.dashboard';
 
-  const settingsMenu = (
+  const settingsItems = (
     <>
-      <div className="nav-settings-row" role="none">
+      <div className="nav-settings-row">
         <span><T k="nav.language" /></span>
         <LanguageSwitcher />
       </div>
-      <button type="button" className="nav-dropdown-item nav-dropdown-btn" onClick={() => toggleA11y('contrast')}>
+      <button
+        type="button"
+        className={`nav-dropdown-item nav-dropdown-btn${highContrast ? ' is-on' : ''}`}
+        onClick={() => toggleA11y('contrast')}
+      >
         <Icon name="adjust" /> <T k="nav.contrast" />
       </button>
-      <button type="button" className="nav-dropdown-item nav-dropdown-btn" onClick={() => toggleA11y('text')}>
+      <button
+        type="button"
+        className={`nav-dropdown-item nav-dropdown-btn${largeText ? ' is-on' : ''}`}
+        onClick={() => toggleA11y('text')}
+      >
         <Icon name="text-height" /> <T k="nav.largeText" />
       </button>
     </>
@@ -124,24 +160,27 @@ export default function Navigation() {
         <T k="nav.home" />
       </NavLink>
       <Dropdown id="nav-services" label={<T k="nav.services" />} active={servicesActive}>
-        <NavLink
-          to="/contraception"
-          className={({ isActive }) => `nav-dropdown-item${isActive ? ' nav-link-active' : ''}`}
-          role="menuitem"
+        <button
+          type="button"
+          className={`nav-dropdown-item nav-dropdown-btn${rhActive ? ' nav-link-active' : ''}`}
+          aria-expanded={desktopRhOpen}
+          onClick={() => setDesktopRhOpen((o) => !o)}
         >
-          <T k="nav.reproductiveHealth" />
-        </NavLink>
-        {REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
-          <NavLink
-            key={key}
-            to={to}
-            className={({ isActive }) => `nav-dropdown-item nav-dropdown-sub${isActive ? ' nav-link-active' : ''}`}
-            role="menuitem"
-            style={{ paddingLeft: '1.5rem' }}
-          >
-            <T k={`nav.${key}`} />
-          </NavLink>
-        ))}
+          <span><T k="nav.reproductiveHealth" /></span>
+          <Icon name={desktopRhOpen ? 'chevron-up' : 'chevron-down'} />
+        </button>
+        {desktopRhOpen
+          ? REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
+              <NavLink
+                key={key}
+                to={to}
+                className={({ isActive }) => `nav-dropdown-item nav-dropdown-sub${isActive ? ' nav-link-active' : ''}`}
+                role="menuitem"
+              >
+                <T k={`nav.${key}`} />
+              </NavLink>
+            ))
+          : null}
         <NavLink
           to="/sti"
           className={({ isActive }) => `nav-dropdown-item${isActive ? ' nav-link-active' : ''}`}
@@ -164,6 +203,9 @@ export default function Navigation() {
       <NavLink to="/donate" className="btn-nav-donate">
         <T k="nav.donate" />
       </NavLink>
+      <button type="button" className="btn-nav-cta btn-nav-chat border-0 cursor-pointer" onClick={openChat}>
+        <Icon name="comments" /> {t('nav.chatNow')}
+      </button>
       <Dropdown
         id="nav-settings"
         label={(
@@ -173,7 +215,7 @@ export default function Navigation() {
         )}
         alignEnd
       >
-        {settingsMenu}
+        {settingsItems}
       </Dropdown>
       {!user ? (
         <Link to="/login" className="nav-link">
@@ -224,31 +266,35 @@ export default function Navigation() {
             <NavLink to="/" end className={navClass}>
               <T k="nav.home" />
             </NavLink>
-            <p className="navbar-mobile-label">
-              <T k="nav.services" />
-            </p>
-            <NavLink
-              to="/contraception"
-              className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
+            <Accordion
+              label={<T k="nav.services" />}
+              open={servicesExpanded}
+              onToggle={() => setServicesExpanded((o) => !o)}
+              active={servicesActive}
             >
-              <T k="nav.reproductiveHealth" />
-            </NavLink>
-            {REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
-              <NavLink
-                key={key}
-                to={to}
-                className={({ isActive }) => `nav-link navbar-mobile-sub navbar-mobile-sub-sub${isActive ? ' nav-link-active' : ''}`}
-                style={{ paddingLeft: '2.2rem' }}
+              <Accordion
+                label={<T k="nav.reproductiveHealth" />}
+                open={rhExpanded}
+                onToggle={() => setRhExpanded((o) => !o)}
+                active={rhActive}
               >
-                <T k={`nav.${key}`} />
+                {REPRODUCTIVE_HEALTH_LINKS.map(({ to, key }) => (
+                  <NavLink
+                    key={key}
+                    to={to}
+                    className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
+                  >
+                    <T k={`nav.${key}`} />
+                  </NavLink>
+                ))}
+              </Accordion>
+              <NavLink
+                to="/sti"
+                className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
+              >
+                <T k="nav.sti" />
               </NavLink>
-            ))}
-            <NavLink
-              to="/sti"
-              className={({ isActive }) => `nav-link navbar-mobile-sub${isActive ? ' nav-link-active' : ''}`}
-            >
-              <T k="nav.sti" />
-            </NavLink>
+            </Accordion>
             <NavLink to="/shop" className={navClass}>
               <T k="nav.shop" />
               {count > 0 ? ` (${count})` : ''}
@@ -262,10 +308,27 @@ export default function Navigation() {
             <NavLink to="/donate" className="btn-nav-donate">
               <T k="nav.donate" />
             </NavLink>
-            <p className="navbar-mobile-label">
-              <T k="nav.settings" />
-            </p>
-            <div className="navbar-mobile-utility">{settingsMenu}</div>
+            <button
+              type="button"
+              className="btn-nav-cta btn-nav-chat border-0 cursor-pointer"
+              onClick={() => {
+                setMobileOpen(false);
+                openChat();
+              }}
+            >
+              <Icon name="comments" /> {t('nav.chatNow')}
+            </button>
+            <Accordion
+              label={(
+                <>
+                  <Icon name="cog" /> <T k="nav.settings" />
+                </>
+              )}
+              open={settingsExpanded}
+              onToggle={() => setSettingsExpanded((o) => !o)}
+            >
+              <div className="navbar-mobile-settings">{settingsItems}</div>
+            </Accordion>
             {!user ? (
               <Link to="/login" className="nav-link">
                 {t('nav.staffLogin')}
