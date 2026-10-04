@@ -64,7 +64,7 @@ export default function FindCare() {
   useEffect(() => {
     listReferralLocations({ lang: language }).then((names) => {
       setOptions((prev) => ({ ...prev, province: names }));
-    });
+    }).catch(() => {});
   }, [language]);
 
   useEffect(() => {
@@ -74,14 +74,14 @@ export default function FindCare() {
     }
     listReferralLocations({ lang: language, province: loc.province }).then((names) => {
       setOptions((p) => ({ ...p, district: names, sector: [], cell: [], village: [] }));
-    });
+    }).catch(() => setOptions((p) => ({ ...p, district: [], sector: [], cell: [], village: [] })));
   }, [language, loc.province]);
 
   useEffect(() => {
     if (!loc.province || !loc.district) return;
     listReferralLocations({ lang: language, province: loc.province, district: loc.district }).then((names) => {
       setOptions((p) => ({ ...p, sector: names, cell: [], village: [] }));
-    });
+    }).catch(() => setOptions((p) => ({ ...p, sector: [], cell: [], village: [] })));
   }, [language, loc.province, loc.district]);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ export default function FindCare() {
       sector: loc.sector,
     }).then((names) => {
       setOptions((p) => ({ ...p, cell: names, village: [] }));
-    });
+    }).catch(() => setOptions((p) => ({ ...p, cell: [], village: [] })));
   }, [language, loc.province, loc.district, loc.sector]);
 
   useEffect(() => {
@@ -106,7 +106,7 @@ export default function FindCare() {
       cell: loc.cell,
     }).then((names) => {
       setOptions((p) => ({ ...p, village: names }));
-    });
+    }).catch(() => setOptions((p) => ({ ...p, village: [] })));
   }, [language, loc.province, loc.district, loc.sector, loc.cell]);
 
   const serviceLabel = useMemo(() => {

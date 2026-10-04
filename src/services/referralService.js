@@ -6,7 +6,10 @@ export const getReferralMeta = async () => {
 };
 
 export const listReferralLocations = async (params = {}) => {
-  const { data } = await api.get('/api/referrals/locations', { params });
+  const clean = Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value != null && String(value).trim() !== ''),
+  );
+  const { data } = await api.get('/api/referrals/locations', { params: clean });
   return data.names || [];
 };
 

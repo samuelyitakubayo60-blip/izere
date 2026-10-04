@@ -6,7 +6,10 @@ export const listShopProducts = async (params = {}) => {
 };
 
 export const listLocationChildren = async (params = {}) => {
-  const { data } = await api.get('/api/shop/locations', { params });
+  const clean = Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value != null && String(value).trim() !== ''),
+  );
+  const { data } = await api.get('/api/shop/locations', { params: clean });
   return data.names || [];
 };
 
