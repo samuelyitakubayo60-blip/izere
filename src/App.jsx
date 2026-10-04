@@ -17,6 +17,8 @@ import Blog from './pages/Blog';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Donate from './pages/Donate';
 import Contact from './pages/Contact';
+import FindCare from './pages/FindCare';
+import PaymentStatus from './pages/PaymentStatus';
 import { CartProvider } from './contexts/CartContext';
 import Shop from './pages/Shop';
 import Footer from './components/Footer';
@@ -38,6 +40,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
+                  <Route path="/care" element={<FindCare />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/donate" element={<Donate />} />
                   <Route path="/shop" element={<Shop />} />
@@ -48,6 +51,7 @@ function App() {
                   <Route path="/menstrual" element={<Menstrual />} />
                   <Route path="/sti" element={<STI />} />
                   <Route path="/blog" element={<Blog />} />
+                  <Route path="/payment/status" element={<PaymentStatus />} />
                   <Route
                     path="/admin"
                     element={

@@ -171,6 +171,9 @@ export default function Navigation() {
         <T k="nav.shop" />
         {count > 0 ? ` (${count})` : ''}
       </NavLink>
+      <NavLink to="/care" className={navClass}>
+        <T k="nav.findCare" />
+      </NavLink>
       <NavLink to="/about" className={navClass}>
         <T k="nav.about" />
       </NavLink>
@@ -303,6 +306,9 @@ export default function Navigation() {
             <NavLink to="/shop" className={navClass}>
               <T k="nav.shop" />
               {count > 0 ? ` (${count})` : ''}
+            </NavLink>
+            <NavLink to="/care" className={navClass}>
+              <T k="nav.findCare" />
             </NavLink>
             <NavLink to="/about" className={navClass}>
               <T k="nav.about" />

@@ -58,3 +58,8 @@ export const adminUpdateShopOrder = async (id, status) => {
   const { data } = await api.patch(`/api/shop/admin/orders/${id}`, { status });
   return data;
 };
+
+export const initiateShopPayment = async (payload) => {
+  const { data } = await api.post('/api/shop/payment/initiate', payload);
+  return data;
+};

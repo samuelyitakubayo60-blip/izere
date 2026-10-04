@@ -9,12 +9,69 @@ export default function Donate() {
   const { language } = useLanguage();
   const fadeRef = useFadeIn([]);
   const [settings, setSettings] = useState(null);
+  const [paymentForm, setPaymentForm] = useState({
+    amount: '',
+    currency: 'XAF',
+    country_code: 'RW',
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_phone: '',
+    customer_email: ''
+  });
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
+  const [paymentMessage, setPaymentMessage] = useState('');
 
   useEffect(() => {
     getPublicDonationSettings()
       .then(setSettings)
       .catch(() => setSettings({}));
   }, []);
+
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    setPaymentStatus('loading');
+    setPaymentMessage('');
+
+    try {
+      const response = await fetch('/api/donate/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...paymentForm,
+          payment_type: 'donation'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPaymentStatus('success');
+        setPaymentMessage('');
+        // Redirect to payment gateway if URL is provided
+        if (data.data?.payment_url) {
+          window.location.href = data.data.payment_url;
+        } else {
+          // Fallback to payment status page
+          window.location.href = `/payment/status?status=success&type=donation&transaction_id=${data.customer_transaction_id}`;
+        }
+      } else {
+        setPaymentStatus('error');
+        setPaymentMessage(data.error || 'payment_error');
+      }
+    } catch (error) {
+      setPaymentStatus('error');
+      setPaymentMessage('network_error');
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setPaymentForm({
+      ...paymentForm,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const note = language === 'rw' ? settings?.extra_note_rw : settings?.extra_note_en;
   const hasMomo = Boolean(settings?.momo_number || settings?.momo_name);
@@ -42,6 +99,118 @@ export default function Donate() {
           </ul>
 
           <h2 className="section-title mb-4"><T k="donate.methodsTitle" /></h2>
+          
+          {/* Online Payment Form */}
+          <div className="glass-card mb-6">
+            <h4 className="mb-4"><Icon name="credit-card" className="me-2" /> <T k="donate.onlinePayment" /></h4>
+            <form onSubmit={handlePaymentSubmit}>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="form-label"><T k="donate.amountLabel" /></label>
+                  <input
+                    type="text"
+                    name="amount"
+                    value={paymentForm.amount}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Enter amount"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="form-label"><T k="donate.currencyLabel" /></label>
+                  <select
+                    name="currency"
+                    value={paymentForm.currency}
+                    onChange={handleInputChange}
+                    className="form-control"
+                  >
+                    <option value="XAF">XAF (CFA Franc)</option>
+                    <option value="RWF">RWF (Rwandan Franc)</option>
+                    <option value="USD">USD (US Dollar)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="form-label"><T k="donate.firstNameLabel" /></label>
+                  <input
+                    type="text"
+                    name="customer_first_name"
+                    value={paymentForm.customer_first_name}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Your first name"
+                  />
+                </div>
+                <div>
+                  <label className="form-label"><T k="donate.lastNameLabel" /></label>
+                  <input
+                    type="text"
+                    name="customer_last_name"
+                    value={paymentForm.customer_last_name}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Your last name"
+                  />
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="form-label"><T k="donate.phoneLabel" /></label>
+                  <input
+                    type="tel"
+                    name="customer_phone"
+                    value={paymentForm.customer_phone}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="+250 XXX XXX XXX"
+                  />
+                </div>
+                <div>
+                  <label className="form-label"><T k="donate.emailLabel" /></label>
+                  <input
+                    type="email"
+                    name="customer_email"
+                    value={paymentForm.customer_email}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="your@email.com"
+                  />
+                </div>
+              </div>
+              
+              {paymentStatus === 'loading' && (
+                <div className="alert alert-info mb-4">
+                  <T k="donate.processing" />
+                </div>
+              )}
+              
+              {paymentStatus === 'success' && (
+                <div className="alert alert-success mb-4">
+                  <T k="donate.paymentSuccess" />
+                </div>
+              )}
+              
+              {paymentStatus === 'error' && (
+                <div className="alert alert-danger mb-4">
+                  {paymentMessage === 'network_error' ? <T k="donate.networkError" /> : 
+                   paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
+                   paymentMessage || <T k="donate.paymentError" />}
+                </div>
+              )}
+              
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={paymentStatus === 'loading'}
+              >
+                {paymentStatus === 'loading' ? <T k="donate.processing" /> : <T k="donate.donateButton" />}
+              </button>
+            </form>
+          </div>
+
+          <h3 className="section-title mb-4">Other Payment Methods</h3>
           {settings && !hasAny && (
             <p style={{ color: 'var(--text-muted)' }}><T k="donate.empty" /></p>
           )}

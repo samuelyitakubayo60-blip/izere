@@ -16,6 +16,7 @@ import {
   clearChatSession,
 } from '../utils/anonymousSession';
 import Icon from './Icon';
+import T from './T';
 
 const REC_IDLE = 'idle';
 const REC_RECORDING = 'recording';
@@ -44,6 +45,18 @@ export default function ChatWidget({ compact = false, dark = false }) {
   const [useBrowserTts, setUseBrowserTts] = useState(false);
   const [escalated, setEscalated] = useState(false);
   const [escalating, setEscalating] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    amount: '500', // Counselor fee
+    currency: 'RWF',
+    country_code: 'RW',
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_phone: '',
+    customer_email: ''
+  });
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
+  const [paymentMessage, setPaymentMessage] = useState('');
 
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
@@ -377,12 +390,57 @@ export default function ChatWidget({ compact = false, dark = false }) {
 
   const handleEscalate = async () => {
     if (!sessionId || escalated || escalating) return;
+    // Show payment modal instead of directly escalating
+    setShowPaymentModal(true);
+  };
+
+  const handleCounselorPayment = async () => {
+    setPaymentStatus('loading');
+    setPaymentMessage('');
+
+    try {
+      const response = await fetch('/api/chat/counselor/payment/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...paymentForm,
+          payment_type: 'counselor'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPaymentStatus('success');
+        setPaymentMessage('');
+        // Redirect to payment gateway if URL is provided
+        if (data.data?.payment_url) {
+          window.location.href = data.data.payment_url;
+        } else {
+          // Fallback to payment status page, then proceed with escalation
+          sessionStorage.setItem('pending_counselor_session', sessionId);
+          window.location.href = `/payment/status?status=success&type=counselor&transaction_id=${data.customer_transaction_id}`;
+        }
+      } else {
+        setPaymentStatus('error');
+        setPaymentMessage(data.error || 'payment_error');
+      }
+    } catch (error) {
+      setPaymentStatus('error');
+      setPaymentMessage('network_error');
+    }
+  };
+
+  const proceedWithEscalation = async () => {
     setEscalating(true);
     setVoiceError('');
     trackEvent('counselor_contacted');
     try {
       const response = await escalateChat(sessionId);
       setEscalated(true);
+      setShowPaymentModal(false);
       setMessages((prev) => [
         ...prev,
         {
@@ -416,8 +474,106 @@ export default function ChatWidget({ compact = false, dark = false }) {
     </button>
   );
 
+  const paymentModal = showPaymentModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 className="text-lg font-bold mb-4"><T k="chat.counselorPaymentTitle" /></h3>
+        <p className="text-sm text-gray-600 mb-4"><T k="chat.counselorPaymentDesc" /></p>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.firstNameLabel" /></label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2"
+              value={paymentForm.customer_first_name}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_first_name: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.lastNameLabel" /></label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2"
+              value={paymentForm.customer_last_name}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_last_name: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.phoneLabel" /></label>
+            <input
+              type="tel"
+              className="w-full border rounded-lg px-3 py-2"
+              placeholder="+250 XXX XXX XXX"
+              value={paymentForm.customer_phone}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_phone: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.emailLabel" /></label>
+            <input
+              type="email"
+              className="w-full border rounded-lg px-3 py-2"
+              placeholder="your@email.com"
+              value={paymentForm.customer_email}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_email: e.target.value })}
+              required
+            />
+          </div>
+          
+          {paymentStatus === 'loading' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
+              <T k="donate.processing" />
+            </div>
+          )}
+          
+          {paymentStatus === 'success' && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
+              <T k="donate.paymentSuccess" />
+            </div>
+          )}
+          
+          {paymentStatus === 'error' && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+              {paymentMessage === 'network_error' ? <T k="donate.networkError" /> : 
+               paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
+               paymentMessage || <T k="donate.paymentError" />}
+            </div>
+          )}
+        </div>
+        
+        <div className="flex gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => {
+              setShowPaymentModal(false);
+              setPaymentStatus('idle');
+              setPaymentMessage('');
+            }}
+            className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+            disabled={paymentStatus === 'loading'}
+          >
+            <T k="chat.cancel" />
+          </button>
+          <button
+            type="button"
+            onClick={handleCounselorPayment}
+            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            disabled={paymentStatus === 'loading'}
+          >
+            {paymentStatus === 'loading' ? <T k="donate.processing" /> : <T k="chat.payAndConnect" />}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className={compact ? 'flex flex-col h-full min-h-0 bg-transparent overflow-hidden' : ''}>
+      {paymentModal}
       {!embedded && (
         <div className={`${compact ? 'px-4 pt-4 pb-2' : 'bg-white rounded-lg shadow-md p-6 mb-6'}`}>
           {!compact && (

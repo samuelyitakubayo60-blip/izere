@@ -31,6 +31,7 @@ import {
   listCounselInbox,
   replyCounselSession,
 } from '../../services/counselService';
+import ReferralAdminPanel from './ReferralAdminPanel';
 
 const CATEGORIES = ['contraception', 'pregnancy', 'menstrual', 'sti'];
 
@@ -39,6 +40,7 @@ const TABS = [
   { id: 'tr', label: 'Site text', roles: ['admin', 'editor'] },
   { id: 'shop', label: 'Shop', roles: ['admin'] },
   { id: 'counsel', label: 'Counselor inbox', roles: ['admin', 'counselor'] },
+  { id: 'referrals', label: 'Referrals', roles: ['admin'] },
   { id: 'users', label: 'Staff', roles: ['admin'] },
   { id: 'donate', label: 'Donations', roles: ['admin'] },
 ];
@@ -964,6 +966,7 @@ export default function AdminDashboard() {
         {tab === 'counsel' && (isAdmin || isCounselor) && <CounselPanel />}
         {tab === 'users' && isAdmin && <UsersPanel />}
         {tab === 'donate' && isAdmin && <DonationsPanel />}
+        {tab === 'referrals' && isAdmin && <ReferralAdminPanel />}
       </div>
     </div>
   );

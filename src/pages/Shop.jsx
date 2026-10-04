@@ -6,6 +6,7 @@ import T from '../components/T';
 import Icon from '../components/Icon';
 import {
   getDeliveryQuote,
+  initiateShopPayment,
   listLocationChildren,
   listShopProducts,
   placeShopOrder,
@@ -42,6 +43,18 @@ export default function Shop() {
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [placing, setPlacing] = useState(false);
   const [receipt, setReceipt] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState('cod'); // cod = cash on delivery, online = FuturaPay
+  const [paymentForm, setPaymentForm] = useState({
+    amount: '',
+    currency: 'RWF',
+    country_code: 'RW',
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_phone: '',
+    customer_email: ''
+  });
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
+  const [paymentMessage, setPaymentMessage] = useState('');
 
   const mixedTypes = useMemo(() => new Set(items.map((row) => row.category)).size > 1, [items]);
   const grandTotal = totalRwf + (deliveryMethod === 'delivery' ? deliveryFee : 0);
@@ -143,6 +156,14 @@ export default function Shop() {
   const onCheckout = async (e) => {
     e.preventDefault();
     if (!items.length) return;
+    
+    // If online payment, handle payment first
+    if (paymentMethod === 'online') {
+      await handleOnlinePayment();
+      return;
+    }
+    
+    // Cash on delivery flow
     setPlacing(true);
     setNotice('');
     try {
@@ -160,6 +181,67 @@ export default function Shop() {
       setNotice(err.response?.data?.detail || err.message);
     } finally {
       setPlacing(false);
+    }
+  };
+
+  const handleOnlinePayment = async () => {
+    setPaymentStatus('loading');
+    setPaymentMessage('');
+
+    // Update payment form with checkout data
+    const nameParts = (checkout.customer_name || '').split(' ');
+    const paymentData = {
+      ...paymentForm,
+      amount: String(grandTotal),
+      currency: 'RWF',
+      country_code: 'RW',
+      customer_first_name: nameParts[0] || '',
+      customer_last_name: nameParts.slice(1).join(' ') || '',
+      customer_phone: checkout.phone || '',
+      customer_email: paymentForm.customer_email,
+      payment_type: 'shop'
+    };
+
+    try {
+      const data = await initiateShopPayment(paymentData);
+
+      if (data.success) {
+        setPaymentStatus('success');
+        setPaymentMessage('');
+        // Redirect to payment gateway if URL is provided
+        if (data.data?.payment_url) {
+          window.location.href = data.data.payment_url;
+        } else {
+          // Fallback to payment status page, then place order
+          window.location.href = `/payment/status?status=success&type=shop&transaction_id=${data.customer_transaction_id}`;
+        }
+      } else {
+        setPaymentStatus('error');
+        setPaymentMessage(data.error || 'payment_error');
+      }
+    } catch (error) {
+      setPaymentStatus('error');
+      setPaymentMessage('network_error');
+    }
+  };
+
+  const placeOrderAfterPayment = async () => {
+    setNotice('');
+    try {
+      const order = await placeShopOrder({
+        ...checkout,
+        delivery_method: deliveryMethod,
+        ...location,
+        items: items.map((row) => ({ product_id: row.id, quantity: row.quantity })),
+      });
+      clearCart();
+      setReceipt(order);
+      setCheckout({ customer_name: '', phone: '', notes: '' });
+      setLocation(EMPTY_LOCATION);
+      setPaymentStatus('idle');
+    } catch (err) {
+      setNotice(err.response?.data?.detail || err.message);
+      setPaymentStatus('error');
     }
   };
 
@@ -323,6 +405,64 @@ export default function Shop() {
                   <T k="shop.methodPickup" />
                 </label>
               </fieldset>
+
+              <fieldset className="shop-method">
+                <legend><T k="shop.paymentChoose" /></legend>
+                <label>
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'cod'}
+                    onChange={() => setPaymentMethod('cod')}
+                  />
+                  <T k="shop.paymentCod" />
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="payment"
+                    checked={paymentMethod === 'online'}
+                    onChange={() => setPaymentMethod('online')}
+                  />
+                  <T k="shop.paymentOnline" />
+                </label>
+              </fieldset>
+
+              {paymentMethod === 'online' && (
+                <div className="shop-payment-form">
+                  <div className="form-group">
+                    <label className="form-label"><T k="shop.paymentEmail" /></label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      placeholder="your@email.com"
+                      value={paymentForm.customer_email}
+                      onChange={(e) => setPaymentForm({ ...paymentForm, customer_email: e.target.value })}
+                      required
+                    />
+                  </div>
+                  
+                  {paymentStatus === 'loading' && (
+                    <div className="alert alert-info">
+                      <T k="donate.processing" />
+                    </div>
+                  )}
+                  
+                  {paymentStatus === 'success' && (
+                    <div className="alert alert-success">
+                      <T k="donate.paymentSuccess" />
+                    </div>
+                  )}
+                  
+                  {paymentStatus === 'error' && (
+                    <div className="alert alert-danger">
+                      {paymentMessage === 'network_error' ? <T k="donate.networkError" /> : 
+                       paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
+                       paymentMessage || <T k="donate.paymentError" />}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {deliveryMethod === 'delivery' && (
                 <div className="shop-location">
