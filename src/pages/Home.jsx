@@ -3,7 +3,6 @@ import { useChatUI } from '../components/FloatingChat';
 import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from '../components/Icon';
 import T from '../components/T';
-import izereImage from '../assets/izere.jpeg';
 
 const TOPICS = [
   { to: '/contraception', cls: 't-contraception', icon: 'pills', ic: 'ic-contraception', titleKey: 'topicContraception', descKey: 'topicContraceptionDesc' },
@@ -68,10 +67,10 @@ export default function Home() {
                 <span className="platform-badge"><Icon name="lock" style={{ color: 'var(--primary)' }} /> <T k="home.badgeNoAccount" /></span>
               </div>
             </div>
-            <div className="phone-mockup-wrap">
-              <div className="hero-image-frame">
-                <img src={izereImage} alt="" />
-              </div>
+            <div className="hero-shortcut-panel" aria-label="Quick access to services">
+              <Link to="/care" className="hero-shortcut hero-shortcut-care"><Icon name="map-marker-alt" /><span><strong>Find Care</strong><small>Explore nearby health facilities</small></span><Icon name="arrow-right" /></Link>
+              <Link to="/chat" className="hero-shortcut hero-shortcut-counsellor"><Icon name="comments" /><span><strong>Talk to a Counsellor</strong><small>Explore confidential support options</small></span><Icon name="arrow-right" /></Link>
+              <button type="button" className="hero-shortcut hero-shortcut-chat" onClick={openChat}><Icon name="comment-medical" /><span><strong>Start Chatting</strong><small>Ask a general health question</small></span><Icon name="arrow-right" /></button>
             </div>
           </div>
         </div>
@@ -160,30 +159,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="accessibility" className="section section-alt">
-        <div className="container">
-          <div className="text-center mb-5 fade-in">
-            <span className="section-label"><T k="home.a11yLabel" /></span>
-            <h2 className="section-title">
-              <T k="home.a11yHeading" /> <span className="gradient-text"><T k="home.a11yAccent" /></span>
-            </h2>
-            <p className="section-sub"><T k="home.a11ySub" /></p>
-          </div>
-          <div className="a11y-grid fade-in">
-            {A11Y.map(({ icon, titleKey, textKey }) => (
-              <div key={titleKey} className="a11y-card">
-                <div className="a11y-card-icon">
-                  <Icon name={icon} style={{ color: 'var(--primary)', fontSize: '1.5rem' }} />
-                </div>
-                <div>
-                  <h5><T k={`home.${titleKey}`} /></h5>
-                  <p><T k={`home.${textKey}`} /></p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       <section className="section">
         <div className="container">

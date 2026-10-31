@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Icon from '../components/Icon';
 import T from '../components/T';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getAnonymousId } from '../utils/anonymousSession';
@@ -9,6 +8,7 @@ import {
   getReferralMeta,
   listReferralLocations,
   lookupReferral,
+  submitReferralFeedback,
   requestReferral,
   resolveReferralLocation,
   searchFacilities,
@@ -33,8 +33,7 @@ export default function FindCare() {
   const [service, setService] = useState('sti');
   const [loc, setLoc] = useState(EMPTY_LOC);
   const [options, setOptions] = useState({ province: [], district: [], sector: [], cell: [], village: [] });
-  const [gps, setGps] = useState({ lat: null, lng: null, error: '' });
-  const [consentGps, setConsentGps] = useState(false);
+  const [gps, setGps] = useState({ lat: null, lng: null, error: '', ready: false });
   const [results, setResults] = useState(null);
   const [searching, setSearching] = useState(false);
   const [notice, setNotice] = useState('');
@@ -42,6 +41,8 @@ export default function FindCare() {
   const [consentShare, setConsentShare] = useState(false);
   const [lookupCode, setLookupCode] = useState('');
   const [lookupResult, setLookupResult] = useState(null);
+  const [feedback, setFeedback] = useState({ rating: '5', received_care: 'yes', respectful_treatment: 'yes', privacy_respected: 'yes', comments: '' });
+  const [feedbackMessage, setFeedbackMessage] = useState('');
   const [partner, setPartner] = useState({
     organisation_name: '',
     facility_type: 'clinic',
@@ -60,6 +61,22 @@ export default function FindCare() {
   useEffect(() => {
     getReferralMeta().then(setMeta).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    if (tab !== 'find') return undefined;
+    if (!navigator.geolocation) {
+      setGps((g) => ({ ...g, error: t('care.gpsUnavailable') }));
+      return undefined;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude, error: '', ready: true });
+      },
+      () => setGps((g) => ({ ...g, error: t('care.gpsDenied'), ready: false })),
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 300000 },
+    );
+    return undefined;
+  }, [tab, t]);
 
   useEffect(() => {
     listReferralLocations({ lang: language }).then((names) => {
@@ -109,6 +126,22 @@ export default function FindCare() {
     }).catch(() => setOptions((p) => ({ ...p, village: [] })));
   }, [language, loc.province, loc.district, loc.sector, loc.cell]);
 
+  const submitFeedback = async (event) => {
+    event.preventDefault();
+    setFeedbackMessage('');
+    try {
+      const response = await submitReferralFeedback({
+        referral_code: lookupCode.trim().toUpperCase(), rating: Number(feedback.rating),
+        received_care: feedback.received_care === 'yes',
+        respectful_treatment: feedback.respectful_treatment === 'yes',
+        privacy_respected: feedback.privacy_respected === 'yes', comments: feedback.comments.trim() || null,
+      });
+      setFeedbackMessage(response.message || 'Thank you for your feedback.');
+    } catch (error) {
+      setFeedbackMessage(error.response?.data?.detail || 'We could not submit feedback. Check the referral code or try again.');
+    }
+  };
+
   const serviceLabel = useMemo(() => {
     const item = (meta.services || []).find((s) => s.code === service);
     if (!item) return service;
@@ -126,24 +159,6 @@ export default function FindCare() {
     });
   };
 
-  const requestGps = () => {
-    if (!consentGps) {
-      setGps((g) => ({ ...g, error: t('care.gpsNeedConsent') }));
-      return;
-    }
-    if (!navigator.geolocation) {
-      setGps((g) => ({ ...g, error: t('care.gpsUnavailable') }));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setGps({ lat: pos.coords.latitude, lng: pos.coords.longitude, error: '' });
-      },
-      () => setGps((g) => ({ ...g, error: t('care.gpsDenied') })),
-      { enableHighAccuracy: false, timeout: 12000, maximumAge: 120000 },
-    );
-  };
-
   const runSearch = async (e) => {
     e?.preventDefault();
     setSearching(true);
@@ -151,7 +166,7 @@ export default function FindCare() {
     setReferral(null);
     try {
       const params = { service, lang: language };
-      if (gps.lat != null && gps.lng != null && consentGps) {
+      if (gps.lat != null && gps.lng != null) {
         params.lat = gps.lat;
         params.lng = gps.lng;
       }
@@ -181,7 +196,7 @@ export default function FindCare() {
         service_code: service,
         anonymous_id: getAnonymousId(),
         location_id: locationId,
-        consent_gps: Boolean(consentGps && gps.lat != null),
+        consent_gps: gps.lat != null,
         consent_share: consentShare,
       });
       setReferral(data);
@@ -266,20 +281,7 @@ export default function FindCare() {
 
               <h2><T k="care.whereTitle" /></h2>
               <p className="care-hint"><T k="care.whereHint" /></p>
-              <label className="care-check">
-                <input
-                  type="checkbox"
-                  checked={consentGps}
-                  onChange={(e) => setConsentGps(e.target.checked)}
-                />
-                <T k="care.gpsConsent" />
-              </label>
-              <div className="care-actions">
-                <button type="button" className="btn-outline-custom" onClick={requestGps} disabled={!consentGps}>
-                  <Icon name="location-arrow" /> <T k="care.useGps" />
-                </button>
-                {gps.lat != null ? <span className="care-ok"><T k="care.gpsReady" /></span> : null}
-              </div>
+              {gps.ready ? <p className="care-ok"><T k="care.gpsReady" /></p> : null}
               {gps.error ? <p className="care-notice">{gps.error}</p> : null}
 
               <div className="care-grid">
@@ -435,6 +437,17 @@ export default function FindCare() {
                 <div className="info-card">
                   <p className="care-code">{lookupResult.referral_id}</p>
                   <p>{lookupResult.facility} · {lookupResult.service} · {lookupResult.status}</p>
+                  <p className="care-hint">Keep this code private. The status shown here is limited and does not include sensitive clinical details.</p>
+                  <form className="care-form" onSubmit={submitFeedback}>
+                    <h3>Have you received care?</h3>
+                    <label className="admin-field"><span>Overall experience (1 = poor, 5 = excellent)</span><select className="admin-input" value={feedback.rating} onChange={e => setFeedback({...feedback, rating:e.target.value})}>{[5,4,3,2,1].map(n => <option key={n} value={n}>{n}</option>)}</select></label>
+                    <label className="admin-field"><span>Did you receive the service?</span><select className="admin-input" value={feedback.received_care} onChange={e => setFeedback({...feedback, received_care:e.target.value})}><option value="yes">Yes</option><option value="no">No</option></select></label>
+                    <label className="admin-field"><span>Were you treated respectfully?</span><select className="admin-input" value={feedback.respectful_treatment} onChange={e => setFeedback({...feedback, respectful_treatment:e.target.value})}><option value="yes">Yes</option><option value="no">No</option></select></label>
+                    <label className="admin-field"><span>Was your privacy respected?</span><select className="admin-input" value={feedback.privacy_respected} onChange={e => setFeedback({...feedback, privacy_respected:e.target.value})}><option value="yes">Yes</option><option value="no">No</option></select></label>
+                    <label className="admin-field"><span>Optional comments (do not include private medical details)</span><textarea className="admin-input" maxLength={1500} rows={3} value={feedback.comments} onChange={e => setFeedback({...feedback, comments:e.target.value})} /></label>
+                    <button className="btn-primary-custom" type="submit">Submit feedback</button>
+                    {feedbackMessage ? <p role="status" className="care-hint">{feedbackMessage}</p> : null}
+                  </form>
                 </div>
               ) : null}
             </form>

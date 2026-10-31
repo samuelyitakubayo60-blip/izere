@@ -3,7 +3,9 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useFadeIn } from '../hooks/useFadeIn';
 import Icon from '../components/Icon';
 import T from '../components/T';
-import { getPublicDonationSettings } from '../services/donateService';
+import PaymentWidget from '../components/PaymentWidget';
+import { getPublicDonationSettings, initiateDonationPayment } from '../services/donateService';
+import { extractPaymentUrl } from '../utils/paymentUrl';
 
 export default function Donate() {
   const { language } = useLanguage();
@@ -11,15 +13,16 @@ export default function Donate() {
   const [settings, setSettings] = useState(null);
   const [paymentForm, setPaymentForm] = useState({
     amount: '',
-    currency: 'XAF',
+    currency: 'RWF',
     country_code: 'RW',
     customer_first_name: '',
     customer_last_name: '',
     customer_phone: '',
-    customer_email: ''
+    customer_email: '',
   });
-  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
+  const [paymentStatus, setPaymentStatus] = useState('idle');
   const [paymentMessage, setPaymentMessage] = useState('');
+  const [widgetUrl, setWidgetUrl] = useState('');
 
   useEffect(() => {
     getPublicDonationSettings()
@@ -33,51 +36,34 @@ export default function Donate() {
     setPaymentMessage('');
 
     try {
-      const response = await fetch('/api/donate/initiate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...paymentForm,
-          payment_type: 'donation'
-        }),
+      const data = await initiateDonationPayment({
+        ...paymentForm,
+        payment_type: 'donation',
       });
 
-      const data = await response.json();
-
-      if (data.success) {
+      const url = extractPaymentUrl(data);
+      if (data.success && url) {
         setPaymentStatus('success');
-        setPaymentMessage('');
-        // Redirect to payment gateway if URL is provided
-        if (data.data?.payment_url) {
-          window.location.href = data.data.payment_url;
-        } else {
-          // Fallback to payment status page
-          window.location.href = `/payment/status?status=success&type=donation&transaction_id=${data.customer_transaction_id}`;
-        }
-      } else {
-        setPaymentStatus('error');
-        setPaymentMessage(data.error || 'payment_error');
+        setWidgetUrl(url);
+        return;
       }
+      setPaymentStatus('error');
+      setPaymentMessage(data.error || data.detail || 'payment_error');
     } catch (error) {
       setPaymentStatus('error');
-      setPaymentMessage('network_error');
+      setPaymentMessage(error.response?.data?.detail || error.response?.data?.error || 'network_error');
     }
   };
 
   const handleInputChange = (e) => {
     setPaymentForm({
       ...paymentForm,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const note = language === 'rw' ? settings?.extra_note_rw : settings?.extra_note_en;
-  const hasMomo = Boolean(settings?.momo_number || settings?.momo_name);
   const hasBank = Boolean(settings?.bank_name || settings?.bank_account);
-  const hasPaypal = Boolean(settings?.paypal_url);
-  const hasAny = hasMomo || hasBank || hasPaypal;
 
   return (
     <div ref={fadeRef}>
@@ -99,10 +85,10 @@ export default function Donate() {
           </ul>
 
           <h2 className="section-title mb-4"><T k="donate.methodsTitle" /></h2>
-          
-          {/* Online Payment Form */}
+
           <div className="glass-card mb-6">
-            <h4 className="mb-4"><Icon name="credit-card" className="me-2" /> <T k="donate.onlinePayment" /></h4>
+            <h4 className="mb-2"><Icon name="credit-card" className="me-2" /> <T k="donate.onlinePayment" /></h4>
+            <p className="shop-muted" style={{ marginBottom: '1.25rem' }}><T k="donate.widgetHint" /></p>
             <form onSubmit={handlePaymentSubmit}>
               <div className="grid md:grid-cols-2 gap-4 mb-4">
                 <div>
@@ -113,7 +99,7 @@ export default function Donate() {
                     value={paymentForm.amount}
                     onChange={handleInputChange}
                     className="form-control"
-                    placeholder="Enter amount"
+                    placeholder="5000"
                     required
                   />
                 </div>
@@ -125,9 +111,9 @@ export default function Donate() {
                     onChange={handleInputChange}
                     className="form-control"
                   >
-                    <option value="XAF">XAF (CFA Franc)</option>
-                    <option value="RWF">RWF (Rwandan Franc)</option>
-                    <option value="USD">USD (US Dollar)</option>
+                    <option value="RWF">RWF</option>
+                    <option value="USD">USD</option>
+                    <option value="XAF">XAF</option>
                   </select>
                 </div>
               </div>
@@ -140,7 +126,7 @@ export default function Donate() {
                     value={paymentForm.customer_first_name}
                     onChange={handleInputChange}
                     className="form-control"
-                    placeholder="Your first name"
+                    required
                   />
                 </div>
                 <div>
@@ -151,7 +137,7 @@ export default function Donate() {
                     value={paymentForm.customer_last_name}
                     onChange={handleInputChange}
                     className="form-control"
-                    placeholder="Your last name"
+                    required
                   />
                 </div>
               </div>
@@ -164,7 +150,8 @@ export default function Donate() {
                     value={paymentForm.customer_phone}
                     onChange={handleInputChange}
                     className="form-control"
-                    placeholder="+250 XXX XXX XXX"
+                    placeholder="+250..."
+                    required
                   />
                 </div>
                 <div>
@@ -175,31 +162,25 @@ export default function Donate() {
                     value={paymentForm.customer_email}
                     onChange={handleInputChange}
                     className="form-control"
-                    placeholder="your@email.com"
+                    required
                   />
                 </div>
               </div>
-              
+
               {paymentStatus === 'loading' && (
                 <div className="alert alert-info mb-4">
                   <T k="donate.processing" />
                 </div>
               )}
-              
-              {paymentStatus === 'success' && (
-                <div className="alert alert-success mb-4">
-                  <T k="donate.paymentSuccess" />
-                </div>
-              )}
-              
+
               {paymentStatus === 'error' && (
                 <div className="alert alert-danger mb-4">
-                  {paymentMessage === 'network_error' ? <T k="donate.networkError" /> : 
-                   paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
-                   paymentMessage || <T k="donate.paymentError" />}
+                  {paymentMessage === 'network_error' ? <T k="donate.networkError" /> :
+                    paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
+                      paymentMessage || <T k="donate.paymentError" />}
                 </div>
               )}
-              
+
               <button
                 type="submit"
                 className="btn btn-primary"
@@ -210,42 +191,17 @@ export default function Donate() {
             </form>
           </div>
 
-          <h3 className="section-title mb-4">Other Payment Methods</h3>
-          {settings && !hasAny && (
-            <p style={{ color: 'var(--text-muted)' }}><T k="donate.empty" /></p>
+          {hasBank && (
+            <div className="glass-card mb-4">
+              <h4><Icon name="university" className="me-2" /> <T k="donate.bankTitle" /></h4>
+              {settings.bank_name && (
+                <p><T k="donate.bankLabel" />: {settings.bank_name}</p>
+              )}
+              {settings.bank_account && (
+                <p><T k="donate.accountLabel" />: {settings.bank_account}</p>
+              )}
+            </div>
           )}
-          <div className="grid md:grid-cols-3 gap-4">
-            {hasMomo && (
-              <div className="glass-card">
-                <h4><Icon name="mobile-alt" className="me-2" /> <T k="donate.momoTitle" /></h4>
-                {settings.momo_name && (
-                  <p><T k="donate.nameLabel" />: {settings.momo_name}</p>
-                )}
-                {settings.momo_number && (
-                  <p><T k="donate.numberLabel" />: {settings.momo_number}</p>
-                )}
-              </div>
-            )}
-            {hasBank && (
-              <div className="glass-card">
-                <h4><Icon name="university" className="me-2" /> <T k="donate.bankTitle" /></h4>
-                {settings.bank_name && (
-                  <p><T k="donate.bankLabel" />: {settings.bank_name}</p>
-                )}
-                {settings.bank_account && (
-                  <p><T k="donate.accountLabel" />: {settings.bank_account}</p>
-                )}
-              </div>
-            )}
-            {hasPaypal && (
-              <div className="glass-card">
-                <h4><T k="donate.paypalTitle" /></h4>
-                <a href={settings.paypal_url} target="_blank" rel="noopener noreferrer">
-                  {settings.paypal_url}
-                </a>
-              </div>
-            )}
-          </div>
 
           {note && (
             <div className="glass-card mt-4">
@@ -256,6 +212,8 @@ export default function Donate() {
           <p className="mt-6"><T k="donate.thanks" /></p>
         </div>
       </section>
+
+      <PaymentWidget url={widgetUrl} onClose={() => setWidgetUrl('')} />
     </div>
   );
 }

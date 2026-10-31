@@ -72,3 +72,19 @@ export const adminListReferrals = async () => {
   const { data } = await api.get('/api/referrals/admin/referrals');
   return data;
 };
+
+
+export const submitReferralFeedback = async (payload) => {
+  const { data } = await api.post('/api/referrals/feedback', payload);
+  return data;
+};
+
+export const adminUpdateReferralStatus = async (code, status) => {
+  const { data } = await api.patch(`/api/referrals/admin/referrals/${encodeURIComponent(code)}/status`, { status });
+  return data;
+};
+
+export const adminListReferralFeedback = async () => {
+  const { data } = await api.get('/api/referrals/admin/feedback');
+  return data;
+};

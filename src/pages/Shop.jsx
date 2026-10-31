@@ -4,6 +4,8 @@ import { useCart } from '../contexts/CartContext';
 import { useFadeIn } from '../hooks/useFadeIn';
 import T from '../components/T';
 import Icon from '../components/Icon';
+import PaymentWidget from '../components/PaymentWidget';
+import { extractPaymentUrl } from '../utils/paymentUrl';
 import {
   getDeliveryQuote,
   initiateShopPayment,
@@ -55,6 +57,7 @@ export default function Shop() {
   });
   const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
   const [paymentMessage, setPaymentMessage] = useState('');
+  const [widgetUrl, setWidgetUrl] = useState('');
 
   const mixedTypes = useMemo(() => new Set(items.map((row) => row.category)).size > 1, [items]);
   const grandTotal = totalRwf + (deliveryMethod === 'delivery' ? deliveryFee : 0);
@@ -187,8 +190,8 @@ export default function Shop() {
   const handleOnlinePayment = async () => {
     setPaymentStatus('loading');
     setPaymentMessage('');
+    setPlacing(true);
 
-    // Update payment form with checkout data
     const nameParts = (checkout.customer_name || '').split(' ');
     const paymentData = {
       ...paymentForm,
@@ -199,29 +202,24 @@ export default function Shop() {
       customer_last_name: nameParts.slice(1).join(' ') || '',
       customer_phone: checkout.phone || '',
       customer_email: paymentForm.customer_email,
-      payment_type: 'shop'
+      payment_type: 'shop',
     };
 
     try {
       const data = await initiateShopPayment(paymentData);
-
-      if (data.success) {
+      const url = extractPaymentUrl(data);
+      if (data.success && url) {
         setPaymentStatus('success');
-        setPaymentMessage('');
-        // Redirect to payment gateway if URL is provided
-        if (data.data?.payment_url) {
-          window.location.href = data.data.payment_url;
-        } else {
-          // Fallback to payment status page, then place order
-          window.location.href = `/payment/status?status=success&type=shop&transaction_id=${data.customer_transaction_id}`;
-        }
+        setWidgetUrl(url);
       } else {
         setPaymentStatus('error');
-        setPaymentMessage(data.error || 'payment_error');
+        setPaymentMessage(data.error || data.detail || 'payment_error');
       }
     } catch (error) {
       setPaymentStatus('error');
-      setPaymentMessage('network_error');
+      setPaymentMessage(error.response?.data?.detail || error.response?.data?.error || 'network_error');
+    } finally {
+      setPlacing(false);
     }
   };
 
@@ -430,6 +428,7 @@ export default function Shop() {
 
               {paymentMethod === 'online' && (
                 <div className="shop-payment-form">
+                  <p className="shop-muted"><T k="shop.widgetHint" /></p>
                   <div className="form-group">
                     <label className="form-label"><T k="shop.paymentEmail" /></label>
                     <input
@@ -445,12 +444,6 @@ export default function Shop() {
                   {paymentStatus === 'loading' && (
                     <div className="alert alert-info">
                       <T k="donate.processing" />
-                    </div>
-                  )}
-                  
-                  {paymentStatus === 'success' && (
-                    <div className="alert alert-success">
-                      <T k="donate.paymentSuccess" />
                     </div>
                   )}
                   
@@ -496,10 +489,12 @@ export default function Shop() {
                 onChange={(e) => setCheckout({ ...checkout, notes: e.target.value })}
               />
               <button type="submit" className="shop-add" disabled={!items.length || placing}>
-                {placing ? t('shop.placing') : t('shop.place')}
+                {placing ? t('shop.placing') : paymentMethod === 'online' ? t('shop.payNow') : t('shop.place')}
               </button>
             </form>
             {notice && <p className="shop-notice">{notice}</p>}
+
+            <PaymentWidget url={widgetUrl} onClose={() => setWidgetUrl('')} />
 
             {receipt && (
               <div className="shop-receipt">

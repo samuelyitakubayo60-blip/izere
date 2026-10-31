@@ -5,6 +5,8 @@ import {
   adminListApplications,
   adminListFacilities,
   adminListReferrals,
+  adminListReferralFeedback,
+  adminUpdateReferralStatus,
   adminSaveFacility,
   getReferralMeta,
   listReferralLocations,
@@ -49,6 +51,7 @@ export default function ReferralAdminPanel() {
   const [facilities, setFacilities] = useState([]);
   const [apps, setApps] = useState([]);
   const [refs, setRefs] = useState([]);
+  const [feedbackRows, setFeedbackRows] = useState([]);
   const [form, setForm] = useState(EMPTY);
   const [editId, setEditId] = useState(null);
   const [msg, setMsg] = useState('');
@@ -56,16 +59,14 @@ export default function ReferralAdminPanel() {
 
   const load = async () => {
     try {
-      const [m, f, a, r] = await Promise.all([
-        getReferralMeta(),
-        adminListFacilities(),
-        adminListApplications(),
-        adminListReferrals(),
+      const [m, f, a, r, fb] = await Promise.all([
+        getReferralMeta(), adminListFacilities(), adminListApplications(), adminListReferrals(), adminListReferralFeedback(),
       ]);
       setMeta(m);
       setFacilities(f);
       setApps(a);
       setRefs(r);
+      setFeedbackRows(fb);
     } catch (e) {
       setMsg(e.response?.data?.detail || e.message);
     }
@@ -164,7 +165,7 @@ export default function ReferralAdminPanel() {
       </p>
       {msg ? <p className="admin-notice">{msg}</p> : null}
       <div className="admin-tabs" role="tablist">
-        {[['facilities', 'Facilities'], ['apps', 'Applications'], ['refs', 'Referral codes']].map(([id, label]) => (
+        {[['facilities', 'Facilities'], ['apps', 'Applications'], ['refs', 'Referral codes'], ['feedback', 'Care feedback']].map(([id, label]) => (
           <button key={id} type="button" className={sub === id ? 'is-active' : ''} onClick={() => setSub(id)}>
             {label}
           </button>
@@ -334,12 +335,22 @@ export default function ReferralAdminPanel() {
                   <td>{r.service}</td>
                   <td>{r.facility}</td>
                   <td>{r.district || '—'}</td>
-                  <td>{r.status}</td>
+                  <td><select aria-label={`Update status for ${r.referral_id}`} className="admin-input" value={r.status} onChange={async (e) => { try { await adminUpdateReferralStatus(r.referral_id, e.target.value); setMsg(`Updated ${r.referral_id}`); await load(); } catch (err) { setMsg(err.response?.data?.detail || err.message); } }}><option value="requested">Requested</option><option value="received">Received</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="unable_to_contact">Unable to contact</option><option value="cancelled">Cancelled</option></select></td>
                   <td>{r.created_at ? new Date(r.created_at).toLocaleString() : ''}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {sub === 'feedback' && (
+        <div>
+          <h3>Care feedback</h3>
+          <p className="admin-lead">Review reported care access, respectful treatment and privacy. Follow your approved complaints process for concerns; avoid copying unnecessary health details.</p>
+          <table className="admin-table"><thead><tr><th>Referral</th><th>Facility</th><th>Rating</th><th>Care received</th><th>Respect</th><th>Privacy</th><th>Comments</th><th>Date</th></tr></thead>
+            <tbody>{feedbackRows.map((f) => <tr key={`${f.referral_id}-${f.created_at}`}><td>{f.referral_id}</td><td>{f.facility || '—'}</td><td>{f.rating}/5</td><td>{f.received_care ? 'Yes' : 'No'}</td><td>{f.respectful_treatment == null ? '—' : f.respectful_treatment ? 'Yes' : 'No'}</td><td>{f.privacy_respected == null ? '—' : f.privacy_respected ? 'Yes' : 'No'}</td><td>{f.comments || '—'}</td><td>{f.created_at ? new Date(f.created_at).toLocaleString() : ''}</td></tr>)}</tbody>
+          </table>
+          {!feedbackRows.length ? <p>No feedback submitted yet.</p> : null}
         </div>
       )}
     </div>

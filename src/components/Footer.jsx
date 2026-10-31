@@ -4,9 +4,11 @@ import Icon from './Icon';
 import T from './T';
 import logo from '../assets/logo.png';
 import { SOCIAL_LINKS } from '../data/socialLinks';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Footer() {
   const { openChat } = useChatUI();
+  const { user, canAccessDashboard } = useAuth();
 
   return (
     <footer role="contentinfo">
@@ -52,6 +54,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <p><T k="footer.rights" /> <T k="footer.disclaimer" /></p>
+          <div className="staff-portal-entry"><Link to={user && canAccessDashboard ? '/admin' : '/login'}>Staff Portal</Link></div>
         </div>
       </div>
     </footer>
