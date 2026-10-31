@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useFadeIn } from '../hooks/useFadeIn';
 import T from '../components/T';
 import Icon from '../components/Icon';
+import { verifyPaymentStatus } from '../services/paymentService';
 
 export default function PaymentStatus() {
   const { language } = useLanguage();
@@ -12,36 +13,56 @@ export default function PaymentStatus() {
   const fadeRef = useFadeIn([]);
   
   const [status, setStatus] = useState('pending');
+  const [isVerifying, setIsVerifying] = useState(false);
   const [paymentType, setPaymentType] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Parse URL parameters
-    const statusParam = searchParams.get('status') || 'pending';
-    const typeParam = searchParams.get('type') || '';
-    const txParam = searchParams.get('transaction_id') || '';
-    const msgParam = searchParams.get('message') || '';
+    let active = true;
+    const checkStatus = async () => {
+      const typeParam = searchParams.get('type') || '';
+      const txParam = searchParams.get('customer_transaction_id') || searchParams.get('transaction_id') || '';
+      setPaymentType(typeParam);
+      setTransactionId(txParam);
+      setMessage('');
 
-    setStatus(statusParam);
-    setPaymentType(typeParam);
-    setTransactionId(txParam);
-    setMessage(msgParam);
+      // A status query parameter from a redirect is not proof of payment.
+      if (!txParam) {
+        setStatus('pending');
+        setMessage(language === 'rw'
+          ? 'Ntiturabona nimero y’ishyura yo kugenzura. Ntufate iri shyura nk’iryemejwe.'
+          : 'We could not find a transaction reference to verify. Payment is not yet confirmed.');
+        return;
+      }
 
-    // Handle shop order completion after successful payment
-    if (statusParam === 'success' && typeParam === 'shop') {
-      // Store transaction info for order completion
-      sessionStorage.setItem('pending_shop_transaction', txParam);
-    }
-
-    // Auto-redirect after 5 seconds if successful
-    if (statusParam === 'success') {
-      const timer = setTimeout(() => {
-        redirectBasedOnType(typeParam);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [searchParams]);
+      setIsVerifying(true);
+      try {
+        const result = await verifyPaymentStatus(txParam);
+        if (!active) return;
+        setStatus(result.status || 'pending');
+        setTransactionId(result.customer_transaction_id || txParam);
+        setMessage(result.message || '');
+        if (result.status === 'success' && typeParam === 'shop') {
+          sessionStorage.setItem('pending_shop_transaction', txParam);
+        }
+        if (result.status === 'success') {
+          const timer = setTimeout(() => redirectBasedOnType(typeParam), 5000);
+          return () => clearTimeout(timer);
+        }
+      } catch (error) {
+        if (!active) return;
+        setStatus('pending');
+        setMessage(language === 'rw'
+          ? 'Ntibyashobotse kugenzura ishyura ubu. Ongera ugerageze nyuma; ntitwemeje ko ryagenze neza.'
+          : 'We could not verify this payment yet. Please check again later; it has not been confirmed as successful.');
+      } finally {
+        if (active) setIsVerifying(false);
+      }
+    };
+    checkStatus();
+    return () => { active = false; };
+  }, [searchParams, language]);
 
   const redirectBasedOnType = (type) => {
     switch (type) {
@@ -159,7 +180,7 @@ export default function PaymentStatus() {
                 className={`text-6xl mb-4 ${getStatusColor()}`}
               />
               <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                {getStatusTitle()}
+                {isVerifying ? (language === 'rw' ? 'Turagenzura ishyura...' : 'Verifying Payment…') : getStatusTitle()}
               </h1>
               {paymentType && (
                 <p className="text-sm text-gray-600">
