@@ -1,0 +1,779 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { sendMessage, escalateChat, getChatMessages, getChatSession, isWaitPlaceholder } from '../services/chatService';
+import { transcribeAudio, synthesizeSpeech } from '../services/voiceService';
+import { useLanguage } from '../contexts/LanguageContext';
+import { trackEvent } from '../utils/analytics';
+import {
+  speakWithBrowser,
+  pauseBrowserSpeech,
+  resumeBrowserSpeech,
+  stopBrowserSpeech,
+} from '../utils/browserSpeech';
+import {
+  getAnonymousId,
+  getStoredSessionId,
+  storeSessionId,
+  clearChatSession,
+} from '../utils/anonymousSession';
+import Icon from './Icon';
+import T from './T';
+
+const REC_IDLE = 'idle';
+const REC_RECORDING = 'recording';
+const REC_PAUSED = 'paused';
+
+function mapServerMessages(rows) {
+  return rows.map((m) => ({
+    id: m.id,
+    role: m.role,
+    content: m.content,
+    language: m.language,
+  }));
+}
+
+export default function ChatWidget({ compact = false, dark = false }) {
+  const { language, t } = useLanguage();
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [sessionId, setSessionId] = useState(() => getStoredSessionId());
+  const [isLoading, setIsLoading] = useState(false);
+  const [recState, setRecState] = useState(REC_IDLE);
+  const [voiceBusy, setVoiceBusy] = useState(false);
+  const [voiceError, setVoiceError] = useState('');
+  const [playingId, setPlayingId] = useState(null);
+  const [playbackPaused, setPlaybackPaused] = useState(false);
+  const [useBrowserTts, setUseBrowserTts] = useState(false);
+  const [escalated, setEscalated] = useState(false);
+  const [escalating, setEscalating] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({
+    amount: '500', // Counselor fee
+    currency: 'RWF',
+    country_code: 'RW',
+    customer_first_name: '',
+    customer_last_name: '',
+    customer_phone: '',
+    customer_email: ''
+  });
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, loading, success, error
+  const [paymentMessage, setPaymentMessage] = useState('');
+
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const streamRef = useRef(null);
+  const chunksRef = useRef([]);
+  const audioRef = useRef(null);
+  const audioUrlRef = useRef(null);
+
+  useEffect(() => {
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+      return;
+    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  useEffect(() => {
+    const existing = getStoredSessionId();
+    if (!existing) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [session, rows] = await Promise.all([getChatSession(existing), getChatMessages(existing)]);
+        if (cancelled) return;
+        setEscalated(Boolean(session.escalated) && session.escalation_status !== 'closed');
+        setMessages(mapServerMessages(rows));
+      } catch {
+        /* session may be gone */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!sessionId || !escalated) return undefined;
+    const tick = async () => {
+      try {
+        const rows = await getChatMessages(sessionId);
+        setMessages((prev) => (rows.length <= prev.length ? prev : mapServerMessages(rows)));
+      } catch {
+        /* keep last view */
+      }
+    };
+    const id = setInterval(tick, 8000);
+    return () => clearInterval(id);
+  }, [sessionId, escalated]);
+
+  const stopPlayback = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
+    stopBrowserSpeech();
+    setPlayingId(null);
+    setPlaybackPaused(false);
+    setUseBrowserTts(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      stopPlayback();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [stopPlayback]);
+
+  const submitText = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    setVoiceError('');
+    setMessages((prev) => [...prev, { role: 'user', content: trimmed, language }]);
+    setIsLoading(true);
+
+    try {
+      let response;
+      try {
+        response = await sendMessage({
+          message: trimmed,
+          language: 'auto',
+          session_id: sessionId,
+          anonymous_id: getAnonymousId(),
+        });
+      } catch (firstError) {
+        const status = firstError?.response?.status;
+        if (status === 404 && sessionId) {
+          clearChatSession();
+          setSessionId(null);
+          response = await sendMessage({
+            message: trimmed,
+            language: 'auto',
+            session_id: null,
+            anonymous_id: getAnonymousId(),
+          });
+        } else {
+          throw firstError;
+        }
+      }
+
+      setSessionId(response.session_id);
+      storeSessionId(response.session_id);
+      if (response.escalated) setEscalated(true);
+
+      if (!response.response?.trim() || isWaitPlaceholder(response.response)) {
+        throw Object.assign(new Error('timeout'), { code: 'ECONNABORTED' });
+      }
+
+      const assistantMsg = {
+        id: response.message_id,
+        role: 'assistant',
+        content: response.response,
+        language: response.detected_language || response.language,
+        needsMedical: response.needs_medical_attention,
+      };
+
+      setMessages((prev) => {
+        const next = [...prev];
+        const lastUser = [...next].reverse().find((m) => m.role === 'user');
+        if (lastUser && (response.detected_language === 'en' || response.detected_language === 'rw')) {
+          lastUser.language = response.detected_language;
+        }
+        return [...next, assistantMsg];
+      });
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const timedOut = error?.code === 'ECONNABORTED';
+      let recovered = null;
+      if (timedOut && sessionId) {
+        try {
+          const rows = await getChatMessages(sessionId);
+          recovered = [...rows].reverse().find(
+            (m) => m.role === 'assistant' && m.content && !isWaitPlaceholder(m.content)
+          );
+        } catch {
+          recovered = null;
+        }
+      }
+      if (recovered?.content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: recovered.content,
+            language: recovered.language || language,
+          },
+        ]);
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: t(timedOut ? 'chat.timeout' : 'chat.error'), language },
+        ]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+    const text = input.trim();
+    setInput('');
+    trackEvent('question_asked', { input_type: 'text', language });
+    await submitText(text);
+  };
+
+  const finishRecording = async () => {
+    const recorder = mediaRecorderRef.current;
+    if (!recorder || recorder.state === 'inactive') {
+      setRecState(REC_IDLE);
+      return;
+    }
+    recorder.stop();
+  };
+
+  const processRecording = async () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+
+    const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+    chunksRef.current = [];
+    setRecState(REC_IDLE);
+
+    if (blob.size < 1000) {
+      setVoiceError(t('chat.voiceTooShort'));
+      return;
+    }
+
+    setVoiceBusy(true);
+    setVoiceError('');
+    try {
+      const { text } = await transcribeAudio(blob, language);
+      if (text?.trim()) {
+        setInput(text);
+        trackEvent('question_asked', { input_type: 'voice', language });
+        await submitText(text);
+      } else {
+        setVoiceError(t('chat.voiceNoText'));
+      }
+    } catch (err) {
+      console.error('Transcription failed:', err);
+      setVoiceError(t('chat.voiceTranscribeFailed'));
+    } finally {
+      setVoiceBusy(false);
+    }
+  };
+
+  const startRecording = async () => {
+    setVoiceError('');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const recorder = new MediaRecorder(stream, { mimeType: getSupportedMimeType() });
+      chunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
+      recorder.onstop = () => processRecording();
+
+      mediaRecorderRef.current = recorder;
+      recorder.start(250);
+      setRecState(REC_RECORDING);
+    } catch (err) {
+      console.error('Microphone error:', err);
+      setVoiceError(t('chat.micDenied'));
+    }
+  };
+
+  const toggleRecording = () => {
+    const recorder = mediaRecorderRef.current;
+    if (recState === REC_IDLE) {
+      startRecording();
+      return;
+    }
+    if (recState === REC_RECORDING && recorder?.state === 'recording') {
+      recorder.pause();
+      setRecState(REC_PAUSED);
+      return;
+    }
+    if (recState === REC_PAUSED && recorder?.state === 'paused') {
+      recorder.resume();
+      setRecState(REC_RECORDING);
+    }
+  };
+
+  const togglePlayback = async (messageId, text, msgLanguage) => {
+    const lang = msgLanguage || language;
+
+    if (playingId === messageId) {
+      if (useBrowserTts) {
+        if (playbackPaused) {
+          resumeBrowserSpeech();
+          setPlaybackPaused(false);
+        } else if (pauseBrowserSpeech()) {
+          setPlaybackPaused(true);
+        } else {
+          stopPlayback();
+        }
+        return;
+      }
+      if (audioRef.current) {
+        if (audioRef.current.paused) {
+          await audioRef.current.play();
+          setPlaybackPaused(false);
+        } else {
+          audioRef.current.pause();
+          setPlaybackPaused(true);
+        }
+        return;
+      }
+    }
+
+    stopPlayback();
+    setVoiceBusy(true);
+    setVoiceError('');
+
+    try {
+      const blob = await synthesizeSpeech(text, lang);
+      const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
+      const audio = new Audio(url);
+      audioRef.current = audio;
+      audio.onended = () => stopPlayback();
+      audio.onerror = () => {
+        stopPlayback();
+        setVoiceError(t('chat.voicePlayFailed'));
+      };
+      await audio.play();
+      setPlayingId(messageId);
+      setPlaybackPaused(false);
+      setUseBrowserTts(false);
+    } catch (err) {
+      console.warn('HF TTS failed, using browser speech:', err);
+      try {
+        setPlayingId(messageId);
+        setUseBrowserTts(true);
+        setPlaybackPaused(false);
+        await speakWithBrowser(text, lang);
+        stopPlayback();
+      } catch (browserErr) {
+        console.error('Browser TTS failed:', browserErr);
+        setVoiceError(t('chat.voicePlayFailed'));
+        stopPlayback();
+      }
+    } finally {
+      setVoiceBusy(false);
+    }
+  };
+
+  const handleNewChat = () => {
+    stopPlayback();
+    if (recState !== REC_IDLE) finishRecording();
+    clearChatSession();
+    setSessionId(null);
+    setMessages([]);
+    setVoiceError('');
+    setEscalated(false);
+  };
+
+  const handleEscalate = async () => {
+    if (!sessionId || escalated || escalating) return;
+    // Show payment modal instead of directly escalating
+    setShowPaymentModal(true);
+  };
+
+  const handleCounselorPayment = async () => {
+    setPaymentStatus('loading');
+    setPaymentMessage('');
+
+    try {
+      const response = await fetch('/api/chat/counselor/payment/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...paymentForm,
+          payment_type: 'counselor'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setPaymentStatus('success');
+        setPaymentMessage('');
+        // Redirect to payment gateway if URL is provided
+        if (data.data?.payment_url) {
+          window.location.href = data.data.payment_url;
+        } else {
+          // Fallback to payment status page, then proceed with escalation
+          sessionStorage.setItem('pending_counselor_session', sessionId);
+          window.location.href = `/payment/status?status=success&type=counselor&transaction_id=${data.customer_transaction_id}`;
+        }
+      } else {
+        setPaymentStatus('error');
+        setPaymentMessage(data.error || 'payment_error');
+      }
+    } catch (error) {
+      setPaymentStatus('error');
+      setPaymentMessage('network_error');
+    }
+  };
+
+  const proceedWithEscalation = async () => {
+    setEscalating(true);
+    setVoiceError('');
+    trackEvent('counselor_contacted');
+    try {
+      const response = await escalateChat(sessionId);
+      setEscalated(true);
+      setShowPaymentModal(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: response.message_id,
+          role: 'assistant',
+          content: response.response,
+          language: response.language,
+        },
+      ]);
+    } catch (err) {
+      console.error('Escalate failed:', err);
+      setVoiceError(t('chat.escalateError'));
+    } finally {
+      setEscalating(false);
+    }
+  };
+
+  const messageHeight = compact ? 'flex-1 min-h-[240px]' : 'h-[500px]';
+  const isRecActive = recState !== REC_IDLE;
+  const embedded = compact && dark;
+
+  const escalateButton = sessionId && !escalated && (
+    <button
+      type="button"
+      onClick={handleEscalate}
+      disabled={escalating}
+      className={embedded ? 'text-xs text-primary-custom hover:underline' : 'text-sm text-green-700 hover:text-green-900 underline'}
+      title={t('chat.counselorFee')}
+    >
+      {escalating ? '…' : t('chat.talkToCounselor')}
+    </button>
+  );
+
+  const paymentModal = showPaymentModal && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+        <h3 className="text-lg font-bold mb-4"><T k="chat.counselorPaymentTitle" /></h3>
+        <p className="text-sm text-gray-600 mb-4"><T k="chat.counselorPaymentDesc" /></p>
+        
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.firstNameLabel" /></label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2"
+              value={paymentForm.customer_first_name}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_first_name: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.lastNameLabel" /></label>
+            <input
+              type="text"
+              className="w-full border rounded-lg px-3 py-2"
+              value={paymentForm.customer_last_name}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_last_name: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.phoneLabel" /></label>
+            <input
+              type="tel"
+              className="w-full border rounded-lg px-3 py-2"
+              placeholder="+250 XXX XXX XXX"
+              value={paymentForm.customer_phone}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_phone: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1"><T k="donate.emailLabel" /></label>
+            <input
+              type="email"
+              className="w-full border rounded-lg px-3 py-2"
+              placeholder="your@email.com"
+              value={paymentForm.customer_email}
+              onChange={(e) => setPaymentForm({ ...paymentForm, customer_email: e.target.value })}
+              required
+            />
+          </div>
+          
+          {paymentStatus === 'loading' && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-700">
+              <T k="donate.processing" />
+            </div>
+          )}
+          
+          {paymentStatus === 'success' && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-700">
+              <T k="donate.paymentSuccess" />
+            </div>
+          )}
+          
+          {paymentStatus === 'error' && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-700">
+              {paymentMessage === 'network_error' ? <T k="donate.networkError" /> : 
+               paymentMessage === 'payment_error' ? <T k="donate.paymentError" /> :
+               paymentMessage || <T k="donate.paymentError" />}
+            </div>
+          )}
+        </div>
+        
+        <div className="flex gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => {
+              setShowPaymentModal(false);
+              setPaymentStatus('idle');
+              setPaymentMessage('');
+            }}
+            className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+            disabled={paymentStatus === 'loading'}
+          >
+            <T k="chat.cancel" />
+          </button>
+          <button
+            type="button"
+            onClick={handleCounselorPayment}
+            className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+            disabled={paymentStatus === 'loading'}
+          >
+            {paymentStatus === 'loading' ? <T k="donate.processing" /> : <T k="chat.payAndConnect" />}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className={compact ? 'flex flex-col h-full min-h-0 bg-transparent overflow-hidden' : ''}>
+      {paymentModal}
+      {!embedded && (
+        <div className={`${compact ? 'px-4 pt-4 pb-2' : 'bg-white rounded-lg shadow-md p-6 mb-6'}`}>
+          {!compact && (
+            <>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('chat.title')}</h1>
+              <p className="text-gray-600 mb-2">{t('chat.subtitle')}</p>
+            </>
+          )}
+          <p className={`text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2 ${compact ? 'mb-2' : 'mb-4'}`}>
+            {t('chat.privacyNote')}
+          </p>
+          <p className="text-xs text-gray-500 mb-2">{t('chat.autoLangNote')}</p>
+          {voiceError && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-2">{voiceError}</p>
+          )}
+          {messages.length > 0 && (
+            <div className="flex flex-wrap gap-3 items-center">
+              <button type="button" onClick={handleNewChat} className="text-sm text-red-600 hover:text-red-800 underline">
+                {t('chat.newChat')}
+              </button>
+              {escalateButton}
+            </div>
+          )}
+        </div>
+      )}
+
+      {embedded && voiceError && <p className="text-xs text-red-400 px-4 py-2">{voiceError}</p>}
+
+      <div
+        ref={messagesContainerRef}
+        className={
+          embedded
+            ? 'cb-messages flex-1 min-h-0'
+            : `${compact ? 'flex-1 min-h-0 mx-4 bg-gray-50 rounded-lg border border-gray-200' : 'bg-white rounded-lg shadow-md'} p-4 mb-4 ${messageHeight} overflow-y-auto min-h-0`
+        }
+      >
+        {messages.length === 0 ? (
+          <div className={`text-center py-12 ${embedded ? 'text-gray-400' : 'text-gray-500'}`}>
+            <Icon name="comments" style={{ fontSize: '2rem', marginBottom: '0.75rem', color: 'var(--primary)' }} />
+            <p className="text-lg font-medium">{t('chat.emptyTitle')}</p>
+            <p className="text-sm mt-2 px-4">{t('chat.emptyHint')}</p>
+          </div>
+        ) : (
+          <div className={embedded ? 'flex flex-col gap-3' : 'space-y-3'}>
+            {messages.map((message, index) => {
+              const msgId = message.id ?? index;
+              const isPlaying = playingId === msgId;
+              const isUser = message.role === 'user';
+              return (
+                <div key={msgId} className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={
+                      embedded
+                        ? `cb-msg ${isUser ? 'user' : 'bot'}`
+                        : `max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${isUser ? 'bg-red-600 text-white' : 'bg-white text-gray-800 shadow-sm border border-gray-100'}`
+                    }
+                  >
+                    {message.role === 'counselor' && (
+                      <p className={`text-xs font-semibold mb-1 ${embedded ? 'text-primary-custom' : 'text-green-700'}`}>
+                        {t('chat.counselorLabel')}
+                      </p>
+                    )}
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    {!isUser && (
+                      <button
+                        type="button"
+                        onClick={() => togglePlayback(msgId, message.content, message.language)}
+                        disabled={voiceBusy && !isPlaying}
+                        className={`mt-2 text-xs flex items-center gap-1 font-medium ${embedded ? 'text-primary-custom' : 'text-red-600 hover:text-red-800'}`}
+                      >
+                        <Icon name={isPlaying && !playbackPaused ? 'pause' : isPlaying ? 'play' : 'volume-up'} />
+                        {isPlaying && !playbackPaused
+                          ? t('chat.pauseListen')
+                          : isPlaying
+                            ? t('chat.resumeListen')
+                            : t('chat.listen')}
+                      </button>
+                    )}
+                    {message.needsMedical && (
+                      <p className={`mt-2 text-xs font-medium ${embedded ? 'text-yellow-400' : 'text-orange-700'}`}>
+                        {t('chat.medicalWarning')}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className={embedded ? 'cb-msg bot' : 'bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100'}>
+                  <div className="pmsg-typing">
+                    <span />
+                    <span />
+                    <span />
+                  </div>
+                  <p className={`mt-2 text-xs ${embedded ? 'text-gray-400' : 'text-gray-500'}`}>{t('chat.thinking')}</p>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
+      </div>
+
+      {embedded && messages.length > 0 && (
+        <div className="px-4 pb-2 shrink-0 flex flex-wrap gap-3">
+          <button type="button" onClick={handleNewChat} className="text-xs text-primary-custom hover:underline">
+            {t('chat.newChat')}
+          </button>
+          {escalateButton}
+          {escalated && <span className="text-xs text-gray-400">{t('chat.waitingCounselor')}</span>}
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSendMessage}
+        className={
+          embedded
+            ? 'cb-input-row mx-0 rounded-none border-t border-[var(--border)] shrink-0'
+            : compact
+              ? 'p-4 pt-0 border-t border-gray-100 bg-white shrink-0'
+              : 'bg-white rounded-lg shadow-md p-6 shrink-0'
+        }
+      >
+        {isRecActive && (
+          <p className="text-xs text-red-600 mb-2 font-medium">
+            {recState === REC_RECORDING ? t('chat.recordingActive') : t('chat.recordingPaused')}
+          </p>
+        )}
+        <div className="flex gap-2 items-center">
+          <button
+            type="button"
+            onClick={toggleRecording}
+            disabled={isLoading || voiceBusy}
+            className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+              recState === REC_RECORDING
+                ? 'bg-red-600 text-white animate-pulse'
+                : recState === REC_PAUSED
+                  ? 'bg-amber-500 text-white'
+                  : embedded
+                    ? 'bg-[var(--bg-glass)] text-[var(--text-primary)] border border-[var(--border)]'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+            title={
+              recState === REC_IDLE
+                ? t('chat.startRecording')
+                : recState === REC_RECORDING
+                  ? t('chat.pauseRecording')
+                  : t('chat.resumeRecording')
+            }
+          >
+            <Icon name={recState === REC_PAUSED ? 'pause' : 'microphone'} />
+          </button>
+
+          {isRecActive && (
+            <button
+              type="button"
+              onClick={finishRecording}
+              disabled={voiceBusy}
+              className="shrink-0 w-10 h-10 rounded-full bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
+              title={t('chat.sendVoice')}
+            >
+              <Icon name="check" />
+            </button>
+          )}
+
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={t('chat.placeholder')}
+            className={embedded ? 'cb-input' : 'flex-1 border border-gray-300 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500'}
+            disabled={isLoading || isRecActive}
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !input.trim() || isRecActive}
+            className={
+              embedded
+                ? 'cb-send'
+                : 'bg-red-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-red-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors shrink-0'
+            }
+          >
+            {isLoading ? '…' : embedded ? <Icon name="paper-plane" /> : t('chat.send')}
+          </button>
+        </div>
+      </form>
+
+      {!compact && (
+        <div className="mt-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+          <p className="text-yellow-800 text-sm">
+            <strong>{t('common.disclaimer')}:</strong> {t('chat.disclaimer')}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function getSupportedMimeType() {
+  const types = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
+  return types.find((t) => MediaRecorder.isTypeSupported(t)) || '';
+}
